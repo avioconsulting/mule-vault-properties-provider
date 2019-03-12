@@ -1,0 +1,13 @@
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:vault-properties-provider="http://www.mulesoft.org/schema/mule/vault-properties-provider"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+          http://www.mulesoft.org/schema/mule/vault-properties-provider http://www.mulesoft.org/schema/mule/vault-properties-provider/current/mule-vault-properties-provider.xsd">
+
+    <vault-properties-provider:config name="config" vaultUrl="http://localhost:8200" vaultToken="s.uo18rIGCFexkcxOOJET97EPA" />
+
+    <object name="testObject" class="com.avioconsulting.mule.vault.provider.TestObject">
+        <property key="valueFromProperty" value="${vault-properties-provider::secret/apikey/google.client_email}" />
+    </object>
+
+</mule>
