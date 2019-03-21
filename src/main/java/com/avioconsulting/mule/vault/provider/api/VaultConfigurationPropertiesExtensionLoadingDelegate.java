@@ -69,16 +69,6 @@ public class VaultConfigurationPropertiesExtensionLoadingDelegate implements Ext
             .onParameterGroup(SSL_PARAMETER_GROUP)
             .withDslInlineRepresentation(true);
     sslParameterGroup
-            .withOptionalParameter("useTlsAuth").ofType(BaseTypeBuilder.create(JAVA).booleanType().build())
-            .withExpressionSupport(NOT_SUPPORTED)
-            .describedAs("Use TLS Authentication")
-            .defaultingTo(Boolean.FALSE);
-    sslParameterGroup
-            .withOptionalParameter("verifySSL").ofType(BaseTypeBuilder.create(JAVA).booleanType().build())
-            .withExpressionSupport(NOT_SUPPORTED)
-            .describedAs("Should Vault SSL be verified")
-            .defaultingTo(Boolean.FALSE);
-    sslParameterGroup
             .withOptionalParameter("keyStorePath").ofType(BaseTypeBuilder.create(JAVA).stringType().build())
             .withExpressionSupport(NOT_SUPPORTED)
             .describedAs("Path to the key store with the vault registered certificate");
@@ -90,6 +80,16 @@ public class VaultConfigurationPropertiesExtensionLoadingDelegate implements Ext
             .withOptionalParameter("trustStorePath").ofType(BaseTypeBuilder.create(JAVA).stringType().build())
             .withExpressionSupport(NOT_SUPPORTED)
             .describedAs("Path to the trust store for trusted certificates");
+    sslParameterGroup
+            .withOptionalParameter("useTlsAuth").ofType(BaseTypeBuilder.create(JAVA).booleanType().build())
+            .withExpressionSupport(NOT_SUPPORTED)
+            .describedAs("Use TLS Authentication")
+            .defaultingTo(Boolean.FALSE);
+    sslParameterGroup
+            .withOptionalParameter("verifySSL").ofType(BaseTypeBuilder.create(JAVA).booleanType().build())
+            .withExpressionSupport(NOT_SUPPORTED)
+            .describedAs("Should Vault SSL be verified")
+            .defaultingTo(Boolean.FALSE);
   }
 
   private void addIamParameters(ConfigurationDeclarer configurationDeclarer) {
