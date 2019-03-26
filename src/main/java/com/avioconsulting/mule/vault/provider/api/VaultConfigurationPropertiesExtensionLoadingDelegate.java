@@ -11,6 +11,7 @@ import static org.mule.runtime.api.meta.Category.SELECT;
 import static org.mule.runtime.api.meta.ExpressionSupport.NOT_SUPPORTED;
 
 import org.mule.metadata.api.builder.BaseTypeBuilder;
+import org.mule.runtime.api.meta.ExpressionSupport;
 import org.mule.runtime.api.meta.model.declaration.fluent.*;
 import org.mule.runtime.extension.api.loader.ExtensionLoadingContext;
 import org.mule.runtime.extension.api.loader.ExtensionLoadingDelegate;
@@ -43,7 +44,7 @@ public class VaultConfigurationPropertiesExtensionLoadingDelegate implements Ext
     ParameterGroupDeclarer defaultParameterGroup = configurationDeclarer.onDefaultParameterGroup();
     defaultParameterGroup
             .withRequiredParameter("vaultUrl").ofType(BaseTypeBuilder.create(JAVA).stringType().build())
-            .withExpressionSupport(NOT_SUPPORTED)
+            .withExpressionSupport(ExpressionSupport.SUPPORTED)
             .describedAs("URL for the Vault Server");
 
     addBasicParameters(configurationDeclarer);
@@ -59,8 +60,12 @@ public class VaultConfigurationPropertiesExtensionLoadingDelegate implements Ext
             .withDslInlineRepresentation(true);
     basicParameterGroup
             .withOptionalParameter("vaultToken").ofType(BaseTypeBuilder.create(JAVA).stringType().build())
-            .withExpressionSupport(NOT_SUPPORTED)
+            .withExpressionSupport(ExpressionSupport.SUPPORTED)
             .describedAs("Vault Token with access to necessary secrets");
+    basicParameterGroup
+            .withOptionalParameter("kvVersion").ofType(BaseTypeBuilder.create(JAVA).numberType().build())
+            .withExpressionSupport(ExpressionSupport.SUPPORTED)
+            .describedAs("KV Version Number");
 
   }
 
@@ -68,6 +73,10 @@ public class VaultConfigurationPropertiesExtensionLoadingDelegate implements Ext
     ParameterGroupDeclarer sslParameterGroup = configurationDeclarer
             .onParameterGroup(SSL_PARAMETER_GROUP)
             .withDslInlineRepresentation(true);
+    sslParameterGroup
+            .withOptionalParameter("vaultPemFile").ofType(BaseTypeBuilder.create(JAVA).stringType().build())
+            .withExpressionSupport(NOT_SUPPORTED)
+            .describedAs("");
     sslParameterGroup
             .withOptionalParameter("keyStorePath").ofType(BaseTypeBuilder.create(JAVA).stringType().build())
             .withExpressionSupport(NOT_SUPPORTED)

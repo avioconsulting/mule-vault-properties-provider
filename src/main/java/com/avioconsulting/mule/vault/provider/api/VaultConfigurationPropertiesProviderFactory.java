@@ -11,6 +11,7 @@ import static org.mule.runtime.api.component.ComponentIdentifier.builder;
 import com.bettercloud.vault.SslConfig;
 import com.bettercloud.vault.VaultConfig;
 import com.bettercloud.vault.VaultException;
+import com.bettercloud.vault.response.LookupResponse;
 import com.bettercloud.vault.rest.Rest;
 import com.bettercloud.vault.rest.RestException;
 import com.bettercloud.vault.rest.RestResponse;
@@ -29,6 +30,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -167,9 +169,13 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
       }
     }
 
-    final Vault vault = new Vault(vaultConfig.build());
-
-    return vault;
+    try {
+      final Vault vault = new Vault(vaultConfig.build());
+      return vault;
+    } catch (VaultException ve){
+      System.out.println("Error connecting to Vault at " + vaultConfig.getAddress() + " with token (" + vaultConfig.getToken() + ")");
+      throw ve;
+    }
   }
 
   /**
@@ -185,11 +191,16 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
     // all we can really do is catch the exception when the optional parameters doesn't exist
 
     try {
-      return vaultConfig.token(basicParameters.getStringParameter("vaultToken"));
+      vaultConfig = vaultConfig.engineVersion(new Integer(basicParameters.getStringParameter("kvVersion")));
+    } catch (Exception e) {
+      LOGGER.debug("kvVersion parameter is not present, or is not a valid value (1 or 2)");
+    }
+    try {
+      vaultConfig = vaultConfig.token(basicParameters.getStringParameter("vaultToken"));
     } catch (Exception e) {
       LOGGER.debug("vaultToken parameter is not present");
-      return vaultConfig;
     }
+    return vaultConfig;
   }
 
   /**
@@ -204,8 +215,15 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
     String keyStorePath = null;
     String keyStorePassword = null;
     String trustStorePath = null;
+    String pemFilePath = null;
     boolean verifySsl = false;
     boolean useTlsAuthentication = false;
+
+    try {
+      pemFilePath = sslParameters.getStringParameter("vaultPemFile");
+    } catch (Exception e) {
+      LOGGER.debug("vaultPemFile is not present");
+    }
 
     try {
       String tlsAuthStr = sslParameters.getStringParameter("useTlsAuth");
@@ -235,6 +253,9 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
     }
 
     SslConfig ssl = new SslConfig();
+    if (pemFilePath != null && !pemFilePath.isEmpty()) {
+      ssl = ssl.pemFile(new File(pemFilePath));
+    }
     if (keyStorePath != null && keyStorePassword != null && !keyStorePath.isEmpty() && !keyStorePassword.isEmpty()) {
       File keyStoreFile = new File(keyStorePath);
       if (keyStoreFile.exists() && keyStoreFile.isFile()) {

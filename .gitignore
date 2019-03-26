@@ -31,3 +31,4 @@ hostkey.ser
 *.factorypath
 
 aux/
+ssl/

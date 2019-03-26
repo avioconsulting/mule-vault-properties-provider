@@ -20,13 +20,31 @@ Add a Vault Properties Provider Config global element to your application. Speci
 ##### Basic Configuration
 Parameters:
 * vaultToken - Token to use for authentication
+* kvVersion - Version of the KV engine being used
 ```xml
 <vault-properties-provider:config name="config" vaultUrl="http://localhost:8200">
-  <vault-properties-provider:basic vaultToken="s.uo18rIGCFexkcxOOJET97EPA" />
+  <vault-properties-provider:basic vaultToken="s.uo18rIGCFexkcxOOJET97EPA" kvVersion="1" />
 </vault-properties-provider:config>
 ```
 
-##### SSL Configuration with Token Authentication
+##### SSL Configuration with Token Authentication (PEM)
+Parameters:
+basic element attributes:
+* vaultToken - Token to use for authentication
+* kvVersion - Version of the KV engine being used
+
+ssl element attributes:
+* vaultPemFile - path to PEM file for vault server SSL
+* useTlsAuth - false to use Token Authentication
+* verifySSL - true to validate certificats
+```xml
+<vault-properties-provider:config name="config" vaultUrl="http://localhost:8200">
+  <vault-properties-provider:basic vaultToken="s.uo18rIGCFexkcxOOJET97EPA" kvVersion="2"/>
+  <vault-properties-provider:ssl vaultPemFile="ssl/my.pem" useTlsAuth="false" verifySSL="true" />
+</vault-properties-provider:config>
+```
+
+##### SSL Configuration with Token Authentication (KeyStore)
 Parameters:
 basic element attributes:
 * vaultToken - Token to use for authentication

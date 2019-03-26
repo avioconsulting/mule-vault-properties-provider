@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.avioconsulting.mule.vault.provider</groupId>
     <artifactId>mule-vault-properties-providers-module</artifactId>
-    <version>1.0.5-SNAPSHOT</version>
+    <version>1.0.6-SNAPSHOT</version>
     <packaging>mule-extension</packaging>
     <name>Vault properties provider Extension</name>
 
@@ -27,6 +27,12 @@
             <groupId>com.bettercloud</groupId>
             <artifactId>vault-java-driver</artifactId>
             <version>4.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>1.6.0</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
