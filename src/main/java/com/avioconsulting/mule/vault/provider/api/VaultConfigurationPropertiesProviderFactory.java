@@ -11,7 +11,6 @@ import static org.mule.runtime.api.component.ComponentIdentifier.builder;
 import com.bettercloud.vault.SslConfig;
 import com.bettercloud.vault.VaultConfig;
 import com.bettercloud.vault.VaultException;
-import com.bettercloud.vault.response.LookupResponse;
 import com.bettercloud.vault.rest.Rest;
 import com.bettercloud.vault.rest.RestException;
 import com.bettercloud.vault.rest.RestResponse;
@@ -30,7 +29,6 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,7 +51,7 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
   private static final ComponentIdentifier VAULT_PROPERTIES_PROVIDER =
       builder().namespace(EXTENSION_NAMESPACE).name(VaultConfigurationPropertiesExtensionLoadingDelegate.CONFIG_ELEMENT).build();
   // TODO change to meaningful prefix
-  private final static String VAULT_PROPERTIES_PREFIX = "vault-properties-provider::";
+  private final static String VAULT_PROPERTIES_PREFIX = "vault::";
   private final static Pattern VAULT_PATTERN = Pattern.compile(VAULT_PROPERTIES_PREFIX + "([^.}]*).(.*)");
 
   @Override
