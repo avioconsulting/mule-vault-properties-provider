@@ -128,13 +128,13 @@ Parameters:
 To reference a value, use this format:
 
 ```
-${vault-properties-provider::<secret_engine>/<path_to_secret>.<key_name>
+${vault::<secret_engine>/<path_to_secret>.<key_name>
 ```
 
-Only the Key/Value secret engine, version 2 is supported at this time.
+By default, version 2 of the KV engine is used.
 
 ## Example
 To retrieve a value from the Key/Value secrets engine exposed as "secret", stored at "test/mule-sample", with a key of "name", use this format:
 ```
-${vault-properties-provider::secret/test/mule-sample.name}
+${vault::secret/test/mule-sample.name}
 ```
