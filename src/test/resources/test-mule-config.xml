@@ -6,7 +6,7 @@
 
 
     <vault-properties-provider:config name="config" vaultUrl="${vaultUrl}">
-        <vault-properties-provider:basic vaultToken="${vaultToken}" kvVersion="1"/>
+        <vault-properties-provider:basic vaultToken="${vaultToken}" kvVersion="2"/>
         <vault-properties-provider:ssl vaultPemFile="ssl/root-cert.pem" />
     </vault-properties-provider:config>
 

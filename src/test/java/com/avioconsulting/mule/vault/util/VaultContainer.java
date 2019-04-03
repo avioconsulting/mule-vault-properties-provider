@@ -42,12 +42,14 @@ public class VaultContainer implements TestRule {
 
     private String unsealKey;
     private String rootToken;
+    private boolean kv2Enabled = false;
 
     public VaultContainer() {
-        container = new GenericContainer("vault:1.0.2")
+        container = new GenericContainer("vault:1.1.0")
             .withClasspathResourceMapping("/startup.sh", CONTAINER_STARTUP_SCRIPT, BindMode.READ_ONLY)
             .withClasspathResourceMapping("/config.json", CONTAINER_CONFIG_FILE, BindMode.READ_ONLY)
             .withClasspathResourceMapping("/libressl.conf", CONTAINER_OPENSSL_CONFIG_FILE, BindMode.READ_ONLY)
+            .withEnv("VAULT_VERSION", "1.1.0")
             .withFileSystemBind(SSL_DIRECTORY, CONTAINER_SSL_DIRECTORY, BindMode.READ_WRITE)
             .withCreateContainerCmdModifier(new Consumer<CreateContainerCmd>() {
                 @Override
@@ -91,12 +93,18 @@ public class VaultContainer implements TestRule {
     }
 
     public void setupSampleSecret() throws IOException, InterruptedException {
-        runCommand("vault", "login", "-tls-skip-verify", rootToken);
-        runCommand("vault", "secrets", "list", "-tls-skip-verify");
         runCommand("vault", "kv", "put", "-tls-skip-verify", "secret/test/mysecret", "att1=test_value1",
                 "att2=test_value2");
-        runCommand("vault", "kv", "get", "-tls-skip-verify", "secret/test/mysecret");
     }
+
+    public void enableKvSecretsV2() throws IOException, InterruptedException {
+        if (!kv2Enabled) {
+            runCommand("vault", "login", "-tls-skip-verify", rootToken);
+            runCommand("vault", "secrets", "enable", "-tls-skip-verify", "-version=2", "-path=secret", "kv");
+            kv2Enabled = true;
+        }
+    }
+
 
     private Container.ExecResult runCommand(final String... command) throws IOException, InterruptedException {
         LOGGER.info("Command: {}", String.join(" ", command));

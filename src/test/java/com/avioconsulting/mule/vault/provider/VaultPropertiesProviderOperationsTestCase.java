@@ -6,10 +6,7 @@ import static org.hamcrest.core.Is.is;
 import com.avioconsulting.mule.vault.util.VaultContainer;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
-import org.junit.Rule;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
-
-import javax.inject.Inject;
 
 import org.junit.Test;
 
@@ -23,6 +20,7 @@ public class VaultPropertiesProviderOperationsTestCase extends MuleArtifactFunct
   @BeforeClass
   public static void setupContainer() throws IOException, InterruptedException {
       container.initAndUnsealVault();
+      container.enableKvSecretsV2();
       container.setupSampleSecret();
 
       // Set vaultUrl and vaultToken properties so they can be used in the Mule config file
