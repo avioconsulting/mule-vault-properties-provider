@@ -74,9 +74,17 @@ public class VaultConfigurationPropertiesExtensionLoadingDelegate implements Ext
             .onParameterGroup(SSL_PARAMETER_GROUP)
             .withDslInlineRepresentation(true);
     sslParameterGroup
-            .withOptionalParameter("vaultPemFile").ofType(BaseTypeBuilder.create(JAVA).stringType().build())
+            .withOptionalParameter("pemFile").ofType(BaseTypeBuilder.create(JAVA).stringType().build())
             .withExpressionSupport(NOT_SUPPORTED)
-            .describedAs("");
+            .describedAs("An X.509 certificate, to use when communicating with Vault over HTTPS.");
+    sslParameterGroup
+            .withOptionalParameter("clientPemFile").ofType(BaseTypeBuilder.create(JAVA).stringType().build())
+            .withExpressionSupport(NOT_SUPPORTED)
+            .describedAs("An X.509 client certificate, for use with Vault's TLS Certificate auth backend.");
+    sslParameterGroup
+            .withOptionalParameter("clientKeyPemFile").ofType(BaseTypeBuilder.create(JAVA).stringType().build())
+            .withExpressionSupport(NOT_SUPPORTED)
+            .describedAs("An RSA private key, for use with Vault's TLS Certificate auth backend.");
     sslParameterGroup
             .withOptionalParameter("keyStorePath").ofType(BaseTypeBuilder.create(JAVA).stringType().build())
             .withExpressionSupport(NOT_SUPPORTED)

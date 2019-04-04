@@ -37,6 +37,7 @@ public class VaultContainer implements TestRule {
     public final static String CONTAINER_SSL_DIRECTORY = "/vault/config/ssl";
     public final static String CONTAINER_CERT_PEMFILE = CONTAINER_SSL_DIRECTORY + "/vault-cert.pem";
     public final static String CONTAINER_CLIENT_CERT_PEMFILE = CONTAINER_SSL_DIRECTORY + "/client-cert.pem";
+    public final static String CONTAINER_WEB_POLICY_FILE = "/vault/config/web_policy.hcl";
 
     private final GenericContainer container;
 
@@ -49,6 +50,7 @@ public class VaultContainer implements TestRule {
             .withClasspathResourceMapping("/startup.sh", CONTAINER_STARTUP_SCRIPT, BindMode.READ_ONLY)
             .withClasspathResourceMapping("/config.json", CONTAINER_CONFIG_FILE, BindMode.READ_ONLY)
             .withClasspathResourceMapping("/libressl.conf", CONTAINER_OPENSSL_CONFIG_FILE, BindMode.READ_ONLY)
+            .withClasspathResourceMapping("/web_policy.hcl", CONTAINER_WEB_POLICY_FILE, BindMode.READ_ONLY)
             .withEnv("VAULT_VERSION", "1.1.0")
             .withFileSystemBind(SSL_DIRECTORY, CONTAINER_SSL_DIRECTORY, BindMode.READ_WRITE)
             .withCreateContainerCmdModifier(new Consumer<CreateContainerCmd>() {
@@ -93,18 +95,33 @@ public class VaultContainer implements TestRule {
     }
 
     public void setupSampleSecret() throws IOException, InterruptedException {
-        runCommand("vault", "kv", "put", "-tls-skip-verify", "secret/test/mysecret", "att1=test_value1",
+        runCommand("vault", "kv", "put", "-ca-cert=" + CONTAINER_CERT_PEMFILE, "secret/test/mysecret", "att1=test_value1",
                 "att2=test_value2");
     }
 
     public void enableKvSecretsV2() throws IOException, InterruptedException {
         if (!kv2Enabled) {
-            runCommand("vault", "login", "-tls-skip-verify", rootToken);
-            runCommand("vault", "secrets", "enable", "-tls-skip-verify", "-version=2", "-path=secret", "kv");
+            runCommand("vault", "login", "-ca-cert=" + CONTAINER_CERT_PEMFILE, rootToken);
+            runCommand("vault", "secrets", "enable", "-ca-cert=" + CONTAINER_CERT_PEMFILE, "-version=2", "-path=secret", "kv");
             kv2Enabled = true;
         }
     }
 
+    /**
+     * Prepares the Vault server for testing of the TLS Certificate auth backend (i.e. mounts the backend and registers
+     * the certificate and private key for client auth).
+     *
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public void setupBackendCert() throws IOException, InterruptedException {
+        runCommand("vault", "login", "-ca-cert=" + CONTAINER_CERT_PEMFILE, rootToken);
+
+        runCommand("vault", "auth", "enable", "-ca-cert=" + CONTAINER_CERT_PEMFILE, "cert");
+        runCommand("vault", "policy", "write", "-ca-cert=" + CONTAINER_CERT_PEMFILE, "web", CONTAINER_WEB_POLICY_FILE);
+        runCommand("vault", "write", "-ca-cert=" + CONTAINER_CERT_PEMFILE, "auth/cert/certs/web", "display_name=web",
+                "policies=web", "certificate=@" + CONTAINER_CLIENT_CERT_PEMFILE, "ttl=3600");
+    }
 
     private Container.ExecResult runCommand(final String... command) throws IOException, InterruptedException {
         LOGGER.info("Command: {}", String.join(" ", command));

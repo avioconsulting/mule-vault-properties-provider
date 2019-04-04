@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
@@ -214,13 +215,30 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
     String keyStorePassword = null;
     String trustStorePath = null;
     String pemFilePath = null;
+    String clientPemFile = null;
+    String clientKeyPemFile = null;
     boolean verifySsl = false;
     boolean useTlsAuthentication = false;
 
     try {
-      pemFilePath = sslParameters.getStringParameter("vaultPemFile");
+      pemFilePath = sslParameters.getStringParameter("pemFile");
     } catch (Exception e) {
-      LOGGER.debug("vaultPemFile is not present");
+      LOGGER.debug("pemFile parameter not present");
+    }
+
+    try {
+      clientPemFile = sslParameters.getStringParameter("clientPemFile");
+      clientKeyPemFile = sslParameters.getStringParameter("clientKeyPemFile");
+    } catch (Exception e) {
+      LOGGER.debug("clientPemFile and/or clientKeyPemFile parameters not present");
+    }
+
+    try {
+      keyStorePath = sslParameters.getStringParameter("keyStorePath");
+      keyStorePassword = sslParameters.getStringParameter("keyStorePassword");
+      trustStorePath = sslParameters.getStringParameter("trustStorePath");
+    } catch (Exception e) {
+      LOGGER.debug("keyStorePath, keyStorePassword, and/or trustStorePath parameters are not present. All are needed for TLS Authentication.");
     }
 
     try {
@@ -237,42 +255,39 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
       LOGGER.debug("verifySSL parameter is not present");
     }
 
-    try {
-      keyStorePath = sslParameters.getStringParameter("keyStorePath");
-      keyStorePassword = sslParameters.getStringParameter("keyStorePassword");
-    } catch (Exception e) {
-      LOGGER.debug("keyStorePath and/or keyStorePassword parameters are not present. Both are needed for TLS Authentication.");
-    }
-
-    try {
-      trustStorePath = sslParameters.getStringParameter("trustStorePath");
-    } catch (Exception e) {
-      LOGGER.debug("trustStorePath parameter is not present");
-    }
-
     SslConfig ssl = new SslConfig();
+
+    // If useTlsAuth is true, verifySsl must also be true, or it will fail to authenticate
+    ssl = ssl.verify(verifySsl || useTlsAuthentication);
+
     if (pemFilePath != null && !pemFilePath.isEmpty()) {
-      ssl = ssl.pemFile(new File(pemFilePath));
-    }
-    if (keyStorePath != null && keyStorePassword != null && !keyStorePath.isEmpty() && !keyStorePassword.isEmpty()) {
-      File keyStoreFile = new File(keyStorePath);
-      if (keyStoreFile.exists() && keyStoreFile.isFile()) {
-        ssl = ssl.keyStoreFile(keyStoreFile,keyStorePassword);
-      } else {
-        ssl = ssl.keyStoreResource(keyStorePath,keyStorePassword);
-      }
-
-    }
-    if (trustStorePath != null && trustStorePath.isEmpty()) {
-      File trustStoreFile = new File(trustStorePath);
-      if (trustStoreFile.exists() && trustStoreFile.isFile()) {
-        ssl = ssl.trustStoreFile(trustStoreFile);
-      } else {
-        ssl = ssl.trustStoreResource(trustStorePath);
-      }
+      ssl = classpathResourceExists(pemFilePath) ?
+              ssl.pemResource(pemFilePath) :
+              ssl.pemFile(new File(pemFilePath));
     }
 
-    vaultConfig = vaultConfig.sslConfig(ssl.verify(verifySsl));
+    if (clientPemFile != null && !clientPemFile.isEmpty()
+          && clientKeyPemFile != null && !clientKeyPemFile.isEmpty()) {
+      ssl = classpathResourceExists(clientPemFile) ?
+              ssl.clientPemResource(clientPemFile) :
+              ssl.clientPemFile(new File(clientPemFile));
+      ssl = classpathResourceExists(clientKeyPemFile) ?
+              ssl.clientKeyPemResource(clientKeyPemFile) :
+              ssl.clientKeyPemFile(new File(clientKeyPemFile));
+    }
+
+    if (keyStorePath != null && keyStorePassword != null && trustStorePath != null
+            && !keyStorePath.isEmpty() && !keyStorePassword.isEmpty() && !trustStorePath.isEmpty()) {
+      ssl = classpathResourceExists(keyStorePath) ?
+              ssl.keyStoreResource(keyStorePath, keyStorePassword) :
+              ssl.keyStoreFile(new File(keyStorePath), keyStorePassword);
+
+      ssl = classpathResourceExists(trustStorePath) ?
+              ssl.trustStoreResource(trustStorePath) :
+              ssl.trustStoreFile(new File(trustStorePath));
+    }
+
+    vaultConfig = vaultConfig.sslConfig(ssl.build());
     if (useTlsAuthentication) {
       Vault vaultDriver = new Vault(vaultConfig.build());
       vaultConfig = vaultConfig.token(vaultDriver.auth().loginByCert().getAuthClientToken());
@@ -396,6 +411,16 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
     return pkcs7;
   }
 
-
+  private boolean classpathResourceExists(String path) {
+    boolean fileExists = false;
+    URL fileUrl = getClass().getResource(path);
+    if (fileUrl != null) {
+      File file = new File(fileUrl.getFile());
+      if (file != null) {
+        fileExists = file.exists();
+      }
+    }
+    return fileExists;
+  }
 
 }

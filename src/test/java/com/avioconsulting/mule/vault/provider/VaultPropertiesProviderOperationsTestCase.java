@@ -26,6 +26,7 @@ public class VaultPropertiesProviderOperationsTestCase extends MuleArtifactFunct
       // Set vaultUrl and vaultToken properties so they can be used in the Mule config file
       System.setProperty("vaultUrl", container.getAddress());
       System.setProperty("vaultToken", container.getRootToken());
+      System.setProperty("pemFile", VaultContainer.CERT_PEMFILE);
   }
 
   /**
