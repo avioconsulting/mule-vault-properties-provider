@@ -34,13 +34,13 @@ basic element attributes:
 * kvVersion - Version of the KV engine being used
 
 ssl element attributes:
-* vaultPemFile - path to PEM file for vault server SSL
+* pemFile - path to PEM file for vault server SSL
 * useTlsAuth - false to use Token Authentication
-* verifySSL - true to validate certificats
+* verifySSL - true to validate certificates
 ```xml
 <vault-properties-provider:config name="config" vaultUrl="http://localhost:8200">
   <vault-properties-provider:basic vaultToken="s.uo18rIGCFexkcxOOJET97EPA" kvVersion="2"/>
-  <vault-properties-provider:ssl vaultPemFile="ssl/my.pem" useTlsAuth="false" verifySSL="true" />
+  <vault-properties-provider:ssl pemFile="ssl/my.pem" useTlsAuth="false" verifySSL="true" />
 </vault-properties-provider:config>
 ```
 
@@ -57,12 +57,12 @@ ssl element attributes:
 * trustStorePath - path to Java trust store (JKS)
 ```xml
 <vault-properties-provider:config name="config" vaultUrl="http://localhost:8200">
-  <vault-properties-provider:basic vaultToken="s.uo18rIGCFexkcxOOJET97EPA" />
+  <vault-properties-provider:basic vaultToken="s.uo18rIGCFexkcxOOJET97EPA" kvVersion="2"/>
   <vault-properties-provider:ssl useTlsAuth="false" verifySSL="true" keyStorePath="/tmp/keystore.jks" keyStorePassword="***" trustStorePath="/tmp/trustStore.jks" />
 </vault-properties-provider:config>
 ```
 
-##### SSL Configuration with TLS Authentication
+##### SSL Configuration with TLS Authentication (JKS)
 Parameter:
 * useTlsAuth - true to authenticate via TLS certificate (must be in key store)
 * verifySSL - true to validate certificats
@@ -71,7 +71,22 @@ Parameter:
 * trustStorePath - path to Java trust store (JKS)
 ```xml
 <vault-properties-provider:config name="config" vaultUrl="http://localhost:8200">
+  <vault-properties-provider:basic kvVersion="2" />
   <vault-properties-provider:ssl useTlsAuth="true" verifySSL="true" keyStorePath="/tmp/keystore.jks" keyStorePassword="***" trustStorePath="/tmp/trustStore.jks" />
+</vault-properties-provider:config>
+```
+
+##### SSL Configuration with TLS Authentication (PEM)
+Parameter:
+* useTlsAuth - true to authenticate via TLS certificate (must be in key store)
+* verifySSL - true to validate certificats
+* pemFile - path to PEM file for vault server SSL
+* clientPemFile - An X.509 client certificate, for use with Vault's TLS Certificate auth backend
+* clientKeyPemFile - An RSA private key, for use with Vault's TLS Certificate auth backend
+```xml
+<vault-properties-provider:config name="config" vaultUrl="http://localhost:8200">
+  <vault-properties-provider:basic kvVersion="2" />
+  <vault-properties-provider:ssl useTlsAuth="true" verifySSL="true" pemFile="ssl/vault.pem" clientPemFile="ssl/my_vault.pem" clientKeyPemFile="ssl/my_vault_key.pem"/>
 </vault-properties-provider:config>
 ```
 
