@@ -163,3 +163,27 @@ To retrieve a value from the Key/Value secrets engine exposed as "secret", store
 ```
 ${vault::secret/test/mule-sample.name}
 ```
+
+### Publishing to a Private Exchange
+
+To publish to a private exchange, some updates are necessary in the `pom.xml` file and your Maven `settings.xml`.
+
+Update the `groupId` to the organization ID used by your organization on the Anypoint platform.
+
+In addition, update the `url` in the `distributionManagement` section of the pom to the following, replacing `${orgId}` with your Organization ID:
+```
+https://maven.anypoint.mulesoft.com/api/v1/organizations/${orgID}/maven
+```
+
+Add a `server` for the exchange repository in your Maven `settings.xml` file with the username and password to use for AnyPoint Exchange. 
+
+After it is published in the exchange, the dependency in a project would change to look like this:
+
+```xml
+<dependency>
+    <groupId>${orgId}</groupId>
+    <artifactId>vault-connector</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <classifier>mule-plugin</classifier>
+</dependency>
+```

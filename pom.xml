@@ -4,11 +4,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.avioconsulting.mule.vault.provider</groupId>
+    <groupId>f2ea2cb4-c600-4bb5-88e8-e952ff5591ee</groupId>
     <artifactId>mule-vault-properties-providers-module</artifactId>
-    <version>1.0.6-SNAPSHOT</version>
+    <version>0.1.0</version>
     <packaging>mule-extension</packaging>
-    <name>Vault properties provider Extension</name>
+    <name>Vault Properties Provider</name>
 
     <parent>
         <groupId>org.mule.extensions</groupId>
@@ -55,5 +55,14 @@
             <url>https://repository-master.mulesoft.org/nexus/content/repositories/releases/</url>
         </repository>
     </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>exchange-repository</id>
+            <name>Corporate Repository</name>
+            <url>https://maven.anypoint.mulesoft.com/api/v1/organizations/f2ea2cb4-c600-4bb5-88e8-e952ff5591ee/maven</url>
+            <layout>default</layout>
+        </repository>
+    </distributionManagement>
 
 </project>
