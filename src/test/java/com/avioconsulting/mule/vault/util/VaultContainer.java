@@ -47,10 +47,10 @@ public class VaultContainer implements TestRule {
 
     public VaultContainer() {
         container = new GenericContainer("vault:1.1.0")
-            .withClasspathResourceMapping("/startup.sh", CONTAINER_STARTUP_SCRIPT, BindMode.READ_ONLY)
-            .withClasspathResourceMapping("/config.json", CONTAINER_CONFIG_FILE, BindMode.READ_ONLY)
-            .withClasspathResourceMapping("/libressl.conf", CONTAINER_OPENSSL_CONFIG_FILE, BindMode.READ_ONLY)
-            .withClasspathResourceMapping("/web_policy.hcl", CONTAINER_WEB_POLICY_FILE, BindMode.READ_ONLY)
+            .withClasspathResourceMapping("/container_config/startup.sh", CONTAINER_STARTUP_SCRIPT, BindMode.READ_ONLY)
+            .withClasspathResourceMapping("/container_config/config.json", CONTAINER_CONFIG_FILE, BindMode.READ_ONLY)
+            .withClasspathResourceMapping("/container_config/libressl.conf", CONTAINER_OPENSSL_CONFIG_FILE, BindMode.READ_ONLY)
+            .withClasspathResourceMapping("/policies/web_policy.hcl", CONTAINER_WEB_POLICY_FILE, BindMode.READ_ONLY)
             .withEnv("VAULT_VERSION", "1.1.0")
             .withFileSystemBind(SSL_DIRECTORY, CONTAINER_SSL_DIRECTORY, BindMode.READ_WRITE)
             .withCreateContainerCmdModifier(new Consumer<CreateContainerCmd>() {

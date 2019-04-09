@@ -35,7 +35,7 @@ public class VaultPropertiesProviderOperationsTestCase extends MuleArtifactFunct
    */
   @Override
   protected String getConfigFile() {
-    return "test-mule-config.xml";
+    return "mule_config/test-mule-config.xml";
   }
 
   @Test

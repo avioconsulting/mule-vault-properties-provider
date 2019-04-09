@@ -172,7 +172,6 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
       final Vault vault = new Vault(vaultConfig.build());
       return vault;
     } catch (VaultException ve){
-      System.out.println("Error connecting to Vault at " + vaultConfig.getAddress() + " with token (" + vaultConfig.getToken() + ")");
       throw ve;
     }
   }
@@ -184,7 +183,6 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
    * @return VaultConfig with additional parameters added to it
    */
   private VaultConfig getBasicVaultConfig(VaultConfig vaultConfig, ConfigurationParameters basicParameters) {
-
     // parameters.getStringParameter() stupidly throws a NullPointerException when the parameter is not present and
     // the getComplexConfigurationParameter() and getComplexConfigurationParameters() are for child elements, so
     // all we can really do is catch the exception when the optional parameters doesn't exist

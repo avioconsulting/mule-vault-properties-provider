@@ -39,7 +39,7 @@ public class VaultTLSAuthenticationTestCase extends MuleArtifactFunctionalTestCa
 
     @Override
     protected String getConfigFile() {
-        return "test-mule-pem-auth-config.xml";
+        return "mule_config/test-mule-pem-auth-config.xml";
     }
 
     @Test
