@@ -1,7 +1,6 @@
-# Vault Properties Provider Extension
+# Vault Properties Provider
 
 The Vault Properties Provider Extension allows one to use values from Vault in-line.
-
 
 Add this dependency to your application pom.xml
 
@@ -18,9 +17,10 @@ Add this dependency to your application pom.xml
 Add a Vault Properties Provider Config global element to your application. Specify the Vault URL and properties to log in.
 
 ##### Basic Configuration
-Parameters:
-* vaultToken - Token to use for authentication
-* kvVersion - Version of the KV engine being used
+Attributes:
+
+*   vaultToken - Token to use for authentication
+*   kvVersion - Version of the KV engine being used
 
 ```xml
 <vault-properties-provider:config name="config" vaultUrl="http://localhost:8200">
@@ -29,15 +29,17 @@ Parameters:
 ```
 
 ##### SSL Configuration with Token Authentication (PEM)
-Parameters:
+Attributes:
 basic element attributes:
-* vaultToken - Token to use for authentication
-* kvVersion - Version of the KV engine being used
+
+*   vaultToken - Token to use for authentication
+*   kvVersion - Version of the KV engine being used
 
 ssl element attributes:
-* pemFile - path to PEM file for vault server SSL
-* useTlsAuth - false to use Token Authentication
-* verifySSL - true to validate certificates
+
+*   pemFile - path to PEM file for vault server SSL
+*   useTlsAuth - false to use Token Authentication
+*   verifySSL - true to validate certificates
 
 ```xml
 <vault-properties-provider:config name="config" vaultUrl="http://localhost:8200">
@@ -47,16 +49,18 @@ ssl element attributes:
 ```
 
 ##### SSL Configuration with Token Authentication (KeyStore)
-Parameters:
+Attributes:
 basic element attributes:
-* vaultToken - Token to use for authentication
+
+*   vaultToken - Token to use for authentication
 
 ssl element attributes:
-* useTlsAuth - false to use Token Authentication
-* verifySSL - true to validate certificats
-* keyStorePath - path to Java key store (JKS)
-* keyStorePassword - password for the key store
-* trustStorePath - path to Java trust store (JKS)
+
+*   useTlsAuth - false to use Token Authentication
+*   verifySSL - true to validate certificats
+*   keyStorePath - path to Java key store (JKS)
+*   keyStorePassword - password for the key store
+*   trustStorePath - path to Java trust store (JKS)
 
 ```xml
 <vault-properties-provider:config name="config" vaultUrl="http://localhost:8200">
@@ -66,12 +70,13 @@ ssl element attributes:
 ```
 
 ##### SSL Configuration with TLS Authentication (JKS)
-Parameter:
-* useTlsAuth - true to authenticate via TLS certificate (must be in key store)
-* verifySSL - true to validate certificats
-* keyStorePath - path to Java key store (JKS)
-* keyStorePassword - password for the key store
-* trustStorePath - path to Java trust store (JKS)
+Attributes:
+
+*   useTlsAuth - true to authenticate via TLS certificate (must be in key store)
+*   verifySSL - true to validate certificats
+*   keyStorePath - path to Java key store (JKS)
+*   keyStorePassword - password for the key store
+*   trustStorePath - path to Java trust store (JKS)
 
 ```xml
 <vault-properties-provider:config name="config" vaultUrl="http://localhost:8200">
@@ -81,12 +86,13 @@ Parameter:
 ```
 
 ##### SSL Configuration with TLS Authentication (PEM)
-Parameter:
-* useTlsAuth - true to authenticate via TLS certificate (must be in key store)
-* verifySSL - true to validate certificats
-* pemFile - path to PEM file for vault server SSL
-* clientPemFile - An X.509 client certificate, for use with Vault's TLS Certificate auth backend
-* clientKeyPemFile - An RSA private key, for use with Vault's TLS Certificate auth backend
+Attributes:
+
+*   useTlsAuth - true to authenticate via TLS certificate (must be in key store)
+*   verifySSL - true to validate certificats
+*   pemFile - path to PEM file for vault server SSL
+*   clientPemFile - An X.509 client certificate, for use with Vault's TLS Certificate auth backend
+*   clientKeyPemFile - An RSA private key, for use with Vault's TLS Certificate auth backend
 
 ```xml
 <vault-properties-provider:config name="config" vaultUrl="http://localhost:8200">
@@ -96,12 +102,13 @@ Parameter:
 ```
 
 ##### IAM Configuration
-Parameters:
-* iamAwsAuthMount - the Vault mount for AWS authentication
-* iamVaultRole - the Vault role to login as
-* iamUrl - Most likely https://sts.amazonaws.com/
-* iamReqBody - The IAM request body, most likely: Action=GetCallerIdentity&Version=2011-06-15
-* iamReqHeaders - IAM request headers
+Attributes:
+
+*   iamAwsAuthMount - the Vault mount for AWS authentication
+*   iamVaultRole - the Vault role to login as
+*   iamUrl - Most likely https://sts.amazonaws.com/
+*   iamReqBody - The IAM request body, most likely: Action=GetCallerIdentity&Version=2011-06-15
+*   iamReqHeaders - IAM request headers
 
 ```xml
 <vault-properties-provider:config name="config" vaultUrl="http://localhost:8200">
@@ -110,10 +117,11 @@ Parameters:
 ```
 
 ##### EC2 Configuration with Instance Metadata Authentication
-Parameters:
-* ec2AwsAuthMount - the Vault mount for AWS authentication
-* ec2VaultRole - the Vault role to login as
-* useInstanceMetadata - true to login with instance metadata (PKCS7 is looked up on the host) 
+Attributes:
+
+*   ec2AwsAuthMount - the Vault mount for AWS authentication
+*   ec2VaultRole - the Vault role to login as
+*   useInstanceMetadata - true to login with instance metadata (PKCS7 is looked up on the host) 
 
 ```xml
 <vault-properties-provider:config name="config" vaultUrl="http://localhost:8200">
@@ -122,11 +130,12 @@ Parameters:
 ```
 
 ##### EC2 Configuration with PKCS7 Authentication
-Parameters:
-* ec2AwsAuthMount - the Vault mount for AWS authentication
-* ec2VaultRole - the Vault role to login as
-* pkcs7 - PKCS7 value with all \n characters removed
-* useInstanceMetadata - false to login with pkcs7 property
+Attributes:
+
+*   ec2AwsAuthMount - the Vault mount for AWS authentication
+*   ec2VaultRole - the Vault role to login as
+*   pkcs7 - PKCS7 value with all \n characters removed
+*   useInstanceMetadata - false to login with pkcs7 property
 
 ```xml
 <vault-properties-provider:config name="config" vaultUrl="http://localhost:8200">
@@ -135,12 +144,13 @@ Parameters:
 ```
 
 ##### EC2 Configuration with Identity Document Authentication
-Parameters:
-* ec2AwsAuthMount - the Vault mount for AWS authentication
-* ec2VaultRole - the Vault role to login as
-* identityDoc - Base64-encoded EC2 instance identity document
-* identityDocSignature - Base64-encoded SHA256 RSA signature of the instance identity document
-* useInstanceMetadata - false to login with Identity Document Authentication
+Attributes:
+
+*   ec2AwsAuthMount - the Vault mount for AWS authentication
+*   ec2VaultRole - the Vault role to login as
+*   identityDoc - Base64-encoded EC2 instance identity document
+*   identityDocSignature - Base64-encoded SHA256 RSA signature of the instance identity document
+*   useInstanceMetadata - false to login with Identity Document Authentication
 
 ```xml
 <vault-properties-provider:config name="config" vaultUrl="http://localhost:8200">
