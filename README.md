@@ -162,7 +162,7 @@ Attributes:
 To reference a value, use this format:
 
 ```
-${vault::<secret_engine>/<path_to_secret>.<key_name>
+${vault::<secret_engine>/<path_to_secret>.<key_name>}
 ```
 
 By default, version 2 of the KV engine is used.
