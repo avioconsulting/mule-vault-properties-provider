@@ -7,7 +7,8 @@
 
     <vault-properties-provider:config name="config" vaultUrl="${vaultUrl}">
         <vault-properties-provider:basic kvVersion="2"/>
-        <vault-properties-provider:ssl useTlsAuth="true" verifySSL="true" pemFile="${pemFile}" clientPemFile="${clientPemFile}" clientKeyPemFile="${clientKeyPemFile}"/>
+        <vault-properties-provider:ssl verifySSL="true" pemFile="${pemFile}" />
+        <vault-properties-provider:tls clientPemFile="${clientPemFile}" clientKeyPemFile="${clientKeyPemFile}" />
     </vault-properties-provider:config>
 
     <flow name="testFlow">

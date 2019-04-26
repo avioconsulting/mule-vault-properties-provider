@@ -1,18 +1,5 @@
 # Vault Properties Provider
 
-The Vault Properties Provider Extension allows one to use values from Vault in-line.
-
-Add this dependency to your application pom.xml
-
-```xml
-<dependency>
-  <groupId>com.avioconsulting.mule.vault.provider</groupId>
-  <artifactId>mule-vault-properties-providers-module</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
-  <classifier>mule-plugin</classifier>
-</dependency>
-```
-
 ### Global Config
 Add a Vault Properties Provider Config global element to your application. Specify the Vault URL and properties to log in.
 
@@ -38,13 +25,12 @@ basic element attributes:
 ssl element attributes:
 
 *   pemFile - path to PEM file for vault server SSL
-*   useTlsAuth - false to use Token Authentication
 *   verifySSL - true to validate certificates
 
 ```xml
 <vault-properties-provider:config name="config" vaultUrl="http://localhost:8200">
   <vault-properties-provider:basic vaultToken="s.uo18rIGCFexkcxOOJET97EPA" kvVersion="2"/>
-  <vault-properties-provider:ssl pemFile="ssl/my.pem" useTlsAuth="false" verifySSL="true" />
+  <vault-properties-provider:ssl pemFile="ssl/my.pem" verifySSL="true" />
 </vault-properties-provider:config>
 ```
 
@@ -58,38 +44,38 @@ ssl element attributes:
 
 *   useTlsAuth - false to use Token Authentication
 *   verifySSL - true to validate certificats
-*   keyStorePath - path to Java key store (JKS)
-*   keyStorePassword - password for the key store
 *   trustStorePath - path to Java trust store (JKS)
 
 ```xml
 <vault-properties-provider:config name="config" vaultUrl="http://localhost:8200">
   <vault-properties-provider:basic vaultToken="s.uo18rIGCFexkcxOOJET97EPA" kvVersion="2"/>
-  <vault-properties-provider:ssl useTlsAuth="false" verifySSL="true" keyStorePath="/tmp/keystore.jks" keyStorePassword="***" trustStorePath="/tmp/trustStore.jks" />
+  <vault-properties-provider:ssl verifySSL="true" trustStorePath="/tmp/trustStore.jks" />
 </vault-properties-provider:config>
 ```
 
 ##### SSL Configuration with TLS Authentication (JKS)
 Attributes:
 
-*   useTlsAuth - true to authenticate via TLS certificate (must be in key store)
-*   verifySSL - true to validate certificats
+*   kvVersion - version of the secrets engine to use (1 or 2)
+*   verifySSL - true to validate certificate
+*   trustStorePath - path to Java trust store (JKS)
 *   keyStorePath - path to Java key store (JKS)
 *   keyStorePassword - password for the key store
-*   trustStorePath - path to Java trust store (JKS)
+
 
 ```xml
 <vault-properties-provider:config name="config" vaultUrl="http://localhost:8200">
   <vault-properties-provider:basic kvVersion="2" />
-  <vault-properties-provider:ssl useTlsAuth="true" verifySSL="true" keyStorePath="/tmp/keystore.jks" keyStorePassword="***" trustStorePath="/tmp/trustStore.jks" />
+  <vault-properties-provider:ssl verifySSL="true" trustStorePath="/tmp/trustStore.jks" />
+  <vault-properties-provider:tls keyStorePath="/tmp/keystore.jks" keyStorePassword="***" />
 </vault-properties-provider:config>
 ```
 
 ##### SSL Configuration with TLS Authentication (PEM)
 Attributes:
 
-*   useTlsAuth - true to authenticate via TLS certificate (must be in key store)
-*   verifySSL - true to validate certificats
+*   kvVersion - version of the secrets engine to use (1 or 2)
+*   verifySSL - true to validate certificate
 *   pemFile - path to PEM file for vault server SSL
 *   clientPemFile - An X.509 client certificate, for use with Vault's TLS Certificate auth backend
 *   clientKeyPemFile - An RSA private key, for use with Vault's TLS Certificate auth backend
@@ -97,7 +83,8 @@ Attributes:
 ```xml
 <vault-properties-provider:config name="config" vaultUrl="http://localhost:8200">
   <vault-properties-provider:basic kvVersion="2" />
-  <vault-properties-provider:ssl useTlsAuth="true" verifySSL="true" pemFile="ssl/vault.pem" clientPemFile="ssl/my_vault.pem" clientKeyPemFile="ssl/my_vault_key.pem"/>
+  <vault-properties-provider:ssl verifySSL="true" pemFile="ssl/vault.pem" />
+  <vault-properties-provider:tls clientPemFile="ssl/my_vault.pem" clientKeyPemFile="ssl/my_vault_key.pem" />
 </vault-properties-provider:config>
 ```
 

@@ -1,9 +1,3 @@
-/*
- * (c) 2003-2018 MuleSoft, Inc. This software is protected under international copyright
- * law. All use of this software is subject to MuleSoft's Master Subscription Agreement
- * (or other master license agreement) separately entered into in writing between you and
- * MuleSoft. If such an agreement is not in place, you may not use the software.
- */
 package com.avioconsulting.mule.vault.provider.api;
 
 import static org.mule.metadata.api.model.MetadataFormat.JAVA;
@@ -17,9 +11,8 @@ import org.mule.runtime.extension.api.loader.ExtensionLoadingContext;
 import org.mule.runtime.extension.api.loader.ExtensionLoadingDelegate;
 
 /**
- * Declares extension for Secure Properties Configuration module
+ * Declares extension for Vault Properties Provider
  *
- * @since 1.0
  */
 public class VaultConfigurationPropertiesExtensionLoadingDelegate implements ExtensionLoadingDelegate {
 
@@ -28,6 +21,7 @@ public class VaultConfigurationPropertiesExtensionLoadingDelegate implements Ext
 
   public static final String BASIC_PARAMETER_GROUP = "basic";
   public static final String SSL_PARAMETER_GROUP = "ssl";
+  public static final String TLS_PARAMETER_GROUP = "tls";
   public static final String IAM_PARAMETER_GROUP = "iam";
   public static final String EC2_PARAMETER_GROUP = "ec2";
 
@@ -49,11 +43,17 @@ public class VaultConfigurationPropertiesExtensionLoadingDelegate implements Ext
 
     addBasicParameters(configurationDeclarer);
     addSslParameters(configurationDeclarer);
+    addTlsParameters(configurationDeclarer);
     addIamParameters(configurationDeclarer);
     addEc2Parameters(configurationDeclarer);
 
   }
 
+  /**
+   * Add the Basic Connection parameters to the parameter list
+   *
+   * @param configurationDeclarer Extension {@link ConfigurationDeclarer}
+   */
   private void addBasicParameters(ConfigurationDeclarer configurationDeclarer) {
     ParameterGroupDeclarer basicParameterGroup = configurationDeclarer
             .onParameterGroup(BASIC_PARAMETER_GROUP)
@@ -69,6 +69,11 @@ public class VaultConfigurationPropertiesExtensionLoadingDelegate implements Ext
 
   }
 
+  /**
+   * Add the SSL Connection parameters to the parameter list
+   *
+   * @param configurationDeclarer Extension {@link ConfigurationDeclarer}
+   */
   private void addSslParameters(ConfigurationDeclarer configurationDeclarer) {
     ParameterGroupDeclarer sslParameterGroup = configurationDeclarer
             .onParameterGroup(SSL_PARAMETER_GROUP)
@@ -77,6 +82,26 @@ public class VaultConfigurationPropertiesExtensionLoadingDelegate implements Ext
             .withOptionalParameter("pemFile").ofType(BaseTypeBuilder.create(JAVA).stringType().build())
             .withExpressionSupport(NOT_SUPPORTED)
             .describedAs("An X.509 certificate, to use when communicating with Vault over HTTPS.");
+    sslParameterGroup
+            .withOptionalParameter("trustStorePath").ofType(BaseTypeBuilder.create(JAVA).stringType().build())
+            .withExpressionSupport(NOT_SUPPORTED)
+            .describedAs("Path to the trust store for trusted certificates");
+    sslParameterGroup
+            .withOptionalParameter("verifySSL").ofType(BaseTypeBuilder.create(JAVA).booleanType().build())
+            .withExpressionSupport(NOT_SUPPORTED)
+            .describedAs("Should Vault SSL be verified")
+            .defaultingTo(Boolean.FALSE);
+  }
+
+  /**
+   * Add the TLS Authentication parameters to the parameter list
+   *
+   * @param configurationDeclarer Extension {@link ConfigurationDeclarer}
+   */
+  private void addTlsParameters(ConfigurationDeclarer configurationDeclarer) {
+    ParameterGroupDeclarer sslParameterGroup = configurationDeclarer
+            .onParameterGroup(TLS_PARAMETER_GROUP)
+            .withDslInlineRepresentation(true);
     sslParameterGroup
             .withOptionalParameter("clientPemFile").ofType(BaseTypeBuilder.create(JAVA).stringType().build())
             .withExpressionSupport(NOT_SUPPORTED)
@@ -93,22 +118,13 @@ public class VaultConfigurationPropertiesExtensionLoadingDelegate implements Ext
             .withOptionalParameter("keyStorePassword").ofType(BaseTypeBuilder.create(JAVA).stringType().build())
             .withExpressionSupport(NOT_SUPPORTED)
             .describedAs("Password for the key store");
-    sslParameterGroup
-            .withOptionalParameter("trustStorePath").ofType(BaseTypeBuilder.create(JAVA).stringType().build())
-            .withExpressionSupport(NOT_SUPPORTED)
-            .describedAs("Path to the trust store for trusted certificates");
-    sslParameterGroup
-            .withOptionalParameter("useTlsAuth").ofType(BaseTypeBuilder.create(JAVA).booleanType().build())
-            .withExpressionSupport(NOT_SUPPORTED)
-            .describedAs("Use TLS Authentication")
-            .defaultingTo(Boolean.FALSE);
-    sslParameterGroup
-            .withOptionalParameter("verifySSL").ofType(BaseTypeBuilder.create(JAVA).booleanType().build())
-            .withExpressionSupport(NOT_SUPPORTED)
-            .describedAs("Should Vault SSL be verified")
-            .defaultingTo(Boolean.FALSE);
   }
 
+  /**
+   * Add the AWS IAM Authentication parameters to the parameter list
+   *
+   * @param configurationDeclarer Extension {@link ConfigurationDeclarer}
+   */
   private void addIamParameters(ConfigurationDeclarer configurationDeclarer) {
     ParameterGroupDeclarer iamParameterGroup = configurationDeclarer
             .onParameterGroup(IAM_PARAMETER_GROUP)
@@ -139,6 +155,11 @@ public class VaultConfigurationPropertiesExtensionLoadingDelegate implements Ext
             .describedAs("IAM Request Headers");
   }
 
+  /**
+   * Add the AWS EC2 Authentication parameters to the parameter list
+   *
+   * @param configurationDeclarer Extension {@link ConfigurationDeclarer}
+   */
   private void addEc2Parameters(ConfigurationDeclarer configurationDeclarer) {
     ParameterGroupDeclarer ec2ParameterGroup = configurationDeclarer
             .onParameterGroup(EC2_PARAMETER_GROUP)

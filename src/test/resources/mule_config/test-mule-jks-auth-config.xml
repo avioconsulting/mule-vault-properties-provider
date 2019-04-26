@@ -7,7 +7,8 @@
 
     <vault-properties-provider:config name="config" vaultUrl="${vaultUrl}">
         <vault-properties-provider:basic kvVersion="2"/>
-        <vault-properties-provider:ssl useTlsAuth="true" verifySSL="true" keyStorePath="${keyStorePath}" keyStorePassword="${keyStorePassword}" trustStorePath="${trustStorePath}"/>
+        <vault-properties-provider:ssl verifySSL="true" trustStorePath="${trustStorePath}"/>
+        <vault-properties-provider:tls keyStorePath="${keyStorePath}" keyStorePassword="${keyStorePassword}" />
     </vault-properties-provider:config>
 
     <flow name="testFlow">

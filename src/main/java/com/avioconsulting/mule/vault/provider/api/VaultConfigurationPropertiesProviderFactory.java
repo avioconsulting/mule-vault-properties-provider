@@ -1,9 +1,3 @@
-/*
- * (c) 2003-2018 MuleSoft, Inc. This software is protected under international copyright
- * law. All use of this software is subject to MuleSoft's Master Subscription Agreement
- * (or other master license agreement) separately entered into in writing between you and
- * MuleSoft. If such an agreement is not in place, you may not use the software.
- */
 package com.avioconsulting.mule.vault.provider.api;
 
 import static org.mule.runtime.api.component.ComponentIdentifier.builder;
@@ -35,9 +29,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Builds the provider for a vault-properties-provider:config element.
+ * Builds the provider for a vault:config element.
  *
- * @since 1.0
  */
 public class VaultConfigurationPropertiesProviderFactory implements ConfigurationPropertiesProviderFactory {
 
@@ -51,7 +44,7 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
       VaultConfigurationPropertiesExtensionLoadingDelegate.EXTENSION_NAME.toLowerCase().replace(" ", "-");
   private static final ComponentIdentifier VAULT_PROPERTIES_PROVIDER =
       builder().namespace(EXTENSION_NAMESPACE).name(VaultConfigurationPropertiesExtensionLoadingDelegate.CONFIG_ELEMENT).build();
-  // TODO change to meaningful prefix
+
   private final static String VAULT_PROPERTIES_PREFIX = "vault::";
   private final static Pattern VAULT_PATTERN = Pattern.compile(VAULT_PROPERTIES_PREFIX + "([^.}]*).(.*)");
 
@@ -139,6 +132,11 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
                     .namespace(EXTENSION_NAMESPACE)
                     .name(VaultConfigurationPropertiesExtensionLoadingDelegate.SSL_PARAMETER_GROUP).build());
 
+    List<ConfigurationParameters> tlsList = parameters
+            .getComplexConfigurationParameter(ComponentIdentifier.builder()
+            .namespace(EXTENSION_NAMESPACE)
+            .name(VaultConfigurationPropertiesExtensionLoadingDelegate.TLS_PARAMETER_GROUP).build());
+
     List<ConfigurationParameters> basicList = parameters
             .getComplexConfigurationParameter(ComponentIdentifier.builder()
                     .namespace(EXTENSION_NAMESPACE)
@@ -154,11 +152,15 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
                     .namespace(EXTENSION_NAMESPACE)
                     .name(VaultConfigurationPropertiesExtensionLoadingDelegate.EC2_PARAMETER_GROUP).build());
 
+    SslConfig sslConfig = null;
     if(sslList.size() > 0) {
-      vaultConfig = getSSLVaultConfig(vaultConfig, sslList.get(0));
+      sslConfig = getSSLVaultConfig(vaultConfig, sslList.get(0));
     }
 
-    if (vaultConfig.getToken() == null || vaultConfig.getToken().isEmpty()) {
+    if (tlsList.size() > 0) {
+      vaultConfig = getTlsVaultConfig(sslConfig, vaultConfig, tlsList.get(0));
+    } else {
+      vaultConfig = vaultConfig.sslConfig(sslConfig.build());
       if (basicList.size() > 0) {
         vaultConfig = getBasicVaultConfig(vaultConfig, basicList.get(0));
       } else if (iamList.size() > 0) {
@@ -201,22 +203,17 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
   }
 
   /**
-   * Get VaultConfig from ssl parameters
+   * Get SslConfig from ssl parameters
    * @param vaultConfig current state of the VaultConfig
    * @param sslParameters parameters from the ssl element
    * @return VaultConfig with additional parameters added to it
    * @throws VaultException if there is an issue authenticating with a certificate
    */
-  private VaultConfig getSSLVaultConfig(VaultConfig vaultConfig, ConfigurationParameters sslParameters) throws VaultException {
+  private SslConfig getSSLVaultConfig(VaultConfig vaultConfig, ConfigurationParameters sslParameters) throws VaultException {
 
-    String keyStorePath = null;
-    String keyStorePassword = null;
     String trustStorePath = null;
     String pemFilePath = null;
-    String clientPemFile = null;
-    String clientKeyPemFile = null;
     boolean verifySsl = false;
-    boolean useTlsAuthentication = false;
 
     try {
       pemFilePath = sslParameters.getStringParameter("pemFile");
@@ -225,25 +222,9 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
     }
 
     try {
-      clientPemFile = sslParameters.getStringParameter("clientPemFile");
-      clientKeyPemFile = sslParameters.getStringParameter("clientKeyPemFile");
-    } catch (Exception e) {
-      LOGGER.debug("clientPemFile and/or clientKeyPemFile parameters not present");
-    }
-
-    try {
-      keyStorePath = sslParameters.getStringParameter("keyStorePath");
-      keyStorePassword = sslParameters.getStringParameter("keyStorePassword");
       trustStorePath = sslParameters.getStringParameter("trustStorePath");
     } catch (Exception e) {
-      LOGGER.debug("keyStorePath, keyStorePassword, and/or trustStorePath parameters are not present. All are needed for TLS Authentication.");
-    }
-
-    try {
-      String tlsAuthStr = sslParameters.getStringParameter("useTlsAuth");
-      useTlsAuthentication = "true".equals(tlsAuthStr != null ? tlsAuthStr.toLowerCase() : "");
-    } catch (Exception e) {
-      LOGGER.debug("useTlsAuth parameter is not present");
+      LOGGER.debug("trustStorePath parameter is not present");
     }
 
     try {
@@ -256,16 +237,52 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
     SslConfig ssl = new SslConfig();
 
     // If useTlsAuth is true, verifySsl must also be true, or it will fail to authenticate
-    ssl = ssl.verify(verifySsl || useTlsAuthentication);
+    ssl = ssl.verify(verifySsl);
 
     if (pemFilePath != null && !pemFilePath.isEmpty()) {
       ssl = classpathResourceExists(pemFilePath) ?
               ssl.pemResource(pemFilePath) :
               ssl.pemFile(new File(pemFilePath));
+    } else if (trustStorePath != null && !trustStorePath.isEmpty()) {
+      ssl = classpathResourceExists(trustStorePath) ?
+              ssl.trustStoreResource(trustStorePath) :
+              ssl.trustStoreFile(new File(trustStorePath));
+    }
+
+    return ssl;
+  }
+
+  /**
+   * Get VaultConfig from tls parameters
+   * @param ssl             the current {@link SslConfig} with trust certificates added
+   * @param vaultConfig     current state of the VaultConfig
+   * @param tlsParameters   parameters from the tls element
+   * @return                VaultConfig with TLS authentication complete
+   * @throws VaultException if there is an issue authenticating with a certificate
+   */
+  private VaultConfig getTlsVaultConfig(SslConfig ssl, VaultConfig vaultConfig, ConfigurationParameters tlsParameters) throws VaultException {
+
+    String keyStorePath = null;
+    String keyStorePassword = null;
+    String clientPemFile = null;
+    String clientKeyPemFile = null;
+
+    try {
+      clientPemFile = tlsParameters.getStringParameter("clientPemFile");
+      clientKeyPemFile = tlsParameters.getStringParameter("clientKeyPemFile");
+    } catch (Exception e) {
+      LOGGER.debug("clientPemFile and/or clientKeyPemFile parameters not present");
+    }
+
+    try {
+      keyStorePath = tlsParameters.getStringParameter("keyStorePath");
+      keyStorePassword = tlsParameters.getStringParameter("keyStorePassword");
+    } catch (Exception e) {
+      LOGGER.debug("keyStorePath, keyStorePassword, and/or trustStorePath parameters are not present. All are needed for TLS Authentication.");
     }
 
     if (clientPemFile != null && !clientPemFile.isEmpty()
-          && clientKeyPemFile != null && !clientKeyPemFile.isEmpty()) {
+            && clientKeyPemFile != null && !clientKeyPemFile.isEmpty()) {
       ssl = classpathResourceExists(clientPemFile) ?
               ssl.clientPemResource(clientPemFile) :
               ssl.clientPemFile(new File(clientPemFile));
@@ -274,24 +291,17 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
               ssl.clientKeyPemFile(new File(clientKeyPemFile));
     }
 
-    if (keyStorePath != null && keyStorePassword != null && trustStorePath != null
-            && !keyStorePath.isEmpty() && !keyStorePassword.isEmpty() && !trustStorePath.isEmpty()) {
+    if (keyStorePath != null && keyStorePassword != null
+            && !keyStorePath.isEmpty() && !keyStorePassword.isEmpty()) {
       ssl = classpathResourceExists(keyStorePath) ?
               ssl.keyStoreResource(keyStorePath, keyStorePassword) :
               ssl.keyStoreFile(new File(keyStorePath), keyStorePassword);
-
-      ssl = classpathResourceExists(trustStorePath) ?
-              ssl.trustStoreResource(trustStorePath) :
-              ssl.trustStoreFile(new File(trustStorePath));
     }
 
-    vaultConfig = vaultConfig.sslConfig(ssl.build());
-    if (useTlsAuthentication) {
-      Vault vaultDriver = new Vault(vaultConfig.build());
-      vaultConfig = vaultConfig.token(vaultDriver.auth().loginByCert().getAuthClientToken());
-    }
+    vaultConfig = vaultConfig.sslConfig(ssl.verify(true).build());
+    Vault vaultDriver = new Vault(vaultConfig.build());
 
-    return vaultConfig;
+    return vaultConfig.token(vaultDriver.auth().loginByCert().getAuthClientToken());
   }
 
   /**
@@ -409,6 +419,12 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
     return pkcs7;
   }
 
+  /**
+   * Determines if the resource exists on the classpath
+   *
+   * @param path path to the file
+   * @return true of the resource is on the classpath
+   */
   private boolean classpathResourceExists(String path) {
     boolean fileExists = false;
     URL fileUrl = getClass().getResource(path);
