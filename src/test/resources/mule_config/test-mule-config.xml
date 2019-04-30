@@ -1,0 +1,17 @@
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:vault-properties-provider="http://www.mulesoft.org/schema/mule/vault-properties-provider"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+          http://www.mulesoft.org/schema/mule/vault-properties-provider http://www.mulesoft.org/schema/mule/vault-properties-provider/current/mule-vault-properties-provider.xsd">
+
+
+    <vault-properties-provider:config name="config" vaultUrl="${vaultUrl}">
+        <vault-properties-provider:basic vaultToken="${vaultToken}" kvVersion="2"/>
+        <vault-properties-provider:ssl pemFile="${pemFile}" />
+    </vault-properties-provider:config>
+
+    <flow name="testFlow">
+        <set-payload value="${vault::secret/test/mysecret.att1}" />
+    </flow>
+
+</mule>
