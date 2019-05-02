@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:vault-properties-provider="http://www.mulesoft.org/schema/mule/vault-properties-provider" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/vault-properties-provider http://www.mulesoft.org/schema/mule/vault-properties-provider/current/mule-vault-properties-provider.xsd">
+	<http:listener-config name="HTTP_Listener" doc:name="HTTP Listener config" doc:id="48384038-9aec-47dd-a0a9-376a33c7e1e8">
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<vault-properties-provider:config name="Vault_Properties_Provider_Config" doc:name="Vault Properties Provider Config" doc:id="a47e018d-87fa-4893-a398-85a9799c4f99" vaultUrl="http://localhost:8200" >
+		<vault-properties-provider:basic vaultToken="devroot" kvVersion="2" />
+	</vault-properties-provider:config>
+	<flow name="vault-properties-demoFlow" doc:id="57295606-86dc-4960-94fa-22490ce934e3" >
+		<http:listener doc:name="Listener" doc:id="d38ccfb6-ac1c-4a1e-9f77-fa112e4af8f8" config-ref="HTTP_Listener" path="getProperties"/>
+		<set-payload value="${vault::secret/samples/sample1.attribute1}" doc:name="Set Payload" doc:id="8a9d8aac-f354-418e-b788-04a6f8a3533b" />
+	</flow>
+</mule>
