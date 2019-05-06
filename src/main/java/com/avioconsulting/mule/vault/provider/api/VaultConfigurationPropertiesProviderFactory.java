@@ -71,33 +71,33 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
     VaultConfig vaultConfig = new VaultConfig().address(vaultUrl);
 
     List<ConfigurationParameters> sslList = parameters
-            .getComplexConfigurationParameter(ComponentIdentifier.builder()
+            .getComplexConfigurationParameter(builder()
                     .namespace(EXTENSION_NAMESPACE)
                     .name(VaultConfigurationPropertiesExtensionLoadingDelegate.SSL_PARAMETER_GROUP).build());
 
     List<ConfigurationParameters> tlsList = parameters
-            .getComplexConfigurationParameter(ComponentIdentifier.builder()
+            .getComplexConfigurationParameter(builder()
             .namespace(EXTENSION_NAMESPACE)
             .name(VaultConfigurationPropertiesExtensionLoadingDelegate.TLS_PARAMETER_GROUP).build());
 
     List<ConfigurationParameters> basicList = parameters
-            .getComplexConfigurationParameter(ComponentIdentifier.builder()
+            .getComplexConfigurationParameter(builder()
                     .namespace(EXTENSION_NAMESPACE)
                     .name(VaultConfigurationPropertiesExtensionLoadingDelegate.BASIC_PARAMETER_GROUP).build());
 
     List<ConfigurationParameters> iamList = parameters
-            .getComplexConfigurationParameter(ComponentIdentifier.builder()
+            .getComplexConfigurationParameter(builder()
                     .namespace(EXTENSION_NAMESPACE)
                     .name(VaultConfigurationPropertiesExtensionLoadingDelegate.IAM_PARAMETER_GROUP).build());
 
     List<ConfigurationParameters> ec2List = parameters
-            .getComplexConfigurationParameter(ComponentIdentifier.builder()
+            .getComplexConfigurationParameter(builder()
                     .namespace(EXTENSION_NAMESPACE)
                     .name(VaultConfigurationPropertiesExtensionLoadingDelegate.EC2_PARAMETER_GROUP).build());
 
     SslConfig sslConfig = null;
     if(sslList.size() > 0) {
-      sslConfig = getSSLVaultConfig(vaultConfig, sslList.get(0));
+      sslConfig = getSSLVaultConfig(sslList.get(0));
     }
 
     if (tlsList.size() > 0) {
@@ -147,12 +147,11 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
 
   /**
    * Get SslConfig from ssl parameters
-   * @param vaultConfig current state of the VaultConfig
    * @param sslParameters parameters from the ssl element
    * @return VaultConfig with additional parameters added to it
    * @throws VaultException if there is an issue authenticating with a certificate
    */
-  private SslConfig getSSLVaultConfig(VaultConfig vaultConfig, ConfigurationParameters sslParameters) throws VaultException {
+  private SslConfig getSSLVaultConfig(ConfigurationParameters sslParameters) throws VaultException {
 
     String trustStorePath = null;
     String pemFilePath = null;
