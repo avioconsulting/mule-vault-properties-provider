@@ -95,7 +95,7 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
                     .namespace(EXTENSION_NAMESPACE)
                     .name(VaultConfigurationPropertiesExtensionLoadingDelegate.EC2_PARAMETER_GROUP).build());
 
-    SslConfig sslConfig = null;
+    SslConfig sslConfig = new SslConfig();
     if(sslList.size() > 0) {
       sslConfig = getSSLVaultConfig(sslList.get(0));
     }
