@@ -154,7 +154,7 @@ public class VaultConfigurationPropertiesExtensionLoadingDelegate implements Ext
             .withDslInlineRepresentation(true);
     iamParameterGroup
             .withOptionalParameter("iamAwsAuthMount")
-            .withDisplayModel(DisplayModel.builder().displayName("IAM AWS Auth Mount").build())
+            .withDisplayModel(DisplayModel.builder().displayName("AWS Auth Mount").build())
             .ofType(BaseTypeBuilder.create(JAVA).stringType().build())
             .withExpressionSupport(NOT_SUPPORTED)
             .describedAs("Mount point for AWS Authentication in Vault");
