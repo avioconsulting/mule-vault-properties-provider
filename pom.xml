@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>f2ea2cb4-c600-4bb5-88e8-e952ff5591ee</groupId>
     <artifactId>mule-vault-properties-providers-module</artifactId>
-    <version>0.1.1</version>
+    <version>0.1.3</version>
     <packaging>mule-extension</packaging>
     <name>Vault Properties Provider</name>
 
