@@ -18,4 +18,8 @@
         <set-payload value="${vault::secret/test/mysecret.att2}" />
     </flow>
 
+    <flow name="envFlow">
+        <set-payload value="${vault::secret/$[ENV]/mysecret.att1}" />
+    </flow>
+
 </mule>

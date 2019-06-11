@@ -1,5 +1,9 @@
 package com.avioconsulting.mule.vault.provider.api;
 
+import com.avioconsulting.mule.vault.provider.api.exception.EmptyEnvironmentVariableException;
+import com.avioconsulting.mule.vault.provider.api.exception.SecretNotFoundException;
+import com.avioconsulting.mule.vault.provider.api.exception.UnknownVaultException;
+import com.avioconsulting.mule.vault.provider.api.exception.VaultAccessException;
 import com.bettercloud.vault.Vault;
 import com.bettercloud.vault.VaultException;
 import org.mule.runtime.config.api.dsl.model.properties.ConfigurationPropertiesProvider;
@@ -22,6 +26,7 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
 
     private final static String VAULT_PROPERTIES_PREFIX = "vault::";
     private final static Pattern VAULT_PATTERN = Pattern.compile(VAULT_PROPERTIES_PREFIX + "([^.}]*).(.*)");
+    private final static Pattern ENV_PATTERN = Pattern.compile("\\$\\[([^\\]]*)\\]");
 
     private final Vault vault;
 
@@ -43,7 +48,9 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
      * @param property the property to retrieve from the secret
      * @return         the value of the property or null if the property is not found
      */
-    private String getProperty(String path, String property) {
+    private String getProperty(String path, String property) throws SecretNotFoundException, VaultAccessException, UnknownVaultException {
+
+
 
         try {
             Map<String, String> data = null;
@@ -61,7 +68,17 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
             }
 
         } catch (VaultException ve) {
-            LOGGER.error("Error getting data from Vault", ve);
+            if (ve.getHttpStatusCode() == 404) {
+                LOGGER.error("Error getting data from Vault, secret not found", ve);
+                throw new SecretNotFoundException("The secret at " + path + " was not found", ve);
+            } else if (ve.getHttpStatusCode() == 403) {
+                LOGGER.error("Error getting data from Vault, access denied", ve);
+                throw new VaultAccessException("Access to the secret at " + path + " is denied", ve);
+            } else {
+                LOGGER.error("Error getting data from Vault", ve);
+                throw new UnknownVaultException("Unknown Vault exception", ve);
+            }
+
         }
 
         return null;
@@ -88,29 +105,31 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
                 // The secret key is everything after the first period
                 final String secretKey = matcher.group(2);
 
-                final String value = getProperty(vaultPath, secretKey);
+                try {
+                    final String value = getProperty(expandedValue(vaultPath), expandedValue(secretKey));
 
-                if (value != null) {
-                    return Optional.of(new ConfigurationProperty() {
+                    if (value != null) {
+                        return Optional.of(new ConfigurationProperty() {
 
-                        @Override
-                        public Object getSource() {
-                            return "Vault provider source";
-                        }
+                            @Override
+                            public Object getSource() {
+                                return "Vault provider source";
+                            }
 
-                        @Override
-                        public Object getRawValue() {
-                            return value;
-                        }
+                            @Override
+                            public Object getRawValue() {
+                                return value;
+                            }
 
-                        @Override
-                        public String getKey() {
-                            return effectiveKey;
-                        }
-                    });
+                            @Override
+                            public String getKey() {
+                                return effectiveKey;
+                            }
+                        });
+                    }
+                } catch (Exception e) {
+                    return Optional.empty();
                 }
-
-
 
                 return Optional.empty();
 
@@ -122,5 +141,35 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
     @Override
     public String getDescription() {
         return "Vault properties provider";
+    }
+
+    /**
+     * Retrieve values from the environment when the pattern \$\[[^\]]*\] is used in a property value and replace the pattern
+     * with the value. Example matches: $[ENV] or $[environment]
+     *
+     * @param value the text to search for the pattern and replace with values
+     * @return the inserted text with environment variables looked up
+     * @throws EmptyEnvironmentVariableException when the environment variable is not set
+     */
+    private String expandedValue(final String value) throws EmptyEnvironmentVariableException {
+        String result = value;
+        Matcher envMatcher = ENV_PATTERN.matcher(value);
+        while (envMatcher.find()) {
+            String envVariableName = envMatcher.group(1);
+            String envValue = System.getenv(envVariableName);
+
+            if (envValue == null) {
+                envValue = System.getProperty(envVariableName);
+                LOGGER.debug("Retrieved environment value from property rather than environment");
+            }
+
+            if (envValue != null) {
+                result = result.replaceAll("\\$\\[" + envVariableName + "\\]", envValue);
+            } else {
+                throw new EmptyEnvironmentVariableException("Environment variable [" + envVariableName + "] is not set");
+            }
+        }
+
+        return result;
     }
 }

@@ -27,6 +27,7 @@ public class VaultPropertiesProviderOperationsTestCase extends MuleArtifactFunct
       System.setProperty("vaultUrl", container.getAddress());
       System.setProperty("vaultToken", container.getRootToken());
       System.setProperty("pemFile", VaultContainer.CERT_PEMFILE);
+      System.setProperty("ENV", "test");
   }
 
   /**
@@ -45,6 +46,17 @@ public class VaultPropertiesProviderOperationsTestCase extends MuleArtifactFunct
             .getMessage()
             .getPayload()
             .getValue());
+
+    assertThat(payloadValue, is("test_value1"));
+  }
+
+  @Test
+  public void vaultPropertyProviderEnvValue() throws Exception {
+    String payloadValue = ((String) flowRunner("envFlow")
+        .run()
+    .getMessage()
+    .getPayload()
+    .getValue());
 
     assertThat(payloadValue, is("test_value1"));
   }
