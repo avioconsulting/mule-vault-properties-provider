@@ -128,7 +128,7 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
    * @return VaultConfig with additional parameters added to it
    */
   private VaultConfig getBasicVaultConfig(VaultConfig vaultConfig, ConfigurationParameters basicParameters) {
-    // parameters.getStringParameter() stupidly throws a NullPointerException when the parameter is not present and
+    // parameters.getStringParameter() throws a NullPointerException when the parameter is not present and
     // the getComplexConfigurationParameter() and getComplexConfigurationParameters() are for child elements, so
     // all we can really do is catch the exception when the optional parameters doesn't exist
 
