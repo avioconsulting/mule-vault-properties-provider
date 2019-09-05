@@ -30,26 +30,27 @@ public class VaultConfigurationPropertiesExtensionLoadingDelegate implements Ext
   @Override
   public void accept(ExtensionDeclarer extensionDeclarer, ExtensionLoadingContext context) {
 
-    ConfigurationDeclarer configurationDeclarer = extensionDeclarer.named(EXTENSION_NAME)
-            .describedAs(String.format("%s Extension", EXTENSION_NAME))
-            .withCategory(SELECT)
-            .onVersion("1.0.0")
-            .fromVendor("AVIO Consulting, LLC")
-            .withConfig(CONFIG_ELEMENT);    // This defines a global element in the extension with name config
+//    ConfigurationDeclarer configurationDeclarer = extensionDeclarer.named(EXTENSION_NAME)
+//            .describedAs(String.format("%s Extension", EXTENSION_NAME))
+//            .withCategory(SELECT)
+//            .onVersion("1.0.0")
+//            .fromVendor("AVIO Consulting, LLC")
+//            .withConfig(CONFIG_ELEMENT);    // This defines a global element in the extension with name config
 
-    ParameterGroupDeclarer defaultParameterGroup = configurationDeclarer.onDefaultParameterGroup();
-    defaultParameterGroup
-            .withRequiredParameter("vaultUrl")
-            .withDisplayModel(DisplayModel.builder().displayName("Vault URL").build())
-            .ofType(BaseTypeBuilder.create(JAVA).stringType().build())
-            .withExpressionSupport(ExpressionSupport.SUPPORTED)
-            .describedAs("URL for the Vault Server");
 
-    addBasicParameters(configurationDeclarer);
-    addSslParameters(configurationDeclarer);
-    addTlsParameters(configurationDeclarer);
-    addIamParameters(configurationDeclarer);
-    addEc2Parameters(configurationDeclarer);
+//    ParameterGroupDeclarer defaultParameterGroup = configurationDeclarer.onDefaultParameterGroup();
+//    defaultParameterGroup
+//            .withRequiredParameter("vaultUrl")
+//            .withDisplayModel(DisplayModel.builder().displayName("Vault URL").build())
+//            .ofType(BaseTypeBuilder.create(JAVA).stringType().build())
+//            .withExpressionSupport(ExpressionSupport.SUPPORTED)
+//            .describedAs("URL for the Vault Server");
+//
+//    addBasicParameters(configurationDeclarer);
+//    addSslParameters(configurationDeclarer);
+//    addTlsParameters(configurationDeclarer);
+//    addIamParameters(configurationDeclarer);
+//    addEc2Parameters(configurationDeclarer);
 
   }
 
