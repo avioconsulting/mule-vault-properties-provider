@@ -10,7 +10,7 @@ import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
  * Grouping of properties used for TLS authentication.
  * Only one of the two parameters is needed
  */
-@ExclusiveOptionals
+@ExclusiveOptionals(isOneRequired = true)
 public class TLSAuthProperties {
 
     @DisplayName("JKS Properties")
@@ -28,6 +28,7 @@ public class TLSAuthProperties {
     }
 
     public TLSAuthProperties(ConfigurationParameters parameters) {
+        super();
         jksProperties = new JKSProperties(parameters);
         pemProperties = new PEMProperties(parameters);
     }

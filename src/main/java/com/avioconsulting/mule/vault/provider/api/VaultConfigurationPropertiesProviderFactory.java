@@ -1,7 +1,5 @@
 package com.avioconsulting.mule.vault.provider.api;
 
-import static org.mule.runtime.api.component.ComponentIdentifier.builder;
-
 import com.avioconsulting.mule.vault.provider.api.connection.VaultConnection;
 import com.avioconsulting.mule.vault.provider.api.connection.provider.Ec2ConnectionProvider;
 import com.avioconsulting.mule.vault.provider.api.connection.provider.IamConnectionProvider;
@@ -18,8 +16,6 @@ import org.mule.runtime.config.api.dsl.model.properties.ConfigurationPropertiesP
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-
 /**
  * Builds the provider for a vault:config element.
  */
@@ -31,7 +27,6 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
   public static final String TLS_PARAMETER_GROUP = "tls-connection";
   public static final String IAM_PARAMETER_GROUP = "iam-connection";
   public static final String EC2_PARAMETER_GROUP = "ec2-connection";
-
 
   @Override
   public ComponentIdentifier getSupportedComponentIdentifier() {
@@ -85,11 +80,5 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
     }
 
   }
-
-
-
-
-
-
 
 }

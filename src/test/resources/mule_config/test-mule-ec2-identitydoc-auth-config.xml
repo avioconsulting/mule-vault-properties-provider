@@ -6,12 +6,9 @@
 
 
     <vault-properties-provider:config name="config">
-        <vault-properties-provider:ec2-connection vaultUrl="${vaultUrl}"
-                                                  engineVersion="v2"
-                                                  awsAuthMount="aws"
-                                                  vaultRole="ec2"
-                                                  identity=""
-                                                  signature=""/>
+        <vault-properties-provider:ec2-connection vaultUrl="${vaultUrl}" engineVersion="v2" awsAuthMount="aws" vaultRole="ec2">
+            <vault-properties-provider:identity-properties identity="" signature="" />
+        </vault-properties-provider:ec2-connection>
     </vault-properties-provider:config>
 
     <flow name="testFlow">

@@ -15,28 +15,15 @@ import org.slf4j.LoggerFactory;
 
 @DisplayName("IAM Connection")
 @Alias("iam-connection")
-public class IamConnectionProvider extends AbstractConnectionProvider {
+public class IamConnectionProvider extends AbstractAWSConnectionProvider {
 
     private static Logger LOGGER = LoggerFactory.getLogger(IamConnectionProvider.class);
-
-    @DisplayName("Vault AWS Authentication Mount")
-    @Summary("Mount point for AWS Authentication in Vault")
-    @Parameter
-    private String awsAuthMount;
-
-    @DisplayName("Vault Role")
-    @Summary("Name of the role against which the login is being attempted. If role is not specified, then the login " +
-            "endpoint looks for a role bearing the name of the AMI ID of the EC2 instance that is trying to login if " +
-            "using the ec2 auth method, or the \"friendly name\" (i.e., role name or username) of the IAM principal " +
-            "authenticated. If a matching role is not found, login fails.")
-    @Optional
-    @Parameter
-    private String vaultRole;
 
     @DisplayName("IAM Request URL")
     @Summary("Most likely https://sts.amazonaws.com/")
     @Parameter
-    private String iamRequestUrl;
+    @Optional(defaultValue = "https://sts.amazonaws.com/")
+    private String iamRequestUrl = "https://sts.amazonaws.com/";
 
     @DisplayName("IAM Request Body")
     @Summary("Body of the signed request")
@@ -55,8 +42,6 @@ public class IamConnectionProvider extends AbstractConnectionProvider {
         super(parameters);
 
         try {
-            awsAuthMount = parameters.getStringParameter("awsAuthMount");
-            vaultRole = parameters.getStringParameter("vaultRole");
             iamRequestUrl = parameters.getStringParameter("iamRequestUrl");
             iamRequestBody = parameters.getStringParameter("iamRequestBody");
             iamRequestHeaders = parameters.getStringParameter("iamRequestHeaders");

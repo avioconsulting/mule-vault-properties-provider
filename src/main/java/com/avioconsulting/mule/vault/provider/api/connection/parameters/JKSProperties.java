@@ -1,6 +1,7 @@
 package com.avioconsulting.mule.vault.provider.api.connection.parameters;
 
 import com.avioconsulting.mule.vault.provider.api.VaultPropertiesProviderExtension;
+import org.mule.runtime.api.meta.model.display.PathModel;
 import org.mule.runtime.config.api.dsl.model.ConfigurationParameters;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
@@ -22,7 +23,7 @@ public class JKSProperties {
 
     @DisplayName("KeyStore File")
     @Summary("Path to the KeyStore if using Vault's TLS Certificate auth backend for client side authentication. The KeyStore password must also be provided.")
-    @Path
+    @Path(type = PathModel.Type.FILE)
     @Parameter
     private String keyStoreFile;
 
