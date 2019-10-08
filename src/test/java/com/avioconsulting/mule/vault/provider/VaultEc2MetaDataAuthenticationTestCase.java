@@ -2,6 +2,7 @@ package com.avioconsulting.mule.vault.provider;
 
 import com.avioconsulting.mule.vault.util.AwsCheck;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 
@@ -9,6 +10,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assume.assumeTrue;
 
+@Ignore
 public class VaultEc2MetaDataAuthenticationTestCase extends MuleArtifactFunctionalTestCase {
 
     @BeforeClass

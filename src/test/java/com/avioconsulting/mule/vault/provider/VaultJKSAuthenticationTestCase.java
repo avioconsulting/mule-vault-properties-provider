@@ -34,7 +34,7 @@ public class VaultJKSAuthenticationTestCase extends MuleArtifactFunctionalTestCa
         System.setProperty("vaultUrl", container.getAddress());
         System.setProperty("keyStorePath", VaultContainer.CLIENT_KEYSTORE);
         System.setProperty("keyStorePassword", "password");
-        System.setProperty("trustStorePath", VaultContainer.CLIENT_TRUSTSTORE);
+        System.setProperty("trustStoreFile", VaultContainer.CLIENT_TRUSTSTORE);
     }
 
     @Override

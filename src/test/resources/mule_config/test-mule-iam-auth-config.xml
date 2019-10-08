@@ -5,9 +5,14 @@
           http://www.mulesoft.org/schema/mule/vault-properties-provider http://www.mulesoft.org/schema/mule/vault-properties-provider/current/mule-vault-properties-provider.xsd">
 
 
-    <vault-properties-provider:config name="config" vaultUrl="${vaultUrl}">
-        <vault-properties-provider:basic kvVersion="2"/>
-        <vault-properties-provider:iam iamAwsAuthMount="aws" iamVaultRole="iam" iamUrl="${iamUrl}" iamReqBody="${iamReqBody}" iamReqHeaders="${iamReqHeadersgit st}"/>
+    <vault-properties-provider:config name="config">
+        <vault-properties-provider:iam-connection vaultUrl="${vaultUrl}"
+                                                  engineVersion = "v2"
+                                                  awsAuthMount="aws"
+                                                  vaultRole="iam"
+                                                  iamRequestUrl="${iamUrl}"
+                                                  iamRequestBody="${iamReqBody}"
+                                                  iamRequestHeaders="${iamReqHeadersgit st}"/>
     </vault-properties-provider:config>
 
     <flow name="testFlow">

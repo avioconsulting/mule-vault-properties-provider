@@ -8,8 +8,8 @@ http://www.mulesoft.org/schema/mule/vault-properties-provider http://www.mulesof
 	<http:listener-config name="HTTP_Listener" doc:name="HTTP Listener config" doc:id="48384038-9aec-47dd-a0a9-376a33c7e1e8">
 		<http:listener-connection host="0.0.0.0" port="8081" />
 	</http:listener-config>
-	<vault-properties-provider:config name="Vault_Properties_Provider_Config" doc:name="Vault Properties Provider Config" doc:id="a47e018d-87fa-4893-a398-85a9799c4f99" vaultUrl="http://localhost:8200" >
-		<vault-properties-provider:basic vaultToken="devroot" kvVersion="2" />
+	<vault-properties-provider:config name="Vault_Properties_Provider_Config" doc:name="Vault Properties Provider Config" doc:id="a47e018d-87fa-4893-a398-85a9799c4f99">
+		<vault-properties-provider:token-connection vaultUrl="http://localhost:8200" vaultToken="devroot" engineVersion="v2" />
 	</vault-properties-provider:config>
 	<flow name="vault-properties-demoFlow" doc:id="57295606-86dc-4960-94fa-22490ce934e3" >
 		<http:listener doc:name="Listener" doc:id="d38ccfb6-ac1c-4a1e-9f77-fa112e4af8f8" config-ref="HTTP_Listener" path="getProperties"/>

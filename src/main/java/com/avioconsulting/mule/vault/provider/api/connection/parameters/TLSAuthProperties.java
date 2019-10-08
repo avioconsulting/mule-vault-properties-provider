@@ -1,5 +1,6 @@
-package com.avioconsulting.mule.vault.provider.api.parameters.group;
+package com.avioconsulting.mule.vault.provider.api.connection.parameters;
 
+import org.mule.runtime.config.api.dsl.model.ConfigurationParameters;
 import org.mule.runtime.extension.api.annotation.param.ExclusiveOptionals;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
@@ -21,6 +22,15 @@ public class TLSAuthProperties {
     @Parameter
     @Optional
     private PEMProperties pemProperties;
+
+    public TLSAuthProperties() {
+        super();
+    }
+
+    public TLSAuthProperties(ConfigurationParameters parameters) {
+        jksProperties = new JKSProperties(parameters);
+        pemProperties = new PEMProperties(parameters);
+    }
 
     public JKSProperties getJksProperties() {
         return jksProperties;

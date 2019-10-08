@@ -1,15 +1,20 @@
 package com.avioconsulting.mule.vault.provider.api;
 
-import com.avioconsulting.mule.vault.provider.api.parameters.*;
+import org.mule.runtime.api.component.ComponentIdentifier;
 import org.mule.runtime.extension.api.annotation.Configurations;
+import org.mule.runtime.extension.api.annotation.Export;
 import org.mule.runtime.extension.api.annotation.Extension;
-import org.mule.runtime.extension.api.annotation.SubTypeMapping;
 import org.mule.runtime.extension.api.annotation.dsl.xml.Xml;
 
+import static org.mule.runtime.api.component.ComponentIdentifier.builder;
+
 @Xml(prefix = "vault-properties-provider")
-@Extension(name = "Vault Properties Provider")
-@Configurations(VaultConfiguration.class)
-@SubTypeMapping(baseType = VaultConfiguration.class,
-                subTypes = {BasicVaultConfiguration.class, Ec2VaultConfiguration.class, IamVaultConfiguration.class, TlsVaultConfiguration.class})
+@Extension(name = "Vault Properties Provider", vendor = "AVIO Consulting")
+@Configurations(VaultPropertiesProviderConfiguration.class)
+@Export(classes = VaultConfigurationPropertiesProviderFactory.class,
+        resources = "META-INF/services/org.mule.runtime.config.api.dsl.model.properties.ConfigurationPropertiesProviderFactory")
 public class VaultPropertiesProviderExtension {
+    public static final String EXTENSION_NAMESPACE = "vault-properties-provider";
+    public static final ComponentIdentifier VAULT_PROPERTIES_PROVIDER =
+            builder().namespace(EXTENSION_NAMESPACE).name("config").build();
 }

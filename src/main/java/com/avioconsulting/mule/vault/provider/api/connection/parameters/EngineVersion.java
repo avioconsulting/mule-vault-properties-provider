@@ -1,4 +1,4 @@
-package com.avioconsulting.mule.vault.provider.api.parameters.group;
+package com.avioconsulting.mule.vault.provider.api.connection.parameters;
 
 /**
  * Enumeration of the acceptable secrets engine versions

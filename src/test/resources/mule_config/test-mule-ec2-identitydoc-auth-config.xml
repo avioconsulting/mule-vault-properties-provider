@@ -5,9 +5,13 @@
           http://www.mulesoft.org/schema/mule/vault-properties-provider http://www.mulesoft.org/schema/mule/vault-properties-provider/current/mule-vault-properties-provider.xsd">
 
 
-    <vault-properties-provider:config name="config" vaultUrl="${vaultUrl}">
-        <vault-properties-provider:basic kvVersion="2"/>
-        <vault-properties-provider:ec2 ec2AwsAuthMount="aws" ec2VaultRole="ec2" identityDoc="" identityDocSignature="" useInstanceMetadata="false"/>
+    <vault-properties-provider:config name="config">
+        <vault-properties-provider:ec2-connection vaultUrl="${vaultUrl}"
+                                                  engineVersion="v2"
+                                                  awsAuthMount="aws"
+                                                  vaultRole="ec2"
+                                                  identity=""
+                                                  signature=""/>
     </vault-properties-provider:config>
 
     <flow name="testFlow">

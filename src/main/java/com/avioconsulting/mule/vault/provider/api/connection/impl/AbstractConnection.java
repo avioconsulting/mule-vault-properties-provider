@@ -1,6 +1,7 @@
-package com.avioconsulting.mule.vault.provider.api.parameters;
+package com.avioconsulting.mule.vault.provider.api.connection.impl;
 
-import com.avioconsulting.mule.vault.provider.api.parameters.group.SSLProperties;
+import com.avioconsulting.mule.vault.provider.api.connection.VaultConnection;
+import com.avioconsulting.mule.vault.provider.api.connection.parameters.SSLProperties;
 import com.bettercloud.vault.SslConfig;
 import com.bettercloud.vault.Vault;
 import com.bettercloud.vault.VaultConfig;
@@ -9,10 +10,32 @@ import com.bettercloud.vault.VaultException;
 import java.io.File;
 import java.net.URL;
 
-public abstract class AbstractVaultConfiguration implements VaultConfiguration {
+public abstract class AbstractConnection implements VaultConnection {
 
-    Vault vault = null;
-    VaultConfig vaultConfig = null;
+    protected boolean valid = false;
+    protected Vault vault;
+    protected VaultConfig vaultConfig;
+
+    public AbstractConnection() {
+        vault = null;
+        vaultConfig = new VaultConfig();
+    }
+
+    @Override
+    public Vault getVault() {
+        return vault;
+    }
+
+    @Override
+    public void invalidate() {
+        this.valid = false;
+        this.vault = null;
+    }
+
+    @Override
+    public boolean isValid() {
+        return valid;
+    }
 
     /**
      * Construct {@link SslConfig} given the ssl-properties element for HTTPS connections to Vault
