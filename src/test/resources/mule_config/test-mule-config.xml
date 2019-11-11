@@ -7,7 +7,7 @@
 
     <vault-properties-provider:config name="config">
         <vault-properties-provider:token-connection vaultToken="${vaultToken}" vaultUrl="${vaultUrl}" engineVersion="v2">
-            <vault-properties-provider:ssl-properties pemFile="${pemFile}" />
+            <vault-properties-provider:ssl-properties pemFile="${pemFile}" verifySSL="true"/>
         </vault-properties-provider:token-connection>
     </vault-properties-provider:config>
 

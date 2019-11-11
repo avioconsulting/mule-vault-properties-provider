@@ -33,6 +33,11 @@ public class SSLProperties {
     @Path
     private String trustStoreFile;
 
+    @DisplayName("Verify SSL")
+    @Optional(defaultValue = "true")
+    @Parameter
+    private boolean verifySSL = true;
+
     public SSLProperties() {
         super();
     }
@@ -58,6 +63,12 @@ public class SSLProperties {
             } catch (Exception e) {
                 LOGGER.debug("trustStorePath parameter is not present");
             }
+
+            try {
+                verifySSL = "TRUE".equalsIgnoreCase(sslParameters.getStringParameter("verifySSL"));
+            } catch (Exception e) {
+                LOGGER.debug("verifySSL parameter is not present");
+            }
         }
     }
 
@@ -77,6 +88,11 @@ public class SSLProperties {
         this.trustStoreFile = trustStoreFile;
     }
 
+    public boolean isVerifySSL() {
+        return verifySSL;
+    }
 
-
+    public void setVerifySSL(boolean verifySSL) {
+        this.verifySSL = verifySSL;
+    }
 }

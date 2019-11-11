@@ -53,14 +53,14 @@ public abstract class AbstractConnection implements VaultConnection {
                 } else {
                     ssl = ssl.pemFile(new File(sslProperties.getPemFile()));
                 }
-                ssl = ssl.verify(true);
+                ssl = ssl.verify(sslProperties.isVerifySSL());
             } else if (sslProperties.getTrustStoreFile() != null && !sslProperties.getTrustStoreFile().isEmpty()) {
                 if (classpathResourceExists(sslProperties.getTrustStoreFile())) {
                     ssl = ssl.trustStoreResource(sslProperties.getTrustStoreFile());
                 } else {
                     ssl = ssl.trustStoreFile(new File(sslProperties.getTrustStoreFile()));
                 }
-                ssl = ssl.verify(true);
+                ssl = ssl.verify(sslProperties.isVerifySSL());
             }
         }
         return ssl;
