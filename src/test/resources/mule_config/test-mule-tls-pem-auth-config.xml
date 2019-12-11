@@ -1,0 +1,19 @@
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:vault-properties-provider="http://www.mulesoft.org/schema/mule/vault-properties-provider"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+          http://www.mulesoft.org/schema/mule/vault-properties-provider http://www.mulesoft.org/schema/mule/vault-properties-provider/current/mule-vault-properties-provider.xsd">
+
+
+    <vault-properties-provider:config name="config" >
+        <vault-properties-provider:tls-connection vaultUrl="${vaultUrl}" engineVersion="v2">
+            <vault-properties-provider:ssl-properties pemFile="mockserver/mockserver-root.pem" verifySSL="true" />
+            <vault-properties-provider:pem-properties clientPemFile="ssl/vault-cert.pem" clientKeyPemFile="ssl/vault-privkey.pem"/>
+        </vault-properties-provider:tls-connection>
+    </vault-properties-provider:config>
+
+    <flow name="testFlow">
+        <set-payload value="${vault::secret/test/mysecret.att1}" />
+    </flow>
+
+</mule>

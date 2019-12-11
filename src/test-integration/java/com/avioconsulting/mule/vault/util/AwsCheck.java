@@ -8,6 +8,7 @@ import java.net.URL;
 public class AwsCheck {
 
     final static private String AMI_URI = "http://169.254.169.254/latest/meta-data/ami-id";
+    final static private String AMI_ENV_VAR = "ENABLE_AWS_CHECK";
 
     private static String getAmiId() {
         StringBuilder result = new StringBuilder();
@@ -28,8 +29,11 @@ public class AwsCheck {
         return result.toString();
     }
 
+    public static boolean isAWSCheckEnabled() {
+        return "TRUE".equals(System.getenv(AMI_ENV_VAR));
+    }
+
     public static boolean isExecutingOnAws() {
-        return false;
-        //return !getAmiId().isEmpty();
+        return !getAmiId().isEmpty();
     }
 }
