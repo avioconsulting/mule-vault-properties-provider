@@ -16,7 +16,7 @@ import java.io.File;
 
 public class TlsConnection extends AbstractConnection {
 
-    private Logger LOGGER = LoggerFactory.getLogger(TlsConnection.class);
+    private Logger logger = LoggerFactory.getLogger(TlsConnection.class);
 
     public TlsConnection(String vaultUrl, JKSProperties jksProperties, PEMProperties pemProperties,
                          SSLProperties sslProperties, EngineVersion engineVersion) throws ConnectionException {
@@ -34,29 +34,29 @@ public class TlsConnection extends AbstractConnection {
                 if (!jksProperties.getKeyStoreFile().isEmpty() && !jksProperties.getKeyStorePassword().isEmpty()) {
                     if (classpathResourceExists(jksProperties.getKeyStoreFile())) {
                         ssl = ssl.keyStoreResource(jksProperties.getKeyStoreFile(), jksProperties.getKeyStorePassword());
-                        LOGGER.debug("Loading JKS key store from classpath");
+                        logger.debug("Loading JKS key store from classpath");
                     } else {
                         ssl = ssl.keyStoreFile(new File(jksProperties.getKeyStoreFile()), jksProperties.getKeyStorePassword());
-                        LOGGER.debug("Loading JKS key store from file system");
+                        logger.debug("Loading JKS key store from file system");
                     }
                 }
             } else if (pemProperties != null && pemProperties.getClientPemFile() != null && pemProperties.getClientKeyPemFile() != null) {
                 if (!pemProperties.getClientPemFile().isEmpty()) {
                     if (classpathResourceExists(pemProperties.getClientPemFile())) {
                         ssl = ssl.clientPemResource(pemProperties.getClientPemFile());
-                        LOGGER.debug("Loading PEM file from classpath");
+                        logger.debug("Loading PEM file from classpath");
                     } else {
                         ssl = ssl.clientPemFile(new File(pemProperties.getClientPemFile()));
-                        LOGGER.debug("Loading PEM file from file system");
+                        logger.debug("Loading PEM file from file system");
                     }
                 }
                 if (!pemProperties.getClientKeyPemFile().isEmpty()) {
                     if (classpathResourceExists(pemProperties.getClientKeyPemFile())) {
                         ssl = ssl.clientKeyPemResource(pemProperties.getClientKeyPemFile());
-                        LOGGER.debug("Loading key PEM file from classpath");
+                        logger.debug("Loading key PEM file from classpath");
                     } else {
                         ssl = ssl.clientKeyPemFile(new File(pemProperties.getClientKeyPemFile()));
-                        LOGGER.debug("Loading key PEM file from file system");
+                        logger.debug("Loading key PEM file from file system");
                     }
                 }
             }
@@ -67,7 +67,7 @@ public class TlsConnection extends AbstractConnection {
             this.vault = new Vault(this.vaultConfig.sslConfig(ssl.build()).token(vaultToken).build());
             this.valid = true;
         } catch (VaultException ve) {
-            LOGGER.error("Error creating Vault connection", ve);
+            logger.error("Error creating Vault connection", ve);
             throw new ConnectionException(ve);
         }
     }

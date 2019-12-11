@@ -26,7 +26,7 @@ public class Ec2ConnectionProvider extends AbstractAWSConnectionProvider {
     // This is the URI to use to retrieve the PKCS7 Signature
     // See: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-identity-documents.html
     private final static String INSTANCE_PKCS7_URI = "http://169.254.169.254/latest/dynamic/instance-identity/pkcs7";
-    private final Logger LOGGER = LoggerFactory.getLogger(Ec2ConnectionProvider.class);
+    private final Logger logger = LoggerFactory.getLogger(Ec2ConnectionProvider.class);
 
     @ParameterGroup(name = "EC2 Properties")
     EC2ConnectionProperties connectionProperties;
@@ -54,7 +54,7 @@ public class Ec2ConnectionProvider extends AbstractAWSConnectionProvider {
                     || connectionProperties.getIdentityProperties().getSignature().isEmpty();
 
             if (pkcsUnavailable && identityUnavailable) {
-                LOGGER.error("PKCS7 Signature, Identity Document, and Identity Signature are all null or empty");
+                logger.error("PKCS7 Signature, Identity Document, and Identity Signature are all null or empty");
                 throw new ConnectionException("PKCS7 Signature or the Identity Document and Signature are required");
             }
 
@@ -99,7 +99,7 @@ public class Ec2ConnectionProvider extends AbstractAWSConnectionProvider {
             // remove \n characters
             pkcs7 = responseStr.replaceAll("\n", "");
         } catch (RestException re) {
-            LOGGER.error("Error looking up PKCS7 from Metadata Service",re);
+            logger.error("Error looking up PKCS7 from Metadata Service",re);
         }
         return pkcs7;
     }

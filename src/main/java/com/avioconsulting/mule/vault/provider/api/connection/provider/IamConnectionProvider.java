@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 @Alias("iam-connection")
 public class IamConnectionProvider extends AbstractAWSConnectionProvider {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(IamConnectionProvider.class);
+    private static Logger logger = LoggerFactory.getLogger(IamConnectionProvider.class);
 
     @DisplayName("IAM Request URL")
     @Summary("Most likely https://sts.amazonaws.com/")
@@ -46,7 +46,7 @@ public class IamConnectionProvider extends AbstractAWSConnectionProvider {
             iamRequestBody = parameters.getStringParameter("iamRequestBody");
             iamRequestHeaders = parameters.getStringParameter("iamRequestHeaders");
         } catch (Exception e) {
-            LOGGER.debug("All IAM properties must be present (iamAwsAuthMount, iamVaultRole, iamUrl, iamReqBody, iamReqHeaders)");
+            logger.debug("All IAM properties must be present (iamAwsAuthMount, iamVaultRole, iamUrl, iamReqBody, iamReqHeaders)", e);
         }
 
     }

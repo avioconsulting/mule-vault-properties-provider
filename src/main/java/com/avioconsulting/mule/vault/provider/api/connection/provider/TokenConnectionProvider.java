@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 @Alias("token-connection")
 public class TokenConnectionProvider extends AbstractConnectionProvider {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(TokenConnectionProvider.class);
+    private static Logger logger = LoggerFactory.getLogger(TokenConnectionProvider.class);
 
     @DisplayName("Vault Token")
     @Parameter
@@ -31,7 +31,7 @@ public class TokenConnectionProvider extends AbstractConnectionProvider {
         try {
             vaultToken = parameters.getStringParameter("vaultToken");
         } catch (Exception e) {
-            LOGGER.debug("vaultToken parameter is not present");
+            logger.debug("vaultToken parameter is not present", e);
         }
     }
 

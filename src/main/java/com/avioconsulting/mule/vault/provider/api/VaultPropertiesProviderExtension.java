@@ -20,4 +20,7 @@ public class VaultPropertiesProviderExtension {
     public static final String EXTENSION_NAMESPACE = "vault-properties-provider";
     public static final ComponentIdentifier VAULT_PROPERTIES_PROVIDER =
             builder().namespace(EXTENSION_NAMESPACE).name("config").build();
+
+    private VaultPropertiesProviderExtension() {
+    }
 }

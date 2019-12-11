@@ -17,7 +17,7 @@ import static org.mule.runtime.api.component.ComponentIdentifier.builder;
 
 public class JKSProperties {
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(JKSProperties.class);
+    public static final Logger logger = LoggerFactory.getLogger(JKSProperties.class);
 
     public static final String JKS_PARAMETER_GROUP = "jks-properties";
 
@@ -50,13 +50,13 @@ public class JKSProperties {
             try {
                 keyStoreFile = jksParameters.getStringParameter("keyStoreFile");
             } catch (Exception e) {
-                LOGGER.error("keyStoreFile property is not set");
+                logger.error("keyStoreFile property is not set", e);
             }
 
             try {
                 keyStorePassword = jksParameters.getStringParameter("keyStorePassword");
             } catch (Exception e) {
-                LOGGER.error("keyStorePassword property is not set");
+                logger.error("keyStorePassword property is not set", e);
             }
         }
     }

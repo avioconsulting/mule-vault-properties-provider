@@ -18,7 +18,7 @@ public class IamConnection extends AbstractConnection {
 
     private final static String UTF_8 = "UTF-8";
 
-    private final Logger LOGGER = LoggerFactory.getLogger(IamConnection.class);
+    private final Logger logger = LoggerFactory.getLogger(IamConnection.class);
 
     public IamConnection(String vaultUrl, String awsAuthMount, String role, String iamRequestUrl, String iamRequestBody,
                          String iamRequestHeaders, SSLProperties sslProperties, EngineVersion engineVersion) throws ConnectionException {
@@ -43,7 +43,7 @@ public class IamConnection extends AbstractConnection {
             this.valid = true;
 
         } catch (VaultException | UnsupportedEncodingException e) {
-            LOGGER.error("Error connecting to Vault", e);
+            logger.error("Error connecting to Vault", e);
             throw new ConnectionException(e);
         }
     }

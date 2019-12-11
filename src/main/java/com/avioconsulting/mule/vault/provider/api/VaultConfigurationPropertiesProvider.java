@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
  */
 public class VaultConfigurationPropertiesProvider implements ConfigurationPropertiesProvider {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(VaultConfigurationPropertiesProvider.class);
+    private final static Logger logger = LoggerFactory.getLogger(VaultConfigurationPropertiesProvider.class);
 
     private final static String VAULT_PROPERTIES_PREFIX = "vault::";
     private final static Pattern VAULT_PATTERN = Pattern.compile(VAULT_PROPERTIES_PREFIX + "([^.}]*).(.*)");
@@ -55,10 +55,10 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
         try {
             Map<String, String> data = null;
             if (cachedData.containsKey(path)) {
-                LOGGER.trace("Getting data from cache");
+                logger.trace("Getting data from cache");
                 data = cachedData.get(path);
             } else {
-                LOGGER.trace("Getting data from Vault");
+                logger.trace("Getting data from Vault");
                 data = vault.logical().read(path).getData();
                 cachedData.put(path, data);
             }
@@ -69,13 +69,13 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
 
         } catch (VaultException ve) {
             if (ve.getHttpStatusCode() == 404) {
-                LOGGER.error("Error getting data from Vault, secret not found", ve);
+                logger.error("Error getting data from Vault, secret not found", ve);
                 throw new SecretNotFoundException("The secret at " + path + " was not found", ve);
             } else if (ve.getHttpStatusCode() == 403) {
-                LOGGER.error("Error getting data from Vault, access denied", ve);
+                logger.error("Error getting data from Vault, access denied", ve);
                 throw new VaultAccessException("Access to the secret at " + path + " is denied", ve);
             } else {
-                LOGGER.error("Error getting data from Vault", ve);
+                logger.error("Error getting data from Vault", ve);
                 throw new UnknownVaultException("Unknown Vault exception", ve);
             }
 
@@ -128,6 +128,7 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
                         });
                     }
                 } catch (Exception e) {
+                    logger.error("Property was not found", e);
                     return Optional.empty();
                 }
 
@@ -160,7 +161,7 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
 
             if (envValue == null) {
                 envValue = System.getProperty(envVariableName);
-                LOGGER.debug("Retrieved environment value from property rather than environment");
+                logger.debug("Retrieved environment value from property rather than environment");
             }
 
             if (envValue != null) {

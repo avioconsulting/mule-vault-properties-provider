@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TokenConnection extends AbstractConnection {
-    private final Logger LOGGER = LoggerFactory.getLogger(TokenConnection.class);
+    private final Logger logger = LoggerFactory.getLogger(TokenConnection.class);
 
     public TokenConnection(String vaultUrl, String vaultToken, SSLProperties sslProperties, EngineVersion engineVersion) throws ConnectionException {
 
@@ -24,7 +24,7 @@ public class TokenConnection extends AbstractConnection {
             this.vault = new Vault(this.vaultConfig.token(vaultToken).sslConfig(ssl.build()).build());
             this.valid = true;
         } catch (VaultException ve) {
-            LOGGER.error("Error establishing Vault connection", ve);
+            logger.error("Error establishing Vault connection", ve);
             throw new ConnectionException(ve.getMessage(), ve.getCause());
         }
     }

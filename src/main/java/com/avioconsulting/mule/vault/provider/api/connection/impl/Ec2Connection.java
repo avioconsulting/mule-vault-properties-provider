@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 public class Ec2Connection extends AbstractConnection {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(Ec2Connection.class);
+    private final Logger logger = LoggerFactory.getLogger(Ec2Connection.class);
 
     public Ec2Connection(String vaultUrl, String role, String pkcs7, String nonce, String identity, String signature,
                          String awsAuthMount, SSLProperties sslProperties, EngineVersion engineVersion) throws ConnectionException {
@@ -37,7 +37,7 @@ public class Ec2Connection extends AbstractConnection {
             this.vault = new Vault(this.vaultConfig.build());
             this.valid = true;
         } catch (VaultException ve) {
-            LOGGER.error("Error connecting to Vault", ve);
+            logger.error("Error connecting to Vault", ve);
             throw new ConnectionException(ve);
         }
     }

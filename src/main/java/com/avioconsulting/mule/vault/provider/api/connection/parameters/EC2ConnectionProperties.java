@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 @ExclusiveOptionals(isOneRequired = true)
 public class EC2ConnectionProperties {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(EC2ConnectionProperties.class);
+    private static final Logger logger = LoggerFactory.getLogger(EC2ConnectionProperties.class);
 
     @DisplayName("Use Instance Metadata")
     @Summary("Retrieve Instance metadata")
@@ -47,14 +47,14 @@ public class EC2ConnectionProperties {
         try {
             pkcs7 = parameters.getStringParameter("pkcs7");
         } catch (Exception e) {
-            LOGGER.debug("pkcs7 value is not set");
+            logger.debug("pkcs7 value is not set", e);
         }
 
         try {
             String useMetadataStr = parameters.getStringParameter("useInstanceMetadata");
             useInstanceMetadata = "true".equals(useMetadataStr);
         } catch (Exception e) {
-            LOGGER.debug("useInstanceMetadata value is not set");
+            logger.debug("useInstanceMetadata value is not set", e);
         }
 
         identityProperties = new AWSIdentityProperties(parameters);

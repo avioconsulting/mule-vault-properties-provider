@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class AbstractConnectionProvider implements ConnectionProvider<VaultConnection> {
 
-    private Logger LOGGER = LoggerFactory.getLogger(AbstractConnectionProvider.class);
+    private Logger logger = LoggerFactory.getLogger(AbstractConnectionProvider.class);
 
     @DisplayName("Vault URL")
     @Parameter
@@ -45,7 +45,7 @@ public abstract class AbstractConnectionProvider implements ConnectionProvider<V
             String ev = parameters.getStringParameter("engineVersion");
             engineVersion = EngineVersion.valueOf(ev);
         } catch (Exception e) {
-            LOGGER.debug("kvVersion parameter is not present, or is not a valid value (v1 or v2)");
+            logger.debug("kvVersion parameter is not present, or is not a valid value (v1 or v2)", e);
         }
 
     }

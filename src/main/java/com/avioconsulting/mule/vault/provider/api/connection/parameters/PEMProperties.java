@@ -18,7 +18,7 @@ import static org.mule.runtime.api.component.ComponentIdentifier.builder;
  */
 public class PEMProperties {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PEMProperties.class);
+    private static final Logger logger = LoggerFactory.getLogger(PEMProperties.class);
 
     private static final String PEM_PARAMETER_GROUP = "pem-properties";
 
@@ -52,13 +52,13 @@ public class PEMProperties {
             try {
                 clientPemFile = pemParameters.getStringParameter("clientPemFile");
             } catch (Exception e) {
-                LOGGER.error("keyStoreFile property is not set");
+                logger.error("keyStoreFile property is not set", e);
             }
 
             try {
                 clientKeyPemFile = pemParameters.getStringParameter("clientKeyPemFile");
             } catch (Exception e) {
-                LOGGER.error("keyStorePassword property is not set");
+                logger.error("keyStorePassword property is not set", e);
             }
         }
     }

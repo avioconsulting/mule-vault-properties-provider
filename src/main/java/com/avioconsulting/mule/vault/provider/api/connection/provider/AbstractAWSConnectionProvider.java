@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractAWSConnectionProvider extends AbstractConnectionProvider {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractAWSConnectionProvider.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractAWSConnectionProvider.class);
 
     @DisplayName("Vault AWS Authentication Mount")
     @Summary("Mount point for AWS Authentication in Vault")
@@ -40,13 +40,13 @@ public abstract class AbstractAWSConnectionProvider extends AbstractConnectionPr
         try {
             this.awsAuthMount = parameters.getStringParameter("awsAuthMount");
         } catch (Exception e) {
-            LOGGER.debug("awsAuthMount is not specified, using default value");
+            logger.debug("awsAuthMount is not specified, using default value", e);
         }
 
         try {
             this.vaultRole = parameters.getStringParameter("vaultRole");
         } catch (Exception e) {
-            LOGGER.debug("vaultRole is not specified, using the AMI ID of the EC2 instance");
+            logger.debug("vaultRole is not specified, using the AMI ID of the EC2 instance", e);
         }
     }
 }

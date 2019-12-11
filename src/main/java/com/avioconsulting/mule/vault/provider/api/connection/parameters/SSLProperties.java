@@ -16,7 +16,7 @@ import static org.mule.runtime.api.component.ComponentIdentifier.builder;
 
 public class SSLProperties {
 
-    private Logger LOGGER = LoggerFactory.getLogger(SSLProperties.class);
+    private Logger logger = LoggerFactory.getLogger(SSLProperties.class);
 
     public static final String SSL_PARAMETER_GROUP = "ssl-properties";
 
@@ -55,19 +55,19 @@ public class SSLProperties {
             try {
                 pemFile = sslParameters.getStringParameter("pemFile");
             } catch (Exception e) {
-                LOGGER.debug("pemFile parameter not present");
+                logger.debug("pemFile parameter not present", e);
             }
 
             try {
                 trustStoreFile = sslParameters.getStringParameter("trustStoreFile");
             } catch (Exception e) {
-                LOGGER.debug("trustStorePath parameter is not present");
+                logger.debug("trustStorePath parameter is not present", e);
             }
 
             try {
                 verifySSL = "TRUE".equalsIgnoreCase(sslParameters.getStringParameter("verifySSL"));
             } catch (Exception e) {
-                LOGGER.debug("verifySSL parameter is not present");
+                logger.debug("verifySSL parameter is not present", e);
             }
         }
     }
