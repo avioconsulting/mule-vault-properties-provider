@@ -8,7 +8,7 @@
     <vault-properties-provider:config name="config">
         <vault-properties-provider:tls-connection vaultUrl="${vaultUrl}" engineVersion="v2">
             <vault-properties-provider:ssl-properties trustStoreFile="mockserver/truststore.jks" verifySSL="true" />
-            <vault-properties-provider:jks-properties keyStoreFile="${keyStorePath}" keyStorePassword="${keyStorePassword}"/>
+            <vault-properties-provider:jks-properties keyStoreFile="mockserver/client.jks" keyStorePassword="password"/>
         </vault-properties-provider:tls-connection>
     </vault-properties-provider:config>
 
