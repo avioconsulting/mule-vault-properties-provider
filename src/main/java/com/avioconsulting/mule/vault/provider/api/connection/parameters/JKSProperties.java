@@ -17,7 +17,7 @@ import static org.mule.runtime.api.component.ComponentIdentifier.builder;
 
 public class JKSProperties {
 
-    public static final Logger logger = LoggerFactory.getLogger(JKSProperties.class);
+    private static final Logger logger = LoggerFactory.getLogger(JKSProperties.class);
 
     public static final String JKS_PARAMETER_GROUP = "jks-properties";
 
