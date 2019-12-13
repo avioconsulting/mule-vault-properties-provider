@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class AbstractConnectionProvider implements ConnectionProvider<VaultConnection> {
 
-    private Logger logger = LoggerFactory.getLogger(AbstractConnectionProvider.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractConnectionProvider.class);
 
     @DisplayName("Vault URL")
     @Parameter

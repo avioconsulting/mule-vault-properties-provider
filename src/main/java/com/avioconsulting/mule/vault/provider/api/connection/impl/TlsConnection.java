@@ -16,7 +16,7 @@ import java.io.File;
 
 public class TlsConnection extends AbstractConnection {
 
-    private Logger logger = LoggerFactory.getLogger(TlsConnection.class);
+    private static final Logger logger = LoggerFactory.getLogger(TlsConnection.class);
 
     public TlsConnection(String vaultUrl, JKSProperties jksProperties, PEMProperties pemProperties,
                          SSLProperties sslProperties, EngineVersion engineVersion) throws ConnectionException {

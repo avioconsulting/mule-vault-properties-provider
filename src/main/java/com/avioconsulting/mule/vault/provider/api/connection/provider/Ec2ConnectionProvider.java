@@ -25,8 +25,8 @@ public class Ec2ConnectionProvider extends AbstractAWSConnectionProvider {
 
     // This is the URI to use to retrieve the PKCS7 Signature
     // See: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-identity-documents.html
-    private final static String INSTANCE_PKCS7_URI = "http://169.254.169.254/latest/dynamic/instance-identity/pkcs7";
-    private final Logger logger = LoggerFactory.getLogger(Ec2ConnectionProvider.class);
+    private static final String INSTANCE_PKCS7_URI = "http://169.254.169.254/latest/dynamic/instance-identity/pkcs7";
+    private static final Logger logger = LoggerFactory.getLogger(Ec2ConnectionProvider.class);
 
     @ParameterGroup(name = "EC2 Properties")
     EC2ConnectionProperties connectionProperties;

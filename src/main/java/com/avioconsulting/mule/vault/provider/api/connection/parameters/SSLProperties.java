@@ -16,7 +16,7 @@ import static org.mule.runtime.api.component.ComponentIdentifier.builder;
 
 public class SSLProperties {
 
-    private Logger logger = LoggerFactory.getLogger(SSLProperties.class);
+    private static final Logger logger = LoggerFactory.getLogger(SSLProperties.class);
 
     public static final String SSL_PARAMETER_GROUP = "ssl-properties";
 

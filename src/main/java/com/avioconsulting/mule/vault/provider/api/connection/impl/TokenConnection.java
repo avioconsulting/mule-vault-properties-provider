@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TokenConnection extends AbstractConnection {
-    private final Logger logger = LoggerFactory.getLogger(TokenConnection.class);
+    private static final Logger logger = LoggerFactory.getLogger(TokenConnection.class);
 
     public TokenConnection(String vaultUrl, String vaultToken, SSLProperties sslProperties, EngineVersion engineVersion) throws ConnectionException {
 

@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 @Alias("iam-connection")
 public class IamConnectionProvider extends AbstractAWSConnectionProvider {
 
-    private static Logger logger = LoggerFactory.getLogger(IamConnectionProvider.class);
+    private static final Logger logger = LoggerFactory.getLogger(IamConnectionProvider.class);
 
     @DisplayName("IAM Request URL")
     @Summary("Most likely https://sts.amazonaws.com/")

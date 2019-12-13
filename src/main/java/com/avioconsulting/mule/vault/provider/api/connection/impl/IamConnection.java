@@ -16,9 +16,9 @@ import java.util.Base64;
 
 public class IamConnection extends AbstractConnection {
 
-    private final static String UTF_8 = "UTF-8";
+    private static final String UTF_8 = "UTF-8";
 
-    private final Logger logger = LoggerFactory.getLogger(IamConnection.class);
+    private static final Logger logger = LoggerFactory.getLogger(IamConnection.class);
 
     public IamConnection(String vaultUrl, String awsAuthMount, String role, String iamRequestUrl, String iamRequestBody,
                          String iamRequestHeaders, SSLProperties sslProperties, EngineVersion engineVersion) throws ConnectionException {
