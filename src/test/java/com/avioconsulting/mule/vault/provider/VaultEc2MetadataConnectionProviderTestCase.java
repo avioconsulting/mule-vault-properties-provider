@@ -11,24 +11,50 @@ import static org.hamcrest.core.Is.is;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
-public class VaultJKSTLSConnectionProviderTestCase extends MuleArtifactFunctionalTestCase{
+public class VaultEc2MetadataConnectionProviderTestCase extends MuleArtifactFunctionalTestCase{
 
 
     @Rule
     public MockServerRule mockServerRule = new MockServerRule(this);
     private MockServerClient mockClient;
 
+
+
     @Override
     protected String getConfigFile() {
         // Set vaultUrl and vaultToken properties so they can be used in the Mule config file
         System.setProperty("vaultUrl", String.format("https://%s:%d", mockServerRule.getClient().remoteAddress().getHostString(), mockServerRule.getClient().remoteAddress().getPort()));
-
+        System.setProperty("INSTANCE_PKCS7_URI", String.format("http://%s:%d/latest/dynamic/instance-identity/pkcs7", mockServerRule.getClient().remoteAddress().getHostString(), mockServerRule.getClient().remoteAddress().getPort()));
+        mockClient
+            .withSecure(false)
+            .when(
+                request()
+                    .withMethod("GET")
+                    .withPath("/latest/dynamic/instance-identity/pkcs7")
+            ).respond(
+                response()
+                    .withStatusCode(200)
+                    .withBody("MIICiTCCAfICCQD6m7oRw0uXOjANBgkqhkiG9w0BAQUFADCBiDELMAkGA1UEBhMC\n" +
+                              "VVMxCzAJBgNVBAgTAldBMRAwDgYDVQQHEwdTZWF0dGxlMQ8wDQYDVQQKEwZBbWF6\n" +
+                              "b24xFDASBgNVBAsTC0lBTSBDb25zb2xlMRIwEAYDVQQDEwlUZXN0Q2lsYWMxHzAd\n" +
+                              "BgkqhkiG9w0BCQEWEG5vb25lQGFtYXpvbi5jb20wHhcNMTEwNDI1MjA0NTIxWhcN\n" +
+                              "MTIwNDI0MjA0NTIxWjCBiDELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAldBMRAwDgYD\n" +
+                              "VQQHEwdTZWF0dGxlMQ8wDQYDVQQKEwZBbWF6b24xFDASBgNVBAsTC0lBTSBDb25z\n" +
+                              "b2xlMRIwEAYDVQQDEwlUZXN0Q2lsYWMxHzAdBgkqhkiG9w0BCQEWEG5vb25lQGFt\n" +
+                              "YXpvbi5jb20wgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAMaK0dn+a4GmWIWJ\n" +
+                              "21uUSfwfEvySWtC2XADZ4nB+BLYgVIk60CpiwsZ3G93vUEIO3IyNoH/f0wYK8m9T\n" +
+                              "rDHudUZg3qX4waLG5M43q7Wgc/MbQITxOUSQv7c7ugFFDzQGBzZswY6786m86gpE\n" +
+                              "Ibb3OhjZnzcvQAaRHhdlQWIMm2nrAgMBAAEwDQYJKoZIhvcNAQEFBQADgYEAtCu4\n" +
+                              "nUhVVxYUntneD9+h8Mg9q6q+auNKyExzyLwaxlAoo7TJHidbtS4J5iNmZgXL0Fkb\n" +
+                              "FFBjvSfpJIlJ00zbhNYS5f6GuoEDmFJl0ZxBHjJnyp378OD8uTs7fLvjx79LjSTb\n" +
+                              "NYiytVbZPQUQ5Yaxu2jXnimvw3rrszlaEXAMPLE")
+        );
         mockClient
           .withSecure(true)
           .when(
             request()
               .withMethod("POST")
-              .withPath("/v1/auth/cert/login")
+              .withPath("/v1/auth/aws/login")
           ).respond(
             response()
               .withStatusCode(200)
@@ -50,7 +76,7 @@ public class VaultJKSTLSConnectionProviderTestCase extends MuleArtifactFunctiona
 
         );
 
-        return "mule_config/test-mule-tls-jks-auth-config.xml";
+        return "mule_config/test-mule-ec2-metadata-auth-config.xml";
     }
 
     @Test

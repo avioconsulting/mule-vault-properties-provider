@@ -31,14 +31,24 @@ public class Ec2ConnectionProvider extends AbstractAWSConnectionProvider {
     @ParameterGroup(name = "EC2 Properties")
     EC2ConnectionProperties connectionProperties;
 
+    private String pkcs7Uri;
+
     public Ec2ConnectionProvider() {
         super();
+        setPkcs7Uri();
     }
 
     public Ec2ConnectionProvider(ConfigurationParameters parameters) {
         super(parameters);
-
+        setPkcs7Uri();
         connectionProperties = new EC2ConnectionProperties(parameters);
+    }
+
+    private void setPkcs7Uri() {
+        pkcs7Uri = System.getProperty("INSTANCE_PKCS7_URI");
+        if (pkcs7Uri == null || pkcs7Uri.isEmpty()) {
+            pkcs7Uri = INSTANCE_PKCS7_URI;
+        }
     }
 
     @Override
@@ -94,7 +104,7 @@ public class Ec2ConnectionProvider extends AbstractAWSConnectionProvider {
     private String lookupPkcs7() {
         String pkcs7 = null;
         try {
-            final RestResponse response = new Rest().url(INSTANCE_PKCS7_URI).get();
+            final RestResponse response = new Rest().url(pkcs7Uri).get();
             String responseStr = new String(response.getBody(), StandardCharsets.UTF_8);
             // remove \n characters
             pkcs7 = responseStr.replaceAll("\n", "");
