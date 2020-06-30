@@ -1,7 +1,7 @@
-package com.avioconsulting.mule.vault.provider.api.connection.provider;
+package com.avioconsulting.mule.vault.provider.internal.connection.provider;
 
-import com.avioconsulting.mule.vault.provider.api.connection.VaultConnection;
-import com.avioconsulting.mule.vault.provider.api.connection.impl.IamConnection;
+import com.avioconsulting.mule.vault.provider.internal.connection.VaultConnection;
+import com.avioconsulting.mule.vault.provider.internal.connection.impl.IamConnection;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.config.api.dsl.model.ConfigurationParameters;

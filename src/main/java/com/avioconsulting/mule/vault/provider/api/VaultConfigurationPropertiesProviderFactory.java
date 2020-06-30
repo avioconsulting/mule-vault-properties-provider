@@ -1,10 +1,11 @@
 package com.avioconsulting.mule.vault.provider.api;
 
-import com.avioconsulting.mule.vault.provider.api.connection.VaultConnection;
-import com.avioconsulting.mule.vault.provider.api.connection.provider.Ec2ConnectionProvider;
-import com.avioconsulting.mule.vault.provider.api.connection.provider.IamConnectionProvider;
-import com.avioconsulting.mule.vault.provider.api.connection.provider.TlsConnectionProvider;
-import com.avioconsulting.mule.vault.provider.api.connection.provider.TokenConnectionProvider;
+import com.avioconsulting.mule.vault.provider.internal.connection.VaultConnection;
+import com.avioconsulting.mule.vault.provider.internal.connection.provider.Ec2ConnectionProvider;
+import com.avioconsulting.mule.vault.provider.internal.connection.provider.IamConnectionProvider;
+import com.avioconsulting.mule.vault.provider.internal.connection.provider.TlsConnectionProvider;
+import com.avioconsulting.mule.vault.provider.internal.connection.provider.TokenConnectionProvider;
+import com.avioconsulting.mule.vault.provider.internal.extension.VaultPropertiesProviderExtension;
 import com.bettercloud.vault.Vault;
 import org.mule.runtime.api.component.ComponentIdentifier;
 import org.mule.runtime.api.connection.ConnectionException;
