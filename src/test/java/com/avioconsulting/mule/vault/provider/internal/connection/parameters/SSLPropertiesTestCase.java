@@ -1,5 +1,6 @@
-package com.avioconsulting.mule.vault.provider.api.connection.parameters;
+package com.avioconsulting.mule.vault.provider.internal.connection.parameters;
 
+import com.avioconsulting.mule.vault.provider.api.connection.parameters.SSLProperties;
 import junit.framework.TestCase;
 import org.junit.Test;
 

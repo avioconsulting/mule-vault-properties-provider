@@ -1,4 +1,4 @@
-package com.avioconsulting.mule.vault.provider.api;
+package com.avioconsulting.mule.vault.provider.internal.extension;
 
 import org.mule.runtime.api.meta.model.declaration.fluent.ExtensionDeclarer;
 import org.mule.runtime.extension.api.loader.ExtensionLoadingContext;

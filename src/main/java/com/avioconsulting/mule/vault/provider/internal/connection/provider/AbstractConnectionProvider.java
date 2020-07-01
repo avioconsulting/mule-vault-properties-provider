@@ -1,6 +1,6 @@
-package com.avioconsulting.mule.vault.provider.api.connection.provider;
+package com.avioconsulting.mule.vault.provider.internal.connection.provider;
 
-import com.avioconsulting.mule.vault.provider.api.connection.VaultConnection;
+import com.avioconsulting.mule.vault.provider.internal.connection.VaultConnection;
 import com.avioconsulting.mule.vault.provider.api.connection.parameters.EngineVersion;
 import com.avioconsulting.mule.vault.provider.api.connection.parameters.SSLProperties;
 import org.mule.runtime.api.connection.ConnectionProvider;

@@ -1,5 +1,7 @@
-package com.avioconsulting.mule.vault.provider.api;
+package com.avioconsulting.mule.vault.provider.internal.extension;
 
+import com.avioconsulting.mule.vault.provider.api.VaultConfigurationPropertiesProviderFactory;
+import com.avioconsulting.mule.vault.provider.internal.config.VaultPropertiesProviderConfiguration;
 import org.mule.runtime.api.component.ComponentIdentifier;
 import org.mule.runtime.api.meta.Category;
 import org.mule.runtime.extension.api.annotation.Configurations;
