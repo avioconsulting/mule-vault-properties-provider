@@ -5,25 +5,24 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 
-import static org.junit.Assume.assumeTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assume.assumeTrue;
 
-public class VaultIamAuthenticationTestCase extends MuleArtifactFunctionalTestCase {
+public class VaultEc2IDDocAuthenticationIT extends MuleArtifactFunctionalTestCase {
 
     @BeforeClass
     public static void runCheckBeforeTest() {
-        assumeTrue(AwsCheck.isExecutingOnAws());
+        assumeTrue(AwsCheck.isAWSCheckEnabled() && AwsCheck.isExecutingOnAws());
     }
 
     @Override
     protected String getConfigFile() {
-        return "mule_config/test-mule-iam-auth-config.xml";
+        return "mule_config/test-mule-ec2-identitydoc-auth-config-it.xml";
     }
 
     @Test
-    public void testVaultIAMAuthentication() throws Exception {
-        assumeTrue(AwsCheck.isExecutingOnAws());
+    public void testVaultEc2Authentication() throws Exception {
         String payloadValue = ((String) flowRunner("testFlow")
                 .run()
                 .getMessage()

@@ -11,7 +11,7 @@ import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
-import org.testcontainers.containers.wait.HttpWaitStrategy;
+import org.testcontainers.containers.wait.Wait;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 
 public class VaultContainer implements TestRule {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(VaultContainer.class);
+    private static final Logger logger = LoggerFactory.getLogger(VaultContainer.class);
 
     public final static String CURRENT_WORKING_DIRECTORY = System.getProperty("user.dir");
     public final static String SSL_DIRECTORY = CURRENT_WORKING_DIRECTORY + File.separator + "ssl";
@@ -33,7 +33,7 @@ public class VaultContainer implements TestRule {
 
     public final static String CONTAINER_STARTUP_SCRIPT = "/vault/config/startup.sh";
     public final static String CONTAINER_CONFIG_FILE = "/vault/config/config.json";
-    public final static String CONTAINER_OPENSSL_CONFIG_FILE = "/vault/config/ssl/libressl.conf";
+    public final static String CONTAINER_OPENSSL_CONFIG_FILE = "/vault/config/libressl.conf";
     public final static String CONTAINER_SSL_DIRECTORY = "/vault/config/ssl";
     public final static String CONTAINER_CERT_PEMFILE = CONTAINER_SSL_DIRECTORY + "/vault-cert.pem";
     public final static String CONTAINER_CLIENT_CERT_PEMFILE = CONTAINER_SSL_DIRECTORY + "/client-cert.pem";
@@ -46,12 +46,12 @@ public class VaultContainer implements TestRule {
     private boolean kv2Enabled = false;
 
     public VaultContainer() {
-        container = new GenericContainer("vault:1.1.0")
-            .withClasspathResourceMapping("/container_config/startup.sh", CONTAINER_STARTUP_SCRIPT, BindMode.READ_ONLY)
-            .withClasspathResourceMapping("/container_config/config.json", CONTAINER_CONFIG_FILE, BindMode.READ_ONLY)
-            .withClasspathResourceMapping("/container_config/libressl.conf", CONTAINER_OPENSSL_CONFIG_FILE, BindMode.READ_ONLY)
-            .withClasspathResourceMapping("/policies/web_policy.hcl", CONTAINER_WEB_POLICY_FILE, BindMode.READ_ONLY)
-            .withEnv("VAULT_VERSION", "1.1.0")
+        container = new GenericContainer("vault:1.4.2")
+            .withClasspathResourceMapping("container_config/startup.sh", CONTAINER_STARTUP_SCRIPT, BindMode.READ_ONLY)
+            .withClasspathResourceMapping("container_config/config.json", CONTAINER_CONFIG_FILE, BindMode.READ_ONLY)
+            .withClasspathResourceMapping("container_config/libressl.conf", CONTAINER_OPENSSL_CONFIG_FILE, BindMode.READ_ONLY)
+            .withClasspathResourceMapping("policies/web_policy.hcl", CONTAINER_WEB_POLICY_FILE, BindMode.READ_ONLY)
+            .withEnv("VAULT_VERSION", "1.4.2")
             .withFileSystemBind(SSL_DIRECTORY, CONTAINER_SSL_DIRECTORY, BindMode.READ_WRITE)
             .withCreateContainerCmdModifier(new Consumer<CreateContainerCmd>() {
                 @Override
@@ -61,15 +61,7 @@ public class VaultContainer implements TestRule {
             })
             .withExposedPorts(8200,8280)
             .withCommand("/bin/sh " + CONTAINER_STARTUP_SCRIPT)
-            .waitingFor(new HttpWaitStrategy() {
-                    @Override
-                    protected Integer getLivenessCheckPort() {
-                        return container.getMappedPort(8280);
-                    }
-                }
-                .forPath("/v1/sys/seal-status")
-                .forStatusCode(HttpURLConnection.HTTP_OK)
-            );
+            .waitingFor(Wait.forHttp("/v1/sys/seal-status").forStatusCode(HttpURLConnection.HTTP_OK));
     }
 
     @Override
@@ -78,17 +70,29 @@ public class VaultContainer implements TestRule {
     }
 
     public void initAndUnsealVault() throws IOException, InterruptedException {
-        final Slf4jLogConsumer logConsumer = new Slf4jLogConsumer(LOGGER);
+        final Slf4jLogConsumer logConsumer = new Slf4jLogConsumer(logger);
         container.followOutput(logConsumer);
 
         // Initialize the Vault server
         final Container.ExecResult initResult = runCommand("vault", "operator", "init", "-ca-cert=" +
-                CONTAINER_CERT_PEMFILE, "-key-shares=1", "-key-threshold=1");
-        final String[] initLines = initResult.getStdout().split(System.lineSeparator());
-        this.unsealKey = initLines[0].replace("Unseal Key 1: ", "");
-        this.rootToken = initLines[2].replace("Initial Root Token: ", "");
+                CONTAINER_CERT_PEMFILE, "-key-shares=1", "-key-threshold=1", "-format=json");
+        for (String line : initResult.getStdout().replaceAll(System.lineSeparator(), "").split(",")) {
+            if (line.contains("unseal_keys_b64")) {
+                this.unsealKey = line.split(":")[1].
+                        replace("[", "").
+                        replace("]","").
+                        replace("\"","").
+                        trim();
+            } else if (line.contains("root_token")) {
+                this.rootToken = line.split(":")[1].
+                        replace("\"","").
+                        replace("}", "").
+                        trim();
+            }
+        }
 
-        System.out.println("Root token: " + rootToken.toString());
+        logger.info(String.format("Unseal Key: %s", this.unsealKey));
+        logger.info(String.format("Root token: %s", this.rootToken));
 
         // Unseal the Vault server
         runCommand("vault", "operator", "unseal", "-ca-cert=" + CONTAINER_CERT_PEMFILE, unsealKey);
@@ -124,15 +128,15 @@ public class VaultContainer implements TestRule {
     }
 
     private Container.ExecResult runCommand(final String... command) throws IOException, InterruptedException {
-        LOGGER.info("Command: {}", String.join(" ", command));
+        logger.info("Command: {}", String.join(" ", command));
         final Container.ExecResult result = this.container.execInContainer(command);
         final String out = result.getStdout();
         final String err = result.getStderr();
         if (out != null && !out.isEmpty()) {
-            LOGGER.info("Command stdout: {}", result.getStdout());
+            logger.info("Command stdout: {}", result.getStdout());
         }
         if (err != null && !err.isEmpty()) {
-            LOGGER.info("Command stderr: {}", result.getStderr());
+            logger.info("Command stderr: {}", result.getStderr());
         }
         return result;
     }
