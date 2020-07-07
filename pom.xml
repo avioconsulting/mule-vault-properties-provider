@@ -20,6 +20,7 @@
         <testContainersVersion>1.14.3</testContainersVersion>
         <bouncyCastleVersion>1.60</bouncyCastleVersion>
         <mockServerVersion>5.10.0</mockServerVersion>
+        <vaultDriverVersion>5.1.0</vaultDriverVersion>
     </properties>
 
     <build>
@@ -101,7 +102,7 @@
         <dependency>
             <groupId>com.bettercloud</groupId>
             <artifactId>vault-java-driver</artifactId>
-            <version>4.0.0</version>
+            <version>${vaultDriverVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
