@@ -22,10 +22,7 @@ public abstract class AbstractAWSConnectionProvider extends AbstractConnectionPr
     protected String awsAuthMount;
 
     @DisplayName("Vault Role")
-    @Summary("Name of the role against which the login is being attempted. If role is not specified, then the login " +
-            "endpoint looks for a role bearing the name of the AMI ID of the EC2 instance that is trying to login if " +
-            "using the ec2 auth method, or the \"friendly name\" (i.e., role name or username) of the IAM principal " +
-            "authenticated. If a matching role is not found, login fails.")
+    @Summary("Name of the role against which the login is being attempted")
     @Optional
     @Parameter
     protected String vaultRole;
