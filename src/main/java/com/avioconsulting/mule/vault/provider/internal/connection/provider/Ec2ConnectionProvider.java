@@ -7,7 +7,6 @@ import com.bettercloud.vault.rest.Rest;
 import com.bettercloud.vault.rest.RestException;
 import com.bettercloud.vault.rest.RestResponse;
 import org.mule.runtime.api.connection.ConnectionException;
-import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.config.api.dsl.model.ConfigurationParameters;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.param.ExclusiveOptionals;

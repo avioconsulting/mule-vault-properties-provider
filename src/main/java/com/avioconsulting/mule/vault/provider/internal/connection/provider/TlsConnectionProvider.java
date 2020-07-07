@@ -4,7 +4,6 @@ import com.avioconsulting.mule.vault.provider.internal.connection.VaultConnectio
 import com.avioconsulting.mule.vault.provider.internal.connection.impl.TlsConnection;
 import com.avioconsulting.mule.vault.provider.api.connection.parameters.TLSAuthProperties;
 import org.mule.runtime.api.connection.ConnectionException;
-import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.config.api.dsl.model.ConfigurationParameters;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
