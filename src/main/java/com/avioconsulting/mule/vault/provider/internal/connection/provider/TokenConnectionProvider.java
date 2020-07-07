@@ -40,18 +40,5 @@ public class TokenConnectionProvider extends AbstractConnectionProvider {
         return new TokenConnection(vaultUrl, vaultToken, sslProperties, engineVersion);
     }
 
-    @Override
-    public void disconnect(VaultConnection connection) {
-        connection.invalidate();
-    }
-
-    @Override
-    public ConnectionValidationResult validate(VaultConnection connection) {
-        if (connection.isValid()) {
-            return ConnectionValidationResult.success();
-        } else {
-            return ConnectionValidationResult.failure("Connection Invalid", null);
-        }
-    }
 
 }

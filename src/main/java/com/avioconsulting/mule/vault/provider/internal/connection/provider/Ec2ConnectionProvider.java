@@ -82,20 +82,6 @@ public class Ec2ConnectionProvider extends AbstractAWSConnectionProvider {
         }
     }
 
-    @Override
-    public void disconnect(VaultConnection vaultConnection) {
-        vaultConnection.invalidate();
-    }
-
-    @Override
-    public ConnectionValidationResult validate(VaultConnection vaultConnection) {
-        if (vaultConnection.isValid()) {
-            return ConnectionValidationResult.success();
-        } else {
-            return ConnectionValidationResult.failure("Invalid Connection", null);
-        }
-    }
-
     /**
      * EC2 Provides a service to retrieve the instance identity. This method uses that service to look up the PKCS7.
      *

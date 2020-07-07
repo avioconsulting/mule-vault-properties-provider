@@ -72,7 +72,7 @@ public abstract class AbstractConnection implements VaultConnection {
      * @param path the path to the file
      * @return true if the file is on the classpath
      */
-    protected boolean classpathResourceExists(String path) {
+    boolean classpathResourceExists(String path) {
         boolean fileExists = false;
         URL fileUrl = getClass().getResource(path);
         if (fileUrl != null) {

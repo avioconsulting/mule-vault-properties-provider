@@ -56,17 +56,4 @@ public class IamConnectionProvider extends AbstractAWSConnectionProvider {
         return new IamConnection(vaultUrl, awsAuthMount, vaultRole, iamRequestUrl, iamRequestBody, iamRequestHeaders, sslProperties, engineVersion);
     }
 
-    @Override
-    public void disconnect(VaultConnection vaultConnection) {
-        vaultConnection.invalidate();
-    }
-
-    @Override
-    public ConnectionValidationResult validate(VaultConnection vaultConnection) {
-        if (vaultConnection.isValid()) {
-            return ConnectionValidationResult.success();
-        } else {
-            return ConnectionValidationResult.failure("Invalid Connection", null);
-        }
-    }
 }
