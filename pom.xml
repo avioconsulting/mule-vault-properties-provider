@@ -11,14 +11,15 @@
     <name>Vault Properties Provider - Mule 4</name>
 
     <parent>
-        <groupId>org.mule.extensions</groupId>
-        <artifactId>mule-modules-parent</artifactId>
-        <version>1.1.3</version>
+        <groupId>org.mule.connectors</groupId>
+        <artifactId>mule-certified-parent</artifactId>
+        <version>1.4.1</version>
     </parent>
 
     <properties>
         <testContainersVersion>1.14.3</testContainersVersion>
         <bouncyCastleVersion>1.60</bouncyCastleVersion>
+        <mockServerVersion>5.10.0</mockServerVersion>
     </properties>
 
     <build>
@@ -123,13 +124,20 @@
         <dependency>
             <groupId>org.mock-server</groupId>
             <artifactId>mockserver-netty</artifactId>
-            <version>5.7.0</version>
+            <version>${mockServerVersion}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mock-server</groupId>
+            <artifactId>mockserver-junit-rule</artifactId>
+            <version>${mockServerVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mock-server</groupId>
             <artifactId>mockserver-client-java</artifactId>
-            <version>5.7.0</version>
+            <version>${mockServerVersion}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
