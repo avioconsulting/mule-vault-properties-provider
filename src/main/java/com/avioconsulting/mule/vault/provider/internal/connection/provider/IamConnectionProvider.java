@@ -3,7 +3,6 @@ package com.avioconsulting.mule.vault.provider.internal.connection.provider;
 import com.avioconsulting.mule.vault.provider.internal.connection.VaultConnection;
 import com.avioconsulting.mule.vault.provider.internal.connection.impl.IamConnection;
 import org.mule.runtime.api.connection.ConnectionException;
-import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.config.api.dsl.model.ConfigurationParameters;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.param.Optional;
@@ -56,17 +55,4 @@ public class IamConnectionProvider extends AbstractAWSConnectionProvider {
         return new IamConnection(vaultUrl, awsAuthMount, vaultRole, iamRequestUrl, iamRequestBody, iamRequestHeaders, sslProperties, engineVersion);
     }
 
-    @Override
-    public void disconnect(VaultConnection vaultConnection) {
-        vaultConnection.invalidate();
-    }
-
-    @Override
-    public ConnectionValidationResult validate(VaultConnection vaultConnection) {
-        if (vaultConnection.isValid()) {
-            return ConnectionValidationResult.success();
-        } else {
-            return ConnectionValidationResult.failure("Invalid Connection", null);
-        }
-    }
 }

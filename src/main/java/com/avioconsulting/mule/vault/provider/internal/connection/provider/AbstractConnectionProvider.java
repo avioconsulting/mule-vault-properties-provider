@@ -4,6 +4,7 @@ import com.avioconsulting.mule.vault.provider.internal.connection.VaultConnectio
 import com.avioconsulting.mule.vault.provider.api.connection.parameters.EngineVersion;
 import com.avioconsulting.mule.vault.provider.api.connection.parameters.SSLProperties;
 import org.mule.runtime.api.connection.ConnectionProvider;
+import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.config.api.dsl.model.ConfigurationParameters;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
@@ -48,6 +49,20 @@ public abstract class AbstractConnectionProvider implements ConnectionProvider<V
             logger.debug("kvVersion parameter is not present, or is not a valid value (v1 or v2)", e);
         }
 
+    }
+
+    @Override
+    public void disconnect(VaultConnection connection) {
+        connection.invalidate();
+    }
+
+    @Override
+    public ConnectionValidationResult validate(VaultConnection vaultConnection) {
+        if (vaultConnection.isValid()) {
+            return ConnectionValidationResult.success();
+        } else {
+            return ConnectionValidationResult.failure("Invalid Connection", null);
+        }
     }
 
 
