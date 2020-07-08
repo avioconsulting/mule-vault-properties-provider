@@ -1,11 +1,11 @@
 package com.avioconsulting.mule.vault.provider.api;
 
-import com.avioconsulting.mule.vault.provider.api.exception.EmptyEnvironmentVariableException;
-import com.avioconsulting.mule.vault.provider.api.exception.SecretNotFoundException;
-import com.avioconsulting.mule.vault.provider.api.exception.UnknownVaultException;
-import com.avioconsulting.mule.vault.provider.api.exception.VaultAccessException;
+import com.avioconsulting.mule.vault.provider.internal.error.exception.SecretNotFoundException;
+import com.avioconsulting.mule.vault.provider.internal.error.exception.UnsetVariableException;
+import com.avioconsulting.mule.vault.provider.internal.error.exception.VaultAccessException;
 import com.bettercloud.vault.Vault;
 import com.bettercloud.vault.VaultException;
+import org.mule.runtime.api.exception.DefaultMuleException;
 import org.mule.runtime.config.api.dsl.model.properties.ConfigurationPropertiesProvider;
 import org.mule.runtime.config.api.dsl.model.properties.ConfigurationProperty;
 import org.slf4j.Logger;
@@ -48,7 +48,7 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
      * @param property the property to retrieve from the secret
      * @return         the value of the property or null if the property is not found
      */
-    private String getProperty(String path, String property) throws SecretNotFoundException, VaultAccessException, UnknownVaultException {
+    private String getProperty(String path, String property) throws DefaultMuleException {
 
 
 
@@ -69,14 +69,12 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
 
         } catch (VaultException ve) {
             if (ve.getHttpStatusCode() == 404) {
-                logger.error("Error getting data from Vault, secret not found", ve);
-                throw new SecretNotFoundException("The secret at " + path + " was not found", ve);
+                throw new SecretNotFoundException("Error getting data from Vault, secret not found", ve);
             } else if (ve.getHttpStatusCode() == 403) {
-                logger.error("Error getting data from Vault, access denied", ve);
-                throw new VaultAccessException("Access to the secret at " + path + " is denied", ve);
+                throw new VaultAccessException(String.format("Access to the secret at \"%s\" is denied", path), ve);
             } else {
                 logger.error("Error getting data from Vault", ve);
-                throw new UnknownVaultException("Unknown Vault exception", ve);
+                throw new DefaultMuleException("Unknown Vault exception", ve);
             }
 
         }
@@ -150,9 +148,9 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
      *
      * @param value the text to search for the pattern and replace with values
      * @return the inserted text with environment variables looked up
-     * @throws EmptyEnvironmentVariableException when the environment variable is not set
+     * @throws UnsetVariableException when the environment variable is not set
      */
-    private String expandedValue(final String value) throws EmptyEnvironmentVariableException {
+    private String expandedValue(final String value) {
         String result = value;
         Matcher envMatcher = ENV_PATTERN.matcher(value);
         while (envMatcher.find()) {
@@ -167,7 +165,7 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
             if (envValue != null) {
                 result = result.replaceAll("\\$\\[" + envVariableName + "\\]", envValue);
             } else {
-                throw new EmptyEnvironmentVariableException("Environment variable [" + envVariableName + "] is not set");
+                throw new UnsetVariableException(String.format("Environment variable [%s] is not set",envVariableName));
             }
         }
 
