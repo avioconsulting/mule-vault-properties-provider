@@ -15,7 +15,7 @@ import java.security.cert.CertificateException;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
-public class VaultJKSAuthenticationTestCase extends MuleArtifactFunctionalTestCase {
+public class VaultTLSAuthenticationIT extends MuleArtifactFunctionalTestCase {
 
     @ClassRule
     public static final VaultContainer container = new VaultContainer();
@@ -32,14 +32,14 @@ public class VaultJKSAuthenticationTestCase extends MuleArtifactFunctionalTestCa
 
         // Set vaultUrl and vaultToken properties so they can be used in the Mule config file
         System.setProperty("vaultUrl", container.getAddress());
-        System.setProperty("keyStorePath", VaultContainer.CLIENT_KEYSTORE);
-        System.setProperty("keyStorePassword", "password");
-        System.setProperty("trustStoreFile", VaultContainer.CLIENT_TRUSTSTORE);
+        System.setProperty("pemFile", VaultContainer.CERT_PEMFILE);
+        System.setProperty("clientPemFile", VaultContainer.CLIENT_CERT_PEMFILE);
+        System.setProperty("clientKeyPemFile", VaultContainer.CLIENT_PRIVATE_KEY_PEMFILE);
     }
 
     @Override
     protected String getConfigFile() {
-        return "mule_config/test-mule-jks-auth-config.xml";
+        return "mule_config/test-mule-pem-auth-config-it.xml";
     }
 
     @Test
