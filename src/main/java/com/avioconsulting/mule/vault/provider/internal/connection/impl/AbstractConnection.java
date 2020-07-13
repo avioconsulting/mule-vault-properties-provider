@@ -1,14 +1,17 @@
 package com.avioconsulting.mule.vault.provider.internal.connection.impl;
 
+import com.avioconsulting.mule.vault.provider.api.connection.parameters.TlsContext;
 import com.avioconsulting.mule.vault.provider.internal.connection.VaultConnection;
-import com.avioconsulting.mule.vault.provider.api.connection.parameters.SSLProperties;
 import com.bettercloud.vault.SslConfig;
 import com.bettercloud.vault.Vault;
 import com.bettercloud.vault.VaultConfig;
-import com.bettercloud.vault.VaultException;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 
 public abstract class AbstractConnection implements VaultConnection {
 
@@ -38,29 +41,24 @@ public abstract class AbstractConnection implements VaultConnection {
     }
 
     /**
-     * Construct {@link SslConfig} given the ssl-properties element for HTTPS connections to Vault
+     * Construct {@link SslConfig} given the tls-context element for TLS connections to Vault
      *
-     * @param sslProperties properties in the ssl-properties element
-     * @return {@link SslConfig} constructed from the ssl-properties attributes
-     * @throws VaultException if there is an error constructing the {@link SslConfig} object
+     * @param tlsContext properties in the tls-context element
+     * @return {@link SslConfig} constructed from the tls-context attributes
+     * @throws CertificateException
+     * @throws NoSuchAlgorithmException
+     * @throws KeyStoreException
+     * @throws IOException
      */
-    public SslConfig getVaultSSLConfig(SSLProperties sslProperties) throws VaultException {
+    public SslConfig getVaultSSLConfig(TlsContext tlsContext) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
         SslConfig ssl = new SslConfig();
-        if (sslProperties != null) {
-            if (sslProperties.getPemFile() != null && !sslProperties.getPemFile().isEmpty()) {
-                if (classpathResourceExists(sslProperties.getPemFile())) {
-                    ssl = ssl.pemResource(sslProperties.getPemFile());
-                } else {
-                    ssl = ssl.pemFile(new File(sslProperties.getPemFile()));
-                }
-                ssl = ssl.verify(sslProperties.isVerifySSL());
-            } else if (sslProperties.getTrustStoreFile() != null && !sslProperties.getTrustStoreFile().isEmpty()) {
-                if (classpathResourceExists(sslProperties.getTrustStoreFile())) {
-                    ssl = ssl.trustStoreResource(sslProperties.getTrustStoreFile());
-                } else {
-                    ssl = ssl.trustStoreFile(new File(sslProperties.getTrustStoreFile()));
-                }
-                ssl = ssl.verify(sslProperties.isVerifySSL());
+        if (tlsContext != null) {
+            if (tlsContext.isTrustStoreConfigured()) {
+                ssl = ssl.trustStore(tlsContext.getTrustStoreConfig().getKeyStore()).
+                        verify(!tlsContext.getTrustStoreConfig().isInsecure());
+            }
+            if (tlsContext.isKeyStoreConfigured()) {
+                ssl = ssl.keyStore(tlsContext.getKeyStoreConfig().getKeyStore(), tlsContext.getKeyStoreConfig().getPassword());
             }
         }
         return ssl;
