@@ -1,7 +1,7 @@
 package com.avioconsulting.mule.vault.provider.internal.connection.impl;
 
 import com.avioconsulting.mule.vault.provider.api.connection.parameters.EngineVersion;
-import com.avioconsulting.mule.vault.provider.api.connection.parameters.SSLProperties;
+import com.avioconsulting.mule.vault.provider.api.connection.parameters.TlsContext;
 import com.bettercloud.vault.SslConfig;
 import com.bettercloud.vault.Vault;
 import com.bettercloud.vault.VaultConfig;
@@ -11,12 +11,17 @@ import org.mule.runtime.api.connection.ConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+
 public class Ec2Connection extends AbstractConnection {
 
     private static final Logger logger = LoggerFactory.getLogger(Ec2Connection.class);
 
     public Ec2Connection(String vaultUrl, String role, String pkcs7, String nonce, String identity, String signature,
-                         String awsAuthMount, SSLProperties sslProperties, EngineVersion engineVersion) throws ConnectionException {
+                         String awsAuthMount, TlsContext tlsContext, EngineVersion engineVersion) throws ConnectionException {
 
         this.vaultConfig = new VaultConfig().address(vaultUrl);
         if (engineVersion != null) {
@@ -24,8 +29,10 @@ public class Ec2Connection extends AbstractConnection {
         }
 
         try {
-            SslConfig ssl = getVaultSSLConfig(sslProperties);
+            SslConfig ssl = getVaultSSLConfig(tlsContext);
             this.vaultConfig = this.vaultConfig.sslConfig(ssl.build());
+            logger.debug("TLS Setup Complete");
+
             Vault vaultDriver = new Vault(this.vaultConfig.build());
             AuthResponse response = null;
             if (pkcs7 != null && !pkcs7.isEmpty()) {
@@ -36,9 +43,8 @@ public class Ec2Connection extends AbstractConnection {
             this.vaultConfig = this.vaultConfig.token(response.getAuthClientToken());
             this.vault = new Vault(this.vaultConfig.build());
             this.valid = true;
-        } catch (VaultException ve) {
-            logger.error("Error connecting to Vault", ve);
-            throw new ConnectionException(ve);
+        } catch (VaultException | IOException | CertificateException | NoSuchAlgorithmException | KeyStoreException e) {
+            throw new ConnectionException(e);
         }
     }
 }

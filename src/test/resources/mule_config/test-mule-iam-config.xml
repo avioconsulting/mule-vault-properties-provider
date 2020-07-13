@@ -13,7 +13,9 @@
                                                   iamRequestUrl="https://sts.amazonaws.com/"
                                                   iamRequestBody="Action=GetCallerIdentity&amp;Version=2011-06-15"
                                                   iamRequestHeaders="abc=def">
-            <vault-properties-provider:ssl-properties pemFile="mockserver/mockserver-root.pem" verifySSL="true" />
+            <vault-properties-provider:tls-context>
+                <vault-properties-provider:trust-store type="JKS" path="mockserver/truststore.jks" password="password" />
+            </vault-properties-provider:tls-context>
         </vault-properties-provider:iam-connection>
     </vault-properties-provider:config>
 

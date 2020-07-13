@@ -1,7 +1,7 @@
 package com.avioconsulting.mule.vault.provider.internal.connection.impl;
 
 import com.avioconsulting.mule.vault.provider.api.connection.parameters.EngineVersion;
-import com.avioconsulting.mule.vault.provider.api.connection.parameters.SSLProperties;
+import com.avioconsulting.mule.vault.provider.api.connection.parameters.TlsContext;
 import com.bettercloud.vault.SslConfig;
 import com.bettercloud.vault.Vault;
 import com.bettercloud.vault.VaultConfig;
@@ -11,7 +11,10 @@ import org.mule.runtime.api.connection.ConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.Base64;
 
 public class IamConnection extends AbstractConnection {
@@ -21,7 +24,7 @@ public class IamConnection extends AbstractConnection {
     private static final Logger logger = LoggerFactory.getLogger(IamConnection.class);
 
     public IamConnection(String vaultUrl, String awsAuthMount, String role, String iamRequestUrl, String iamRequestBody,
-                         String iamRequestHeaders, SSLProperties sslProperties, EngineVersion engineVersion) throws ConnectionException {
+                         String iamRequestHeaders, TlsContext tlsContext, EngineVersion engineVersion) throws ConnectionException {
 
         this.vaultConfig = new VaultConfig().address(vaultUrl);
         if (engineVersion != null) {
@@ -29,8 +32,9 @@ public class IamConnection extends AbstractConnection {
         }
 
         try {
-            SslConfig ssl = getVaultSSLConfig(sslProperties);
+            SslConfig ssl = getVaultSSLConfig(tlsContext);
             this.vaultConfig = this.vaultConfig.sslConfig(ssl.build());
+            logger.debug("TLS Setup Complete");
 
             Vault vaultDriver = new Vault(this.vaultConfig.build());
 
@@ -42,8 +46,7 @@ public class IamConnection extends AbstractConnection {
             this.vault = new Vault(this.vaultConfig.build());
             this.valid = true;
 
-        } catch (VaultException | UnsupportedEncodingException e) {
-            logger.error("Error connecting to Vault", e);
+        } catch (VaultException | CertificateException | NoSuchAlgorithmException | KeyStoreException | IOException e) {
             throw new ConnectionException(e);
         }
     }

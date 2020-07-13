@@ -1,15 +1,14 @@
 package com.avioconsulting.mule.vault.provider.internal.connection.provider;
 
-import com.avioconsulting.mule.vault.provider.internal.connection.VaultConnection;
 import com.avioconsulting.mule.vault.provider.api.connection.parameters.EngineVersion;
-import com.avioconsulting.mule.vault.provider.api.connection.parameters.SSLProperties;
+import com.avioconsulting.mule.vault.provider.api.connection.parameters.TlsContext;
+import com.avioconsulting.mule.vault.provider.internal.connection.VaultConnection;
 import org.mule.runtime.api.connection.ConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.config.api.dsl.model.ConfigurationParameters;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
-import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,19 +25,13 @@ public abstract class AbstractConnectionProvider implements ConnectionProvider<V
     @Optional
     protected EngineVersion engineVersion;
 
-    @DisplayName("SSL Properties")
-    @Parameter
-    @Optional
-    @Placement(tab = Placement.CONNECTION_TAB)
-    protected SSLProperties sslProperties;
+    protected abstract TlsContext getTlsContext();
 
     public AbstractConnectionProvider() {
         super();
     }
 
     public AbstractConnectionProvider(ConfigurationParameters parameters) {
-
-        sslProperties = new SSLProperties(parameters);
 
         vaultUrl = parameters.getStringParameter("vaultUrl");
 
@@ -64,7 +57,4 @@ public abstract class AbstractConnectionProvider implements ConnectionProvider<V
             return ConnectionValidationResult.failure("Invalid Connection", null);
         }
     }
-
-
-
 }
