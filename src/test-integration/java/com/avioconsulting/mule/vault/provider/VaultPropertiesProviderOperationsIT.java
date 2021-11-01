@@ -3,7 +3,9 @@ package com.avioconsulting.mule.vault.provider;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
+import com.avioconsulting.mule.vault.util.SSLUtils;
 import com.avioconsulting.mule.vault.util.VaultContainer;
+import org.bouncycastle.operator.OperatorCreationException;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
@@ -11,6 +13,8 @@ import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.security.*;
+import java.security.cert.CertificateException;
 
 public class VaultPropertiesProviderOperationsIT extends MuleArtifactFunctionalTestCase {
 
@@ -18,15 +22,17 @@ public class VaultPropertiesProviderOperationsIT extends MuleArtifactFunctionalT
   public static final VaultContainer container = new VaultContainer();
 
   @BeforeClass
-  public static void setupContainer() throws IOException, InterruptedException {
+  public static void setupContainer() throws IOException, InterruptedException, CertificateException, NoSuchAlgorithmException, KeyStoreException, SignatureException, NoSuchProviderException, InvalidKeyException, OperatorCreationException {
       container.initAndUnsealVault();
+      SSLUtils.createClientCertAndKey();
       container.enableKvSecretsV2();
       container.setupSampleSecret();
 
       // Set vaultUrl and vaultToken properties so they can be used in the Mule config file
       System.setProperty("vaultUrl", container.getAddress());
       System.setProperty("vaultToken", container.getRootToken());
-      System.setProperty("pemFile", VaultContainer.CERT_PEMFILE);
+      System.setProperty("trustStoreFile", VaultContainer.CLIENT_TRUSTSTORE);
+      System.setProperty("trustStorePassword", "password");
       System.setProperty("ENV", "test");
   }
 
