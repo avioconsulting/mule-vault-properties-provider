@@ -11,7 +11,8 @@ import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
-import org.testcontainers.containers.wait.HttpWaitStrategy;
+import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.utility.DockerImageName;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,26 +33,26 @@ public class VaultContainer implements TestRule {
     public final static String CLIENT_TRUSTSTORE = SSL_DIRECTORY + File.separator + "truststore.jks";
 
     public final static String CONTAINER_STARTUP_SCRIPT = "/vault/config/startup.sh";
-    public final static String CONTAINER_CONFIG_FILE = "/vault/config/config.json";
-    public final static String CONTAINER_OPENSSL_CONFIG_FILE = "/vault/config/ssl/libressl.conf";
+    public final static String CONTAINER_CONFIG_FILE = "/vault/config/config.hcl";
+    public final static String CONTAINER_OPENSSL_CONFIG_FILE = "/vault/config/libressl.conf";
     public final static String CONTAINER_SSL_DIRECTORY = "/vault/config/ssl";
     public final static String CONTAINER_CERT_PEMFILE = CONTAINER_SSL_DIRECTORY + "/vault-cert.pem";
     public final static String CONTAINER_CLIENT_CERT_PEMFILE = CONTAINER_SSL_DIRECTORY + "/client-cert.pem";
     public final static String CONTAINER_WEB_POLICY_FILE = "/vault/config/web_policy.hcl";
 
-    private final GenericContainer container;
+    private final GenericContainer<?> container;
 
     private String unsealKey;
     private String rootToken;
     private boolean kv2Enabled = false;
 
     public VaultContainer() {
-        container = new GenericContainer("vault:1.1.0")
+        container = new GenericContainer(DockerImageName.parse("vault:1.10.4"))
             .withClasspathResourceMapping("/container_config/startup.sh", CONTAINER_STARTUP_SCRIPT, BindMode.READ_ONLY)
-            .withClasspathResourceMapping("/container_config/config.json", CONTAINER_CONFIG_FILE, BindMode.READ_ONLY)
+            .withClasspathResourceMapping("/container_config/config.hcl", CONTAINER_CONFIG_FILE, BindMode.READ_ONLY)
             .withClasspathResourceMapping("/container_config/libressl.conf", CONTAINER_OPENSSL_CONFIG_FILE, BindMode.READ_ONLY)
             .withClasspathResourceMapping("/policies/web_policy.hcl", CONTAINER_WEB_POLICY_FILE, BindMode.READ_ONLY)
-            .withEnv("VAULT_VERSION", "1.1.0")
+            .withEnv("VAULT_VERSION", "1.10.4")
             .withFileSystemBind(SSL_DIRECTORY, CONTAINER_SSL_DIRECTORY, BindMode.READ_WRITE)
             .withCreateContainerCmdModifier(new Consumer<CreateContainerCmd>() {
                 @Override
@@ -59,17 +60,9 @@ public class VaultContainer implements TestRule {
                     createContainerCmd.withCapAdd(Capability.IPC_LOCK);
                 }
             })
-            .withExposedPorts(8200,8280)
+            .withExposedPorts(8200, 8280)
             .withCommand("/bin/sh " + CONTAINER_STARTUP_SCRIPT)
-            .waitingFor(new HttpWaitStrategy() {
-                    @Override
-                    protected Integer getLivenessCheckPort() {
-                        return container.getMappedPort(8280);
-                    }
-                }
-                .forPath("/v1/sys/seal-status")
-                .forStatusCode(HttpURLConnection.HTTP_OK)
-            );
+            .waitingFor(Wait.forHttp("/v1/sys/seal-status").forStatusCode(HttpURLConnection.HTTP_OK).forPort(8280));
     }
 
     @Override
