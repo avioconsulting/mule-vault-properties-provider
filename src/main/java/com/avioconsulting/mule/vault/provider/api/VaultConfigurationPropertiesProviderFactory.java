@@ -51,25 +51,35 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
    * @return a fully configured {@link Vault} object
    */
   private Vault getVault(ConfigurationParameters parameters) throws ConnectionException {
-
     if (parameters.getComplexConfigurationParameters().size() > 1) {
       LOGGER.warn("Multiple Vault Properties Provider configurations have been found");
     }
 
-    String firstConfiguation = parameters.getComplexConfigurationParameters().get(0).getFirst().getName();
-
-
     ConnectionProvider<VaultConnection> connectionProvider = null;
-
-    ConfigurationParameters configurationParameters = parameters.getComplexConfigurationParameters().get(0).getSecond();
-    if (TLS_PARAMETER_GROUP.equals(firstConfiguation)) {
-      connectionProvider = new TlsConnectionProvider(configurationParameters);
-    } else if (TOKEN_PARAMETER_GROUP.equals(firstConfiguation)) {
-      connectionProvider = new TokenConnectionProvider(configurationParameters);
-    } else if (IAM_PARAMETER_GROUP.equals(firstConfiguation)) {
-      connectionProvider = new IamConnectionProvider(configurationParameters);
-    } else if (EC2_PARAMETER_GROUP.equals(firstConfiguation)) {
-      connectionProvider = new Ec2ConnectionProvider(configurationParameters);
+    
+    /* 
+      Issue #12: https://github.com/avioconsulting/mule-vault-properties-provider/issues/12
+      Mule 4.4 added an expiration-policy element that is added automatically, so we need to 
+      disregard it and find the correct configuration element. 
+      See https://docs.mulesoft.com/mule-sdk/1.1/static-dynamic-configs
+    */
+    for (int i=0;i<parameters.getComplexConfigurationParameters().size();i++) {
+	    String namespace = parameters.getComplexConfigurationParameters().get(i).getFirst().getNamespace();
+      
+	    if (namespace.equals(VaultPropertiesProviderExtension.VAULT_PROPERTIES_PROVIDER.getNamespace())) {
+	    	String firstConfiguration = parameters.getComplexConfigurationParameters().get(i).getFirst().getName();
+		    ConfigurationParameters configurationParameters = parameters.getComplexConfigurationParameters().get(i).getSecond();
+		    if (TLS_PARAMETER_GROUP.equals(firstConfiguration)) {
+		      connectionProvider = new TlsConnectionProvider(configurationParameters);
+		    } else if (TOKEN_PARAMETER_GROUP.equals(firstConfiguration)) {
+		      connectionProvider = new TokenConnectionProvider(configurationParameters);
+		    } else if (IAM_PARAMETER_GROUP.equals(firstConfiguration)) {
+		      connectionProvider = new IamConnectionProvider(configurationParameters);
+		    } else if (EC2_PARAMETER_GROUP.equals(firstConfiguration)) {
+		      connectionProvider = new Ec2ConnectionProvider(configurationParameters);
+		    }
+		    break;
+	    }
     }
 
     if (connectionProvider != null) {
