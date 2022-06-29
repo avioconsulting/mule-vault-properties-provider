@@ -10,6 +10,12 @@
     <packaging>mule-extension</packaging>
     <name>Vault Properties Provider</name>
 
+    <properties>
+        <vault.driver.version>5.1.0</vault.driver.version>
+        <bouncy.castle.version>1.71</bouncy.castle.version>
+        <test.containers.version>1.17.2</test.containers.version>
+    </properties>
+
     <parent>
         <groupId>org.mule.extensions</groupId>
         <artifactId>mule-modules-parent</artifactId>
@@ -26,24 +32,24 @@
         <dependency>
             <groupId>com.bettercloud</groupId>
             <artifactId>vault-java-driver</artifactId>
-            <version>4.0.0</version>
+            <version>${vault.driver.version}</version>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
-            <version>1.6.0</version>
+            <version>${test.containers.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15on</artifactId>
-            <version>1.67</version>
+            <artifactId>bcprov-jdk18on</artifactId>
+            <version>${bouncy.castle.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
-            <artifactId>bcpkix-jdk15on</artifactId>
-            <version>1.60</version>
+            <artifactId>bcpkix-jdk18on</artifactId>
+            <version>${bouncy.castle.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
