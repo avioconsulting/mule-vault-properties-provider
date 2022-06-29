@@ -23,6 +23,8 @@ public class VaultContainer implements TestRule {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(VaultContainer.class);
 
+    private static final String VAULT_VERSION = "1.10.4";
+
     public final static String CURRENT_WORKING_DIRECTORY = System.getProperty("user.dir");
     public final static String SSL_DIRECTORY = CURRENT_WORKING_DIRECTORY + File.separator + "ssl";
     public final static String CERT_PEMFILE = SSL_DIRECTORY + File.separator + "root-cert.pem";
@@ -47,12 +49,12 @@ public class VaultContainer implements TestRule {
     private boolean kv2Enabled = false;
 
     public VaultContainer() {
-        container = new GenericContainer(DockerImageName.parse("vault:1.10.4"))
+        container = new GenericContainer(DockerImageName.parse(String.format("vault:%s", VAULT_VERSION)))
             .withClasspathResourceMapping("/container_config/startup.sh", CONTAINER_STARTUP_SCRIPT, BindMode.READ_ONLY)
             .withClasspathResourceMapping("/container_config/config.hcl", CONTAINER_CONFIG_FILE, BindMode.READ_ONLY)
             .withClasspathResourceMapping("/container_config/libressl.conf", CONTAINER_OPENSSL_CONFIG_FILE, BindMode.READ_ONLY)
             .withClasspathResourceMapping("/policies/web_policy.hcl", CONTAINER_WEB_POLICY_FILE, BindMode.READ_ONLY)
-            .withEnv("VAULT_VERSION", "1.10.4")
+            .withEnv("VAULT_VERSION", VAULT_VERSION)
             .withFileSystemBind(SSL_DIRECTORY, CONTAINER_SSL_DIRECTORY, BindMode.READ_WRITE)
             .withCreateContainerCmdModifier(new Consumer<CreateContainerCmd>() {
                 @Override
