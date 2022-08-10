@@ -6,15 +6,23 @@
 
 
     <vault-properties-provider:config name="config">
-        <vault-properties-provider:ec2-connection vaultUrl="${vaultUrl}" engineVersion="v2" awsAuthMount="aws" vaultRole="ec2" useInstanceMetadata="true">
+        <vault-properties-provider:token-connection vaultToken="${vaultToken}" vaultUrl="${vaultUrl}" engineVersion="v2">
             <vault-properties-provider:tls-context>
-                <vault-properties-provider:trust-store type="JKS" path="mockserver/truststore.jks" password="password" />
+                <vault-properties-provider:trust-store type="JKS" path="${trustStoreFile}" password="${trustStorePassword}" />
             </vault-properties-provider:tls-context>
-        </vault-properties-provider:ec2-connection>
+        </vault-properties-provider:token-connection>
     </vault-properties-provider:config>
 
     <flow name="testFlow">
         <set-payload value="${vault::secret/test/mysecret.att1}" />
+    </flow>
+
+    <flow name="testFlow2">
+        <set-payload value="${vault::secret/test/mysecret.att2}" />
+    </flow>
+
+    <flow name="envFlow">
+        <set-payload value="${vault::secret/$[ENV]/mysecret.att1}" />
     </flow>
 
 </mule>

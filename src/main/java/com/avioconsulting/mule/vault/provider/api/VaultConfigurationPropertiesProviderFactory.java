@@ -1,10 +1,11 @@
 package com.avioconsulting.mule.vault.provider.api;
 
-import com.avioconsulting.mule.vault.provider.api.connection.VaultConnection;
-import com.avioconsulting.mule.vault.provider.api.connection.provider.Ec2ConnectionProvider;
-import com.avioconsulting.mule.vault.provider.api.connection.provider.IamConnectionProvider;
-import com.avioconsulting.mule.vault.provider.api.connection.provider.TlsConnectionProvider;
-import com.avioconsulting.mule.vault.provider.api.connection.provider.TokenConnectionProvider;
+import com.avioconsulting.mule.vault.provider.internal.connection.VaultConnection;
+import com.avioconsulting.mule.vault.provider.internal.connection.provider.Ec2ConnectionProvider;
+import com.avioconsulting.mule.vault.provider.internal.connection.provider.IamConnectionProvider;
+import com.avioconsulting.mule.vault.provider.internal.connection.provider.TlsConnectionProvider;
+import com.avioconsulting.mule.vault.provider.internal.connection.provider.TokenConnectionProvider;
+import com.avioconsulting.mule.vault.provider.internal.extension.VaultPropertiesProviderExtension;
 import com.bettercloud.vault.Vault;
 import org.mule.runtime.api.component.ComponentIdentifier;
 import org.mule.runtime.api.connection.ConnectionException;
@@ -21,7 +22,7 @@ import org.slf4j.LoggerFactory;
  */
 public class VaultConfigurationPropertiesProviderFactory implements ConfigurationPropertiesProviderFactory {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(VaultConfigurationPropertiesProviderFactory.class);
+  private static final Logger logger = LoggerFactory.getLogger(VaultConfigurationPropertiesProviderFactory.class);
 
   public static final String TOKEN_PARAMETER_GROUP = "token-connection";
   public static final String TLS_PARAMETER_GROUP = "tls-connection";
@@ -39,7 +40,7 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
     try {
       return new VaultConfigurationPropertiesProvider(getVault(parameters));
     } catch (ConnectionException ce) {
-      LOGGER.error("Error connecting to Vault", ce);
+      logger.error("Error connecting to Vault", ce);
       return null;
     }
   }
@@ -52,7 +53,7 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
    */
   private Vault getVault(ConfigurationParameters parameters) throws ConnectionException {
     if (parameters.getComplexConfigurationParameters().size() > 1) {
-      LOGGER.warn("Multiple Vault Properties Provider configurations have been found");
+      logger.warn("Multiple Vault Properties Provider configurations have been found");
     }
 
     ConnectionProvider<VaultConnection> connectionProvider = null;
@@ -85,7 +86,7 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
     if (connectionProvider != null) {
       return connectionProvider.connect().getVault();
     } else {
-      LOGGER.warn("No Vault Properties Provider configurations found");
+      logger.warn("No Vault Properties Provider configurations found");
       return null;
     }
 

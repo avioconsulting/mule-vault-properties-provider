@@ -6,11 +6,11 @@
 
 
     <vault-properties-provider:config name="config">
-        <vault-properties-provider:ec2-connection vaultUrl="${vaultUrl}" engineVersion="v2" awsAuthMount="aws" vaultRole="ec2" useInstanceMetadata="true">
-            <vault-properties-provider:tls-context>
-                <vault-properties-provider:trust-store type="JKS" path="mockserver/truststore.jks" password="password" />
-            </vault-properties-provider:tls-context>
-        </vault-properties-provider:ec2-connection>
+        <vault-properties-provider:ec2-connection vaultUrl="${vaultUrl}"
+                                                  engineVersion="v2"
+                                                  awsAuthMount="aws"
+                                                  vaultRole="ec2"
+                                                  useInstanceMetadata="true"/>
     </vault-properties-provider:config>
 
     <flow name="testFlow">

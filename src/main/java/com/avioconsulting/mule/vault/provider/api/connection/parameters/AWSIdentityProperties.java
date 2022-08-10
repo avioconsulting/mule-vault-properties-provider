@@ -1,6 +1,6 @@
 package com.avioconsulting.mule.vault.provider.api.connection.parameters;
 
-import com.avioconsulting.mule.vault.provider.api.VaultPropertiesProviderExtension;
+import com.avioconsulting.mule.vault.provider.internal.extension.VaultPropertiesProviderExtension;
 import org.mule.runtime.api.meta.ExpressionSupport;
 import org.mule.runtime.config.api.dsl.model.ConfigurationParameters;
 import org.mule.runtime.extension.api.annotation.Expression;
@@ -19,7 +19,7 @@ import static org.mule.runtime.api.component.ComponentIdentifier.builder;
  */
 public class AWSIdentityProperties {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AWSIdentityProperties.class);
+    private static final Logger logger = LoggerFactory.getLogger(AWSIdentityProperties.class);
 
     private static final String IDENTITY_PARAMETER_GROUP = "identity-properties";
 
@@ -58,7 +58,7 @@ public class AWSIdentityProperties {
                 identity = idParameters.getStringParameter("identity");
                 signature = idParameters.getStringParameter("signature");
             } catch (Exception ide) {
-                LOGGER.debug("identity and/or signature properties are not present. If one is set, both must be set");
+                logger.debug("identity and/or signature properties are not present. If one is set, both must be set", ide);
             }
         }
     }
