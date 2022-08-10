@@ -17,12 +17,12 @@
     </parent>
 
     <properties>
-        <testContainersVersion>1.14.3</testContainersVersion>
-        <bouncyCastleVersion>1.60</bouncyCastleVersion>
-        <mockServerVersion>5.10.0</mockServerVersion>
-        <vaultDriverVersion>5.1.0</vaultDriverVersion>
+        <vault.driver.version>5.1.0</vault.driver.version>
+        <bouncy.castle.version>1.71</bouncy.castle.version>
+        <test.containers.version>1.17.2</test.containers.version>
+		<mock.server.version>5.10.0</mock.server.version>
     </properties>
-
+	
     <build>
         <plugins>
             <plugin>
@@ -102,42 +102,42 @@
         <dependency>
             <groupId>com.bettercloud</groupId>
             <artifactId>vault-java-driver</artifactId>
-            <version>${vaultDriverVersion}</version>
+            <version>${vault.driver.version}</version>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
-            <version>${testContainersVersion}</version>
+            <version>${test.containers.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15on</artifactId>
-            <version>${bouncyCastleVersion}</version>
+            <artifactId>bcprov-jdk18on</artifactId>
+            <version>${bouncy.castle.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
-            <artifactId>bcpkix-jdk15on</artifactId>
-            <version>${bouncyCastleVersion}</version>
+            <artifactId>bcpkix-jdk18on</artifactId>
+            <version>${bouncy.castle.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mock-server</groupId>
             <artifactId>mockserver-netty</artifactId>
-            <version>${mockServerVersion}</version>
+            <version>${mock.server.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mock-server</groupId>
             <artifactId>mockserver-junit-rule</artifactId>
-            <version>${mockServerVersion}</version>
+            <version>${mock.server.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mock-server</groupId>
             <artifactId>mockserver-client-java</artifactId>
-            <version>${mockServerVersion}</version>
+            <version>${mock.server.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

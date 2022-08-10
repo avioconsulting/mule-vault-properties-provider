@@ -3,7 +3,7 @@
 #####
 # (1) Install SSL dependencies
 #####
-apk add --no-cache libressl
+apk add --no-cache openssl
 
 
 #####
@@ -23,13 +23,15 @@ echo 000a > serialfile
 touch certindex
 openssl ca -batch -config libressl.conf -notext -in vault-csr.pem -out vault-cert.pem
 # Configure SSL at the OS level to trust the new certs
-cp root-cert.pem vault-cert.pem /usr/local/share/ca-certificates
+cat root-cert.pem >> /etc/ssl/certs/ca-certificates.crt
+update-ca-certificates
 # Clean up temp files
 rm 0A.pem certindex certindex.attr certindex.old libressl.conf serialfile serialfile.old vault-csr.pem
+
 
 
 #####
 # (3) Start Vault
 #####
-vault server -config /vault/config/config.json
+vault server -config /vault/config/config.hcl
 
