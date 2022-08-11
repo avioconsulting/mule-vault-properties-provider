@@ -11,9 +11,12 @@ import org.mule.runtime.config.api.dsl.model.properties.ConfigurationProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileInputStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,9 +39,10 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
      * Constructs a VaultConfigurationPropertiesProvider. Vault must not be null.
      * @param vault
      */
-    public VaultConfigurationPropertiesProvider(final Vault vault) {
+    public VaultConfigurationPropertiesProvider(final Vault vault, final String fallbackFile) {
         this.vault = vault;
         cachedData = new HashMap<>();
+        evaluateFileFallbackConfig(fallbackFile);
     }
 
     /**
@@ -48,10 +52,7 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
      * @param property the property to retrieve from the secret
      * @return         the value of the property or null if the property is not found
      */
-    private String getProperty(String path, String property) throws DefaultMuleException {
-
-
-
+    private String getProperty(String path, String property) throws SecretNotFoundException, VaultAccessException, DefaultMuleException {
         try {
             Map<String, String> data = null;
             if (cachedData.containsKey(path)) {
@@ -170,5 +171,34 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
         }
 
         return result;
+    }
+    private void evaluateFileFallbackConfig(String fallbackFile){
+        if(fallbackFile==null || fallbackFile.isEmpty()) return;
+        try{
+            URL resourceUrl = this.getClass().getClassLoader().getResource(fallbackFile);
+            if(resourceUrl==null) return;
+            Properties appProps = new Properties();
+            appProps.load(new FileInputStream(resourceUrl.getPath()));
+            if(appProps!= null && !appProps.isEmpty())
+                fillCachedData(appProps);
+        }catch(Exception e){
+            logger.error("The follow error happened: "+ e.getMessage());
+        }
+    }
+    private void fillCachedData(Properties properties){
+        if(properties == null || properties.isEmpty()) return;
+
+        properties.entrySet().forEach(entry ->{
+            String keyS = entry.getKey().toString();
+            String[] pathElements = keyS.split("\\.");
+            if(pathElements.length != 2){
+                logger.warn("FAIL TO TRY TO PARSE THE PROPERTY WITH THE KEY: "+ keyS);
+            }else{
+                if(cachedData.containsKey(pathElements[0]))
+                    cachedData.get(pathElements[0]).put(pathElements[1], entry.getValue().toString());
+                else
+                    cachedData.put(pathElements[0], new HashMap<String,String>(){ { put(pathElements[1], entry.getValue().toString()); } });
+            }
+        });
     }
 }
