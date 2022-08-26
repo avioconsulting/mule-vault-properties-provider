@@ -1,10 +1,7 @@
 package com.avioconsulting.mule.vault.provider.api;
 
 import com.avioconsulting.mule.vault.provider.internal.connection.VaultConnection;
-import com.avioconsulting.mule.vault.provider.internal.connection.provider.Ec2ConnectionProvider;
-import com.avioconsulting.mule.vault.provider.internal.connection.provider.IamConnectionProvider;
-import com.avioconsulting.mule.vault.provider.internal.connection.provider.TlsConnectionProvider;
-import com.avioconsulting.mule.vault.provider.internal.connection.provider.TokenConnectionProvider;
+import com.avioconsulting.mule.vault.provider.internal.connection.provider.*;
 import com.avioconsulting.mule.vault.provider.internal.extension.VaultPropertiesProviderExtension;
 import com.bettercloud.vault.Vault;
 import org.mule.runtime.api.component.ComponentIdentifier;
@@ -17,6 +14,8 @@ import org.mule.runtime.config.api.dsl.model.properties.ConfigurationPropertiesP
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.stream.Stream;
+
 /**
  * Builds the provider for a vault:config element.
  */
@@ -28,6 +27,7 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
   public static final String TLS_PARAMETER_GROUP = "tls-connection";
   public static final String IAM_PARAMETER_GROUP = "iam-connection";
   public static final String EC2_PARAMETER_GROUP = "ec2-connection";
+  public static final String APPROLE_PARAMETER_GROUP= "approle-connection";
 
   @Override
   public ComponentIdentifier getSupportedComponentIdentifier() {
@@ -66,7 +66,7 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
     */
     for (int i=0;i<parameters.getComplexConfigurationParameters().size();i++) {
 	    String namespace = parameters.getComplexConfigurationParameters().get(i).getFirst().getNamespace();
-      
+
 	    if (namespace.equals(VaultPropertiesProviderExtension.VAULT_PROPERTIES_PROVIDER.getNamespace())) {
 	    	String firstConfiguration = parameters.getComplexConfigurationParameters().get(i).getFirst().getName();
 		    ConfigurationParameters configurationParameters = parameters.getComplexConfigurationParameters().get(i).getSecond();
@@ -78,7 +78,9 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
 		      connectionProvider = new IamConnectionProvider(configurationParameters);
 		    } else if (EC2_PARAMETER_GROUP.equals(firstConfiguration)) {
 		      connectionProvider = new Ec2ConnectionProvider(configurationParameters);
-		    }
+		    } else if(APPROLE_PARAMETER_GROUP.equals(firstConfiguration)){
+              connectionProvider = new AppRoleConnectionProvider(configurationParameters);
+            }
 		    break;
 	    }
     }
