@@ -47,6 +47,8 @@ public class VaultContainer implements TestRule {
     private String unsealKey;
     private String rootToken;
     private boolean kv2Enabled = false;
+    private String roleId;
+    private String secretId;
 
     public VaultContainer() {
         container = new GenericContainer(DockerImageName.parse(String.format("vault:%s", VAULT_VERSION)))
@@ -114,6 +116,15 @@ public class VaultContainer implements TestRule {
         }
     }
 
+    public void addAndConfigureAppRole() throws IOException, InterruptedException {
+        runCommand("path \"secrets/*\" { capabilities = [\"create\",\"read\",\"update\",\"list\",\"delete\"] }", "> my-policy.hcl");
+        final Container.ExecResult result1 = runCommand("vault", "auth", "enable", "approle");
+        final Container.ExecResult result2 = runCommand("vault", "policy", "write", "my-policy ./my-policy.hcl");
+        final Container.ExecResult result3 = runCommand("vault", "write", "auth/approle/role/my-policy", "token_policies=\"my-policy\"");
+        final Container.ExecResult result4 = runCommand("vault", "read", "auth/approle/role/my-policy/role-id");
+        final Container.ExecResult result5 = runCommand("vault", "write", "-f", "auth/approle/role/my-policy/secret-id");
+    }
+
     /**
      * Prepares the Vault server for testing of the TLS Certificate auth backend (i.e. mounts the backend and registers
      * the certificate and private key for client auth).
@@ -123,7 +134,6 @@ public class VaultContainer implements TestRule {
      */
     public void setupBackendCert() throws IOException, InterruptedException {
         runCommand("vault", "login", "-ca-cert=" + CONTAINER_CERT_PEMFILE, rootToken);
-
         runCommand("vault", "auth", "enable", "-ca-cert=" + CONTAINER_CERT_PEMFILE, "cert");
         runCommand("vault", "policy", "write", "-ca-cert=" + CONTAINER_CERT_PEMFILE, "web", CONTAINER_WEB_POLICY_FILE);
         runCommand("vault", "write", "-ca-cert=" + CONTAINER_CERT_PEMFILE, "auth/cert/certs/web", "display_name=web",

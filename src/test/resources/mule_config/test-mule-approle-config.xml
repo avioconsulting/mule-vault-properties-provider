@@ -1,0 +1,29 @@
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:vault-properties-provider="http://www.mulesoft.org/schema/mule/vault-properties-provider"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+          http://www.mulesoft.org/schema/mule/vault-properties-provider http://www.mulesoft.org/schema/mule/vault-properties-provider/current/mule-vault-properties-provider.xsd">
+
+
+    <vault-properties-provider:config name="config">
+        <vault-properties-provider:approle-connection vaultUrl="${vaultUrl}" roleId="${roleId}" secretId="${secretId}">
+            <vault-properties-provider:tls-context>
+                <vault-properties-provider:trust-store type="JKS" path="mockserver/truststore.jks" password="password" />
+            </vault-properties-provider:tls-context>
+        </vault-properties-provider:approle-connection>
+
+    </vault-properties-provider:config>
+
+    <flow name="testFlow">
+        <set-payload value="${vault::secret/test/mysecret.att1}" />
+    </flow>
+
+    <flow name="testFlow2">
+        <set-payload value="${vault::secret/test/mysecret.att2}" />
+    </flow>
+
+    <flow name="envFlow">
+        <set-payload value="${vault::secret/$[ENV]/mysecret.att1}" />
+    </flow>
+
+</mule>
