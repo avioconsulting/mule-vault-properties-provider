@@ -23,16 +23,12 @@ public class VaultAppRoleAuthenticationIT extends MuleArtifactFunctionalTestCase
     public static void setupContainer() throws IOException, InterruptedException, CertificateException, KeyStoreException, NoSuchAlgorithmException, SignatureException, NoSuchProviderException, InvalidKeyException, OperatorCreationException {
         container.initAndUnsealVault();
         SSLUtils.createClientCertAndKey();
-        container.setupBackendCert();
         container.addAndConfigureAppRole();
-        container.setupBackendCert();
         container.enableKvSecretsV2();
         container.setupSampleSecret();
 
         // Set vaultUrl and vaultToken properties so they can be used in the Mule config file
         System.setProperty("vaultUrl", container.getAddress());
-        System.setProperty("keyStorePath", VaultContainer.CLIENT_KEYSTORE);
-        System.setProperty("keyStorePassword", "password");
         System.setProperty("trustStoreFile", VaultContainer.CLIENT_TRUSTSTORE);
         System.setProperty("trustStorePassword", "password");
         System.setProperty("role_id", container.getRoleId());
