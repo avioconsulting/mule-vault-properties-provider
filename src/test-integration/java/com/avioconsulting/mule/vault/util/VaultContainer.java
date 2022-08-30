@@ -48,6 +48,15 @@ public class VaultContainer implements TestRule {
     private String rootToken;
     private boolean kv2Enabled = false;
     private String roleId;
+
+    public String getRoleId() {
+        return roleId;
+    }
+
+    public String getSecretId() {
+        return secretId;
+    }
+
     private String secretId;
 
     public VaultContainer() {
@@ -118,11 +127,14 @@ public class VaultContainer implements TestRule {
 
     public void addAndConfigureAppRole() throws IOException, InterruptedException {
         runCommand("path \"secrets/*\" { capabilities = [\"create\",\"read\",\"update\",\"list\",\"delete\"] }", "> my-policy.hcl");
-        final Container.ExecResult result1 = runCommand("vault", "auth", "enable", "approle");
-        final Container.ExecResult result2 = runCommand("vault", "policy", "write", "my-policy ./my-policy.hcl");
-        final Container.ExecResult result3 = runCommand("vault", "write", "auth/approle/role/my-policy", "token_policies=\"my-policy\"");
-        final Container.ExecResult result4 = runCommand("vault", "read", "auth/approle/role/my-policy/role-id");
-        final Container.ExecResult result5 = runCommand("vault", "write", "-f", "auth/approle/role/my-policy/secret-id");
+        runCommand("vault", "login", "-ca-cert=" + CONTAINER_CERT_PEMFILE, rootToken);
+        final Container.ExecResult result1 = runCommand("vault", "auth", "enable", "-ca-cert=" + CONTAINER_CERT_PEMFILE, "approle");
+        final Container.ExecResult result2 = runCommand("vault", "policy", "write", "-ca-cert=" + CONTAINER_CERT_PEMFILE, "my-policy ./my-policy.hcl");
+        final Container.ExecResult result3 = runCommand("vault", "write", "-ca-cert=" + CONTAINER_CERT_PEMFILE, "auth/approle/role/my-policy", "token_policies=\"my-policy\"");
+        final Container.ExecResult result4 = runCommand("vault", "read", "-ca-cert=" + CONTAINER_CERT_PEMFILE, "auth/approle/role/my-policy/role-id");
+        roleId = result4.getStdout().split("role_id")[1].trim();
+        final Container.ExecResult result5 = runCommand("vault", "write", "-ca-cert=" + CONTAINER_CERT_PEMFILE, "-f", "auth/approle/role/my-policy/secret-id");
+        secretId = result5.getStdout().split("secret_id")[1].trim();
     }
 
     /**

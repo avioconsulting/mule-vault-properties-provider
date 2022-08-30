@@ -26,6 +26,8 @@ public class VaultAppRoleAuthenticationIT extends MuleArtifactFunctionalTestCase
         container.setupBackendCert();
         container.addAndConfigureAppRole();
         container.setupBackendCert();
+        container.enableKvSecretsV2();
+        container.setupSampleSecret();
 
         // Set vaultUrl and vaultToken properties so they can be used in the Mule config file
         System.setProperty("vaultUrl", container.getAddress());
@@ -33,11 +35,13 @@ public class VaultAppRoleAuthenticationIT extends MuleArtifactFunctionalTestCase
         System.setProperty("keyStorePassword", "password");
         System.setProperty("trustStoreFile", VaultContainer.CLIENT_TRUSTSTORE);
         System.setProperty("trustStorePassword", "password");
+        System.setProperty("role_id", container.getRoleId());
+        System.setProperty("secret_id", container.getSecretId());
     }
 
     @Override
     protected String getConfigFile() {
-        return "mule_config/test-mule-jks-auth-config-it.xml";
+        return "mule_config/test-mule-app-role-auth-config-it.xml";
     }
 
     @Test
