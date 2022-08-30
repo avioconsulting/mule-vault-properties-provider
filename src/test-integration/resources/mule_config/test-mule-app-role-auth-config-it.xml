@@ -9,7 +9,6 @@
         <vault-properties-provider:approle-connection vaultUrl="${vaultUrl}" engineVersion="v2" roleId="${role_id}" secretId="${secret_id}">
             <vault-properties-provider:tls-context >
                 <vault-properties-provider:trust-store type="JKS" path="${trustStoreFile}" password="${trustStorePassword}" />
-                <vault-properties-provider:key-store type="JKS" path="${keyStorePath}" password="${keyStorePassword}" />
             </vault-properties-provider:tls-context>
         </vault-properties-provider:approle-connection>
     </vault-properties-provider:config>
