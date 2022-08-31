@@ -39,7 +39,7 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
                                                         ResourceProvider externalResourceProvider) {
     try {
         return new VaultConfigurationPropertiesProvider(getVault(parameters),
-                getFileFallback(parameters));
+                getFallBackFile(parameters));
     } catch (ConnectionException ce) {
       logger.error("Error connecting to Vault", ce);
       return null;
@@ -92,12 +92,12 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
     }
 
   }
-  private String getFileFallback(ConfigurationParameters parameters){
+  private String getFallBackFile(ConfigurationParameters parameters){
       try{
           for (int i=0;i<parameters.getComplexConfigurationParameters().size();i++) {
               String namespace = parameters.getComplexConfigurationParameters().get(i).getFirst().getNamespace();
               if (namespace.equals(VaultPropertiesProviderExtension.VAULT_PROPERTIES_PROVIDER.getNamespace()))
-                  return parameters.getComplexConfigurationParameters().get(i).getSecond().getStringParameter("fileFallback");
+                  return parameters.getComplexConfigurationParameters().get(i).getSecond().getStringParameter("fallBackFile");
           }
       }catch(Exception e){
           logger.debug("Not possible to find file fallback configuration!");

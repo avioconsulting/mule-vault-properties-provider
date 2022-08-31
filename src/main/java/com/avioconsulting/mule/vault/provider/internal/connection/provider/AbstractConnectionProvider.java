@@ -25,10 +25,10 @@ public abstract class AbstractConnectionProvider implements ConnectionProvider<V
     @Optional
     protected EngineVersion engineVersion;
 
-    @DisplayName("File Fallback")
+    @DisplayName("Fallback File Path")
     @Parameter
     @Optional
-    protected String fileFallback;
+    protected String fallBackFile;
 
     protected abstract TlsContext getTlsContext();
 
@@ -47,7 +47,7 @@ public abstract class AbstractConnectionProvider implements ConnectionProvider<V
             logger.debug("kvVersion parameter is not present, or is not a valid value (v1 or v2)", e);
         }
         try{
-            fileFallback = parameters.getStringParameter("fileFallback");
+            fallBackFile = parameters.getStringParameter("fallBackFile");
         } catch (Exception e){
             logger.debug("fileFallback parameter is not present", e);
         }
