@@ -26,11 +26,14 @@ public class AppRoleConnection extends AbstractConnection{
                 this.vaultConfig = this.vaultConfig.engineVersion(engineVersion.getEngineVersionNumber());
             }
             SslConfig ssl = getVaultSSLConfig(tlsContext);
-            this.vault = new Vault(this.vaultConfig.sslConfig(ssl.build()).build());
-            String token = vault.auth().loginByAppRole(path, roleId, secretId).getAuthClientToken();
+            this.vaultConfig = this.vaultConfig.sslConfig(ssl.build());
             logger.debug("TLS Setup Complete");
+            this.vault = new Vault(this.vaultConfig.build());
+            String token = vault.auth().loginByAppRole(path, roleId, secretId).getAuthClientToken();
+            this.vault = new Vault(this.vaultConfig.sslConfig(ssl.build()).token(token).build());
             this.valid = true;
         } catch (VaultException | CertificateException | NoSuchAlgorithmException | KeyStoreException | IOException ve) {
+            logger.error("Error trying to stablish approle connection", ve);
             throw new ConnectionException(ve.getMessage(), ve.getCause());
         }
     }

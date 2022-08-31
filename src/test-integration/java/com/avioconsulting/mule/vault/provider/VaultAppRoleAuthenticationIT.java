@@ -23,6 +23,7 @@ public class VaultAppRoleAuthenticationIT extends MuleArtifactFunctionalTestCase
     public static void setupContainer() throws IOException, InterruptedException, CertificateException, KeyStoreException, NoSuchAlgorithmException, SignatureException, NoSuchProviderException, InvalidKeyException, OperatorCreationException {
         container.initAndUnsealVault();
         SSLUtils.createClientCertAndKey();
+        container.setupBackendCert();
         container.addAndConfigureAppRole();
         container.enableKvSecretsV2();
         container.setupSampleSecret();
@@ -41,7 +42,7 @@ public class VaultAppRoleAuthenticationIT extends MuleArtifactFunctionalTestCase
     }
 
     @Test
-    public void testVaultTLSAuthentication() throws Exception {
+    public void testVaultAppRoleAuthentication() throws Exception {
         String payloadValue = ((String) flowRunner("testFlow")
                 .run()
                 .getMessage()
