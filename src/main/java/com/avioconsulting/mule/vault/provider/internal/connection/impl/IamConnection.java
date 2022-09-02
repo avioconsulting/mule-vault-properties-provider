@@ -24,9 +24,9 @@ public class IamConnection extends AbstractConnection {
     private static final Logger logger = LoggerFactory.getLogger(IamConnection.class);
 
     public IamConnection(String vaultUrl, String awsAuthMount, String role, String iamRequestUrl, String iamRequestBody,
-                         String iamRequestHeaders, TlsContext tlsContext, EngineVersion engineVersion) throws ConnectionException {
+                         String iamRequestHeaders, TlsContext tlsContext, EngineVersion engineVersion, int prefixPathDepth) throws ConnectionException {
 
-        this.vaultConfig = new VaultConfig().address(vaultUrl);
+        this.vaultConfig = new VaultConfig().address(vaultUrl).prefixPathDepth(prefixPathDepth);
         if (engineVersion != null) {
             this.vaultConfig = this.vaultConfig.engineVersion(engineVersion.getEngineVersionNumber());
         }

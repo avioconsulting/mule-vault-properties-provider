@@ -45,7 +45,7 @@ public class TlsConnectionProvider extends AbstractConnectionProvider {
         if (tlsContext == null) {
             throw new ConnectionException("TLS Context is required for TLS Connection");
         }
-        return new TlsConnection(vaultUrl, getTlsContext(), engineVersion);
+        return new TlsConnection(vaultUrl, getTlsContext(), engineVersion, prefixPathDepth);
     }
 
 }

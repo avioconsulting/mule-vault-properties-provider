@@ -18,10 +18,10 @@ import java.security.cert.CertificateException;
 public class TokenConnection extends AbstractConnection {
     private static final Logger logger = LoggerFactory.getLogger(TokenConnection.class);
 
-    public TokenConnection(String vaultUrl, String vaultToken, TlsContext tlsContext, EngineVersion engineVersion) throws ConnectionException {
+    public TokenConnection(String vaultUrl, String vaultToken, TlsContext tlsContext, EngineVersion engineVersion, int prefixPathDepth) throws ConnectionException {
 
         try {
-            this.vaultConfig = new VaultConfig().address(vaultUrl);
+            this.vaultConfig = new VaultConfig().address(vaultUrl).prefixPathDepth(prefixPathDepth);
             if (engineVersion != null) {
                 this.vaultConfig = this.vaultConfig.engineVersion(engineVersion.getEngineVersionNumber());
             }

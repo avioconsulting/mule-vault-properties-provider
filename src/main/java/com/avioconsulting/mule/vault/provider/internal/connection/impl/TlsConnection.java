@@ -19,9 +19,9 @@ public class TlsConnection extends AbstractConnection {
 
     private static final Logger logger = LoggerFactory.getLogger(TlsConnection.class);
 
-    public TlsConnection(String vaultUrl, TlsContext tlsContext, EngineVersion engineVersion) throws ConnectionException {
+    public TlsConnection(String vaultUrl, TlsContext tlsContext, EngineVersion engineVersion, int prefixPathDepth) throws ConnectionException {
 
-        this.vaultConfig = new VaultConfig().address(vaultUrl);
+        this.vaultConfig = new VaultConfig().address(vaultUrl).prefixPathDepth(prefixPathDepth);
         if (engineVersion != null) {
             this.vaultConfig = this.vaultConfig.engineVersion(engineVersion.getEngineVersionNumber());
         }
