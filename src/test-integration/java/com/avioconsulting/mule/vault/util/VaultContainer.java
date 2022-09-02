@@ -107,9 +107,10 @@ public class VaultContainer implements TestRule {
     }
 
     public void setupSampleSecretDepth() throws IOException, InterruptedException {
-        runCommand("vault", "secrets", "enable", "-ca-cert=" + CONTAINER_CERT_PEMFILE, "-path=avio/dev/kv", "kv",
-                "-version=2");
-        runCommand("vault", "kv", "put", "-ca-cert=" + CONTAINER_CERT_PEMFILE, "avio/dev/kv/test/mysecret", "att1=test_value1",
+        Container.ExecResult result  = runCommand("vault", "login", "-ca-cert=" + CONTAINER_CERT_PEMFILE, rootToken);
+        Container.ExecResult result2  = runCommand("vault", "secrets", "enable", "-ca-cert=" + CONTAINER_CERT_PEMFILE,
+                "-version=2", "-path=avio/dev/kv", "kv");
+        Container.ExecResult result3  = runCommand("vault", "kv", "put", "-ca-cert=" + CONTAINER_CERT_PEMFILE, "avio/dev/kv/test/mysecret", "att1=test_value1",
                 "att2=test_value2");
     }
 

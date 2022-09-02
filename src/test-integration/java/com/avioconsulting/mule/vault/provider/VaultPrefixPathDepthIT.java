@@ -23,7 +23,6 @@ public class VaultPrefixPathDepthIT extends MuleArtifactFunctionalTestCase {
     public static void setupContainer() throws IOException, InterruptedException, CertificateException, NoSuchAlgorithmException, KeyStoreException, SignatureException, NoSuchProviderException, InvalidKeyException, OperatorCreationException {
         container.initAndUnsealVault();
         SSLUtils.createClientCertAndKey();
-        container.enableKvSecretsV2();
         container.setupSampleSecretDepth();
 
         // Set vaultUrl and vaultToken properties so they can be used in the Mule config file
@@ -34,7 +33,7 @@ public class VaultPrefixPathDepthIT extends MuleArtifactFunctionalTestCase {
     }
 
     protected String getConfigFile() {
-        return "mule_config/test-mule-config-it.xml";
+        return "mule_config/test-mule-prefix-path-depth-config-it.xml";
     }
 
     @Test
