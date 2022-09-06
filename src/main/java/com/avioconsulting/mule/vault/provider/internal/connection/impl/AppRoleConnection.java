@@ -18,10 +18,10 @@ import java.security.cert.CertificateException;
 public class AppRoleConnection extends AbstractConnection{
     private static final Logger logger = LoggerFactory.getLogger(AppRoleConnection.class);
 
-    public AppRoleConnection(String vaultUrl, String path, String roleId, String secretId, TlsContext tlsContext, EngineVersion engineVersion) throws ConnectionException {
+    public AppRoleConnection(String vaultUrl, String path, String roleId, String secretId, TlsContext tlsContext, EngineVersion engineVersion, int prefixPathDepth) throws ConnectionException {
 
         try {
-            this.vaultConfig = new VaultConfig().address(vaultUrl);
+            this.vaultConfig = new VaultConfig().address(vaultUrl).prefixPathDepth(prefixPathDepth);
             if (engineVersion != null) {
                 this.vaultConfig = this.vaultConfig.engineVersion(engineVersion.getEngineVersionNumber());
             }

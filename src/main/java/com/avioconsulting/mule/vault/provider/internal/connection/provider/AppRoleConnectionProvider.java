@@ -3,7 +3,6 @@ package com.avioconsulting.mule.vault.provider.internal.connection.provider;
 import com.avioconsulting.mule.vault.provider.api.connection.parameters.TlsContext;
 import com.avioconsulting.mule.vault.provider.internal.connection.VaultConnection;
 import com.avioconsulting.mule.vault.provider.internal.connection.impl.AppRoleConnection;
-import com.avioconsulting.mule.vault.provider.internal.connection.impl.TokenConnection;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.meta.ExpressionSupport;
 import org.mule.runtime.config.api.dsl.model.ConfigurationParameters;
@@ -26,9 +25,11 @@ public class AppRoleConnectionProvider extends AbstractConnectionProvider {
     @Parameter
     @Optional(defaultValue = "approle")
     private String path;
+
     @DisplayName("Vault Role Id")
     @Parameter
     private String roleId;
+    
     @DisplayName("Vault Secret Id")
     @Parameter
     private String secretId;
@@ -62,6 +63,6 @@ public class AppRoleConnectionProvider extends AbstractConnectionProvider {
 
     @Override
     public VaultConnection connect() throws ConnectionException {
-        return new AppRoleConnection(vaultUrl, path, roleId, secretId, getTlsContext(), engineVersion);
+        return new AppRoleConnection(vaultUrl, path, roleId, secretId, getTlsContext(), engineVersion, prefixPathDepth);
     }
 }

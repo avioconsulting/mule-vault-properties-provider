@@ -1,9 +1,5 @@
 package com.avioconsulting.mule.vault.provider.api;
 
-import com.avioconsulting.mule.vault.provider.internal.connection.VaultConnection;
-import com.avioconsulting.mule.vault.provider.internal.connection.provider.*;
-import com.avioconsulting.mule.vault.provider.internal.extension.VaultPropertiesProviderExtension;
-import com.bettercloud.vault.Vault;
 import org.mule.runtime.api.component.ComponentIdentifier;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionProvider;
@@ -14,7 +10,14 @@ import org.mule.runtime.config.api.dsl.model.properties.ConfigurationPropertiesP
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.stream.Stream;
+import com.avioconsulting.mule.vault.provider.internal.connection.VaultConnection;
+import com.avioconsulting.mule.vault.provider.internal.connection.provider.AppRoleConnectionProvider;
+import com.avioconsulting.mule.vault.provider.internal.connection.provider.Ec2ConnectionProvider;
+import com.avioconsulting.mule.vault.provider.internal.connection.provider.IamConnectionProvider;
+import com.avioconsulting.mule.vault.provider.internal.connection.provider.TlsConnectionProvider;
+import com.avioconsulting.mule.vault.provider.internal.connection.provider.TokenConnectionProvider;
+import com.avioconsulting.mule.vault.provider.internal.extension.VaultPropertiesProviderExtension;
+import com.bettercloud.vault.Vault;
 
 /**
  * Builds the provider for a vault:config element.
@@ -79,8 +82,8 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
 		    } else if (EC2_PARAMETER_GROUP.equals(firstConfiguration)) {
 		      connectionProvider = new Ec2ConnectionProvider(configurationParameters);
 		    } else if(APPROLE_PARAMETER_GROUP.equals(firstConfiguration)){
-              connectionProvider = new AppRoleConnectionProvider(configurationParameters);
-            }
+          connectionProvider = new AppRoleConnectionProvider(configurationParameters);
+        }
 		    break;
 	    }
     }
