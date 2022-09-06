@@ -21,9 +21,9 @@ public class Ec2Connection extends AbstractConnection {
     private static final Logger logger = LoggerFactory.getLogger(Ec2Connection.class);
 
     public Ec2Connection(String vaultUrl, String role, String pkcs7, String nonce, String identity, String signature,
-                         String awsAuthMount, TlsContext tlsContext, EngineVersion engineVersion) throws ConnectionException {
+                         String awsAuthMount, TlsContext tlsContext, EngineVersion engineVersion, int prefixPathDepth) throws ConnectionException {
 
-        this.vaultConfig = new VaultConfig().address(vaultUrl);
+        this.vaultConfig = new VaultConfig().address(vaultUrl).prefixPathDepth(prefixPathDepth);
         if (engineVersion != null) {
             this.vaultConfig = this.vaultConfig.engineVersion(engineVersion.getEngineVersionNumber());
         }

@@ -72,7 +72,7 @@ public class IamConnectionProvider extends AbstractAWSConnectionProvider {
 
     @Override
     public VaultConnection connect() throws ConnectionException {
-        return new IamConnection(vaultUrl, awsAuthMount, vaultRole, iamRequestUrl, iamRequestBody, iamRequestHeaders, getTlsContext(), engineVersion);
+        return new IamConnection(vaultUrl, awsAuthMount, vaultRole, iamRequestUrl, iamRequestBody, iamRequestHeaders, getTlsContext(), engineVersion, prefixPathDepth);
     }
 
 }

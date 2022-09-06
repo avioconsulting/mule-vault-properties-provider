@@ -56,7 +56,7 @@ public class TokenConnectionProvider extends AbstractConnectionProvider {
 
     @Override
     public VaultConnection connect() throws ConnectionException {
-        return new TokenConnection(vaultUrl, vaultToken, getTlsContext(), engineVersion);
+        return new TokenConnection(vaultUrl, vaultToken, getTlsContext(), engineVersion, prefixPathDepth);
     }
 
 
