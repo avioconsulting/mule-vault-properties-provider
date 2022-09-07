@@ -13,6 +13,7 @@ import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
+import org.mule.runtime.extension.api.annotation.param.display.Summary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,10 +22,11 @@ import org.slf4j.LoggerFactory;
 public class AppRoleConnectionProvider extends AbstractConnectionProvider {
     private static final Logger logger = LoggerFactory.getLogger(AppRoleConnectionProvider.class);
 
-    @DisplayName("AppRole Path")
+    @DisplayName("AppRole Mount")
+    @Summary("Mount point for AppRole Authentication in Vault")
     @Parameter
     @Optional(defaultValue = "approle")
-    private String path;
+    private String authMount;
 
     @DisplayName("Vault Role Id")
     @Parameter
@@ -52,7 +54,7 @@ public class AppRoleConnectionProvider extends AbstractConnectionProvider {
         try {
             roleId = parameters.getStringParameter("roleId");
             secretId = parameters.getStringParameter("secretId");
-            path = parameters.getStringParameter("path");
+            authMount = parameters.getStringParameter("authMount");
         } catch (Exception e) {
             logger.debug("Role Id or Secret Id is not present", e);
         }
@@ -63,6 +65,6 @@ public class AppRoleConnectionProvider extends AbstractConnectionProvider {
 
     @Override
     public VaultConnection connect() throws ConnectionException {
-        return new AppRoleConnection(vaultUrl, path, roleId, secretId, getTlsContext(), engineVersion, prefixPathDepth);
+        return new AppRoleConnection(vaultUrl, authMount, roleId, secretId, getTlsContext(), engineVersion, prefixPathDepth);
     }
 }

@@ -18,7 +18,7 @@ import java.security.cert.CertificateException;
 public class AppRoleConnection extends AbstractConnection{
     private static final Logger logger = LoggerFactory.getLogger(AppRoleConnection.class);
 
-    public AppRoleConnection(String vaultUrl, String path, String roleId, String secretId, TlsContext tlsContext, EngineVersion engineVersion, int prefixPathDepth) throws ConnectionException {
+    public AppRoleConnection(String vaultUrl, String authMount, String roleId, String secretId, TlsContext tlsContext, EngineVersion engineVersion, int prefixPathDepth) throws ConnectionException {
 
         try {
             this.vaultConfig = new VaultConfig().address(vaultUrl).prefixPathDepth(prefixPathDepth);
@@ -28,7 +28,7 @@ public class AppRoleConnection extends AbstractConnection{
             SslConfig ssl = getVaultSSLConfig(tlsContext);
             this.vaultConfig = this.vaultConfig.sslConfig(ssl.build());
             this.vault = new Vault(this.vaultConfig.build());
-            String token = vault.auth().loginByAppRole(path, roleId, secretId).getAuthClientToken();
+            String token = vault.auth().loginByAppRole(authMount, roleId, secretId).getAuthClientToken();
             this.vault = new Vault(this.vaultConfig.sslConfig(ssl.build()).token(token).build());
             logger.debug("Successfully authenticated with AppRole auth method");
             this.valid = true;
