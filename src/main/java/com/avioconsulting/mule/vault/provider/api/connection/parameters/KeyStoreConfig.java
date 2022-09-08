@@ -56,6 +56,7 @@ public class KeyStoreConfig {
     public KeyStore getKeyStore() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
         KeyStore ks = KeyStore.getInstance(type);
         ks.load(new FileInputStream(path), password.toCharArray());
+        logger.debug(String.format("Using keystore from %s", path));
         return ks;
     }
 

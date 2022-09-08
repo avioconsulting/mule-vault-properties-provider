@@ -15,10 +15,10 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 
-public class TokenConnection extends AbstractConnection {
-    private static final Logger logger = LoggerFactory.getLogger(TokenConnection.class);
+public class AppRoleConnection extends AbstractConnection{
+    private static final Logger logger = LoggerFactory.getLogger(AppRoleConnection.class);
 
-    public TokenConnection(String vaultUrl, String vaultToken, TlsContext tlsContext, EngineVersion engineVersion, int prefixPathDepth) throws ConnectionException {
+    public AppRoleConnection(String vaultUrl, String authMount, String roleId, String secretId, TlsContext tlsContext, EngineVersion engineVersion, int prefixPathDepth) throws ConnectionException {
 
         try {
             this.vaultConfig = new VaultConfig().address(vaultUrl).prefixPathDepth(prefixPathDepth);
@@ -26,10 +26,14 @@ public class TokenConnection extends AbstractConnection {
                 this.vaultConfig = this.vaultConfig.engineVersion(engineVersion.getEngineVersionNumber());
             }
             SslConfig ssl = getVaultSSLConfig(tlsContext);
-            this.vault = new Vault(this.vaultConfig.token(vaultToken).sslConfig(ssl.build()).build());
-            logger.debug("TLS Setup Complete");
+            this.vaultConfig = this.vaultConfig.sslConfig(ssl.build());
+            this.vault = new Vault(this.vaultConfig.build());
+            String token = vault.auth().loginByAppRole(authMount, roleId, secretId).getAuthClientToken();
+            this.vault = new Vault(this.vaultConfig.sslConfig(ssl.build()).token(token).build());
+            logger.debug("Successfully authenticated with AppRole auth method");
             this.valid = true;
         } catch (VaultException | CertificateException | NoSuchAlgorithmException | KeyStoreException | IOException ve) {
+            logger.error("Error trying to stablish approle connection", ve);
             throw new ConnectionException(ve.getMessage(), ve.getCause());
         }
     }

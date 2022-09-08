@@ -96,7 +96,8 @@ public class Ec2ConnectionProvider extends AbstractAWSConnectionProvider {
                     connectionProperties.getIdentityProperties().getSignature(),
                     awsAuthMount,
                     getTlsContext(),
-                    engineVersion);
+                    engineVersion,
+                    prefixPathDepth);
         } else {
             return null;
         }

@@ -30,6 +30,11 @@ public abstract class AbstractConnectionProvider implements ConnectionProvider<V
     @Optional
     protected String fallBackFile;
 
+    @DisplayName("Prefix path depth")
+    @Parameter
+    @Optional(defaultValue = "1")
+    protected int prefixPathDepth;
+
     protected abstract TlsContext getTlsContext();
 
     public AbstractConnectionProvider() {
@@ -39,7 +44,7 @@ public abstract class AbstractConnectionProvider implements ConnectionProvider<V
     public AbstractConnectionProvider(ConfigurationParameters parameters) {
 
         vaultUrl = parameters.getStringParameter("vaultUrl");
-
+        prefixPathDepth = Integer.valueOf(parameters.getStringParameter("prefixPathDepth"));
         try {
             String ev = parameters.getStringParameter("engineVersion");
             engineVersion = EngineVersion.valueOf(ev);

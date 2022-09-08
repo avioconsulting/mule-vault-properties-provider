@@ -2,7 +2,7 @@ package com.avioconsulting.mule.vault.provider.internal.connection.provider;
 
 import com.avioconsulting.mule.vault.provider.api.connection.parameters.TlsContext;
 import com.avioconsulting.mule.vault.provider.internal.connection.VaultConnection;
-import com.avioconsulting.mule.vault.provider.internal.connection.impl.IamConnection;
+import com.avioconsulting.mule.vault.provider.internal.connection.impl.AppRoleConnection;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.meta.ExpressionSupport;
 import org.mule.runtime.config.api.dsl.model.ConfigurationParameters;
@@ -17,26 +17,24 @@ import org.mule.runtime.extension.api.annotation.param.display.Summary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@DisplayName("IAM Connection")
-@Alias("iam-connection")
-public class IamConnectionProvider extends AbstractAWSConnectionProvider {
+@DisplayName("AppRole Connection")
+@Alias("approle-connection")
+public class AppRoleConnectionProvider extends AbstractConnectionProvider {
+    private static final Logger logger = LoggerFactory.getLogger(AppRoleConnectionProvider.class);
 
-    private static final Logger logger = LoggerFactory.getLogger(IamConnectionProvider.class);
-
-    @DisplayName("IAM Request URL")
-    @Summary("Most likely https://sts.amazonaws.com/")
+    @DisplayName("AppRole Mount")
+    @Summary("Mount point for AppRole Authentication in Vault")
     @Parameter
-    @Optional(defaultValue = "https://sts.amazonaws.com/")
-    private String iamRequestUrl = "https://sts.amazonaws.com/";
+    @Optional(defaultValue = "approle")
+    private String authMount;
 
-    @DisplayName("IAM Request Body")
-    @Summary("Body of the signed request")
+    @DisplayName("Vault Role Id")
     @Parameter
-    private String iamRequestBody;
-
-    @DisplayName("IAM Request Headers")
+    private String roleId;
+    
+    @DisplayName("Vault Secret Id")
     @Parameter
-    private String iamRequestHeaders;
+    private String secretId;
 
     @DisplayName("TLS Context")
     @Expression(ExpressionSupport.NOT_SUPPORTED)
@@ -46,33 +44,27 @@ public class IamConnectionProvider extends AbstractAWSConnectionProvider {
     @Optional
     protected TlsContext tlsContext;
 
-    public IamConnectionProvider() {
+    public AppRoleConnectionProvider() {
         super();
     }
 
-    public IamConnectionProvider(ConfigurationParameters parameters) {
+    public AppRoleConnectionProvider(ConfigurationParameters parameters) {
         super(parameters);
-
         tlsContext = new TlsContext(parameters);
-
         try {
-            iamRequestUrl = parameters.getStringParameter("iamRequestUrl");
-            iamRequestBody = parameters.getStringParameter("iamRequestBody");
-            iamRequestHeaders = parameters.getStringParameter("iamRequestHeaders");
+            roleId = parameters.getStringParameter("roleId");
+            secretId = parameters.getStringParameter("secretId");
+            authMount = parameters.getStringParameter("authMount");
         } catch (Exception e) {
-            logger.debug("All IAM properties must be present (iamAwsAuthMount, iamVaultRole, iamUrl, iamReqBody, iamReqHeaders)", e);
+            logger.debug("Role Id or Secret Id is not present", e);
         }
-
     }
 
     @Override
-    protected TlsContext getTlsContext() {
-        return tlsContext;
-    }
+    protected TlsContext getTlsContext() {  return tlsContext;  }
 
     @Override
     public VaultConnection connect() throws ConnectionException {
-        return new IamConnection(vaultUrl, awsAuthMount, vaultRole, iamRequestUrl, iamRequestBody, iamRequestHeaders, getTlsContext(), engineVersion, prefixPathDepth);
+        return new AppRoleConnection(vaultUrl, authMount, roleId, secretId, getTlsContext(), engineVersion, prefixPathDepth);
     }
-
 }
