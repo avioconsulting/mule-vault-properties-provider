@@ -173,14 +173,14 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
         return result;
     }
     private void evaluateFileFallbackConfig(String fallbackFile){
-        if(fallbackFile==null || fallbackFile.isEmpty()) return;
-        try{
+        if(fallbackFile==null || fallbackFile.isEmpty())
+            return;
+        try {
             URL resourceUrl = this.getClass().getClassLoader().getResource(fallbackFile);
             if(resourceUrl==null) return;
             Properties appProps = new Properties();
             appProps.load(new FileInputStream(resourceUrl.getPath()));
-            if(appProps!= null && !appProps.isEmpty())
-                fillCachedData(appProps);
+            fillCachedData(appProps);
         }catch(Exception e){
             logger.error("The follow error happened: "+ e.getMessage());
         }
