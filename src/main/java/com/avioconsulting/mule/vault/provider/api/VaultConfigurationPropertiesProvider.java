@@ -28,21 +28,29 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
     private final static Logger logger = LoggerFactory.getLogger(VaultConfigurationPropertiesProvider.class);
 
     private final static String VAULT_PROPERTIES_PREFIX = "vault::";
-    private final static Pattern VAULT_PATTERN = Pattern.compile(VAULT_PROPERTIES_PREFIX + "([^.}]*).(.*)");
+    private final static Pattern VAULT_PATTERN = Pattern.compile(VAULT_PROPERTIES_PREFIX + "([^\\.]*)\\.([^}]*)");
     private final static Pattern ENV_PATTERN = Pattern.compile("\\$\\[([^\\]]*)\\]");
 
     private final Vault vault;
+
+    private final boolean isLocalMode;
 
     Map<String, Map<String,String>> cachedData;
 
     /**
      * Constructs a VaultConfigurationPropertiesProvider. Vault must not be null.
+     * 
+     * If isLocalMode is true, it will use the 
+     * 
      * @param vault
      */
-    public VaultConfigurationPropertiesProvider(final Vault vault, final String fallbackFile) {
+    public VaultConfigurationPropertiesProvider(final Vault vault, final Boolean isLocalMode, final String localPropertiesFile) {
         this.vault = vault;
         cachedData = new HashMap<>();
-        evaluateFileFallbackConfig(fallbackFile);
+        this.isLocalMode = isLocalMode;
+        if (isLocalMode) {
+            evaluateLocalProperitesConfig(localPropertiesFile);
+        }
     }
 
     /**
@@ -58,14 +66,20 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
             if (cachedData.containsKey(path)) {
                 logger.trace("Getting data from cache");
                 data = cachedData.get(path);
-            } else {
+            } else if (!isLocalMode) {
                 logger.trace("Getting data from Vault");
                 data = vault.logical().read(path).getData();
+                // TODO: Does the driver ever return null? Or does it throw an exception? It returns a null if there is no data stored in the secret
                 cachedData.put(path, data);
+            } else {
+                // path is not in the cache and isLocalMode is true, so notify that the property is not in the local properties file
+                throw new SecretNotFoundException(String.format("No property found for %s.%s in the local properties file", path, property));
             }
 
-            if (data != null) {
+            if (data != null && data.containsKey(property)) {
                 return data.get(property);
+            } else {
+                throw new SecretNotFoundException(String.format("No value found for %s.%s", path, property));
             }
 
         } catch (VaultException ve) {
@@ -77,10 +91,7 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
                 logger.error("Error getting data from Vault", ve);
                 throw new DefaultMuleException("Unknown Vault exception", ve);
             }
-
         }
-
-        return null;
     }
 
     /**
@@ -99,13 +110,13 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
                 final String effectiveKey = configurationAttributeKey.substring(VAULT_PROPERTIES_PREFIX.length());
 
                 // The Vault path is everything after the prefix and before the first period
-                final String vaultPath = matcher.group(1);
+                final String secretPath = matcher.group(1);
 
-                // The secret key is everything after the first period
-                final String secretKey = matcher.group(2);
+                // The key is everything after the first period
+                final String key = matcher.group(2);
 
                 try {
-                    final String value = getProperty(expandedValue(vaultPath), expandedValue(secretKey));
+                    final String value = getProperty(expandedValue(secretPath), expandedValue(key));
 
                     if (value != null) {
                         return Optional.of(new ConfigurationProperty() {
@@ -172,27 +183,32 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
 
         return result;
     }
-    private void evaluateFileFallbackConfig(String fallbackFile){
-        if(fallbackFile==null || fallbackFile.isEmpty())
+
+    // TODO: Add additional property to enable "Local Mode" that will then use a "Local Properties File" to load the properties
+    private void evaluateLocalProperitesConfig(String localPropertiesFile){
+        if(localPropertiesFile==null || localPropertiesFile.isEmpty())
             return;
         try {
-            URL resourceUrl = this.getClass().getClassLoader().getResource(fallbackFile);
+            URL resourceUrl = this.getClass().getClassLoader().getResource(localPropertiesFile);
             if(resourceUrl==null) return;
             Properties appProps = new Properties();
             appProps.load(new FileInputStream(resourceUrl.getPath()));
-            fillCachedData(appProps);
-        }catch(Exception e){
-            logger.error("The follow error happened: "+ e.getMessage());
+            loadCacheFromProperties(appProps);
+        } catch(Exception e) {
+            logger.error(String.format("Error occurred while loading the local properties file from %s", localPropertiesFile), e);
         }
     }
-    private void fillCachedData(Properties properties){
+
+    // TODO: Javadoc comments
+    private void loadCacheFromProperties(Properties properties){
         if(properties == null || properties.isEmpty()) return;
 
         properties.entrySet().forEach(entry ->{
             String keyS = entry.getKey().toString();
             String[] pathElements = keyS.split("\\.");
             if(pathElements.length != 2){
-                logger.warn("FAIL TO TRY TO PARSE THE PROPERTY WITH THE KEY: "+ keyS);
+                // TODO: Use String.format to format this string and also don't use all caps, also specify the format that should be used
+                logger.warn("FAIL TO PARSE THE PROPERTY WITH THE KEY: "+ keyS);
             }else{
                 if(cachedData.containsKey(pathElements[0]))
                     cachedData.get(pathElements[0]).put(pathElements[1], entry.getValue().toString());

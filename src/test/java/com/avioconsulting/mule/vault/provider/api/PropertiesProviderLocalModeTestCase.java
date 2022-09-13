@@ -1,16 +1,15 @@
 package com.avioconsulting.mule.vault.provider.api;
 
-import org.junit.Rule;
 import org.junit.Test;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
-public class PropertiesProviderFallbackFile extends MuleArtifactFunctionalTestCase {
+public class PropertiesProviderLocalModeTestCase extends MuleArtifactFunctionalTestCase {
     @Override
     protected String getConfigFile() {
-        return "mule_config/test-mule-fallback-file-config.xml";
+        return "mule_config/test-mule-local-mode-config.xml";
     }
     @Test
     public void testEmptyEnvironmentVariable() throws Exception {
