@@ -3,6 +3,7 @@ package com.avioconsulting.mule.vault.provider.api;
 import com.avioconsulting.mule.vault.provider.internal.error.exception.SecretNotFoundException;
 import com.avioconsulting.mule.vault.provider.internal.error.exception.UnsetVariableException;
 import com.avioconsulting.mule.vault.provider.internal.error.exception.VaultAccessException;
+import com.avioconsulting.mule.vault.provider.internal.extension.VaultPropertyPath;
 import com.bettercloud.vault.Vault;
 import com.bettercloud.vault.VaultException;
 import org.mule.runtime.api.exception.DefaultMuleException;
@@ -95,28 +96,21 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
     }
 
     /**
-     * Get a configuration property value from Vault.
+     * Get a configuration property value from Vault or a local properties file
      *
      * @param configurationAttributeKey  the key to lookup
-     * @return                           the String value of the property
+     * @return                           an {@link Optional} containing the {@link ConfigurationProperty} which holds the value for the given key at the given secret path
      */
     @Override
     public Optional<ConfigurationProperty> getConfigurationProperty(String configurationAttributeKey) {
 
         if (configurationAttributeKey.startsWith(VAULT_PROPERTIES_PREFIX)) {
-            Matcher matcher = VAULT_PATTERN.matcher(configurationAttributeKey);
-            if (matcher.find()) {
+            VaultPropertyPath path = parsePropertyPath(configurationAttributeKey);
 
-                final String effectiveKey = configurationAttributeKey.substring(VAULT_PROPERTIES_PREFIX.length());
-
-                // The Vault path is everything after the prefix and before the first period
-                final String secretPath = matcher.group(1);
-
-                // The key is everything after the first period
-                final String key = matcher.group(2);
+            if (path != null) {
 
                 try {
-                    final String value = getProperty(expandedValue(secretPath), expandedValue(key));
+                    final String value = getProperty(path.getSecretPath(), path.getKey());
 
                     if (value != null) {
                         return Optional.of(new ConfigurationProperty() {
@@ -133,7 +127,7 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
 
                             @Override
                             public String getKey() {
-                                return effectiveKey;
+                                return String.format("%s.%s", path.getSecretPath(), path.getKey());
                             }
                         });
                     }
@@ -153,6 +147,30 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
     public String getDescription() {
         return "Vault properties provider";
     }
+
+    /**
+     * Parse the configurationAttributeKey to determine if the key provided should be retrieved from Vault. The configurationAttributeKey
+     * must match VAULT_PATTERN. 
+     * Not all configurationAttributeKeys are meant for the Vault Properties Provider and they must be ignored. 
+     *  
+     * @param configurationAttributeKey a String representing the secret path and key that should be parsed
+     * @return a {@link VaultPropertyPath} with the Vault Secret Path and Key to retrieve or null if it is not a Vault property
+     */
+    private VaultPropertyPath parsePropertyPath(String configurationAttributeKey) {
+
+        Matcher matcher = VAULT_PATTERN.matcher(configurationAttributeKey);
+        if (matcher.find()) {
+            // The Vault path is everything after the prefix and before the first period
+            final String secretPath = matcher.group(1);
+
+            // The key is everything after the first period
+            final String key = matcher.group(2);
+
+            return new VaultPropertyPath(expandedValue(secretPath), expandedValue(key));
+        }
+
+        return null;
+    }    
 
     /**
      * Retrieve values from the environment when the pattern \$\[[^\]]*\] is used in a property value and replace the pattern
@@ -184,7 +202,11 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
         return result;
     }
 
-    // TODO: Add additional property to enable "Local Mode" that will then use a "Local Properties File" to load the properties
+    /**
+     * Read a properties file from localPropertiesFile and load the local cache with its values
+     * 
+     * @param localPropertiesFile path to a properties file located on the classpath
+     */
     private void evaluateLocalProperitesConfig(String localPropertiesFile){
         if(localPropertiesFile==null || localPropertiesFile.isEmpty())
             return;
@@ -199,7 +221,14 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
         }
     }
 
-    // TODO: Javadoc comments
+    /**
+     * Populate the cache using the properties provided. Logs warnings if the properties to not match the expected format.
+     * Expected format: path/to/secret/engine.key
+     * 
+     * Secret paths and the key cannot have periods in them
+     * 
+     * @param properties A {@link Properties} object to load the cache with
+     */
     private void loadCacheFromProperties(Properties properties){
         if(properties == null || properties.isEmpty()) return;
 
@@ -207,9 +236,8 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
             String keyS = entry.getKey().toString();
             String[] pathElements = keyS.split("\\.");
             if(pathElements.length != 2){
-                // TODO: Use String.format to format this string and also don't use all caps, also specify the format that should be used
-                logger.warn("FAIL TO PARSE THE PROPERTY WITH THE KEY: "+ keyS);
-            }else{
+                logger.warn(String.format("Invalid property path in local properties file (%s). Property must be in this format: path/to/secret/engine.key", keyS));
+            } else {
                 if(cachedData.containsKey(pathElements[0]))
                     cachedData.get(pathElements[0]).put(pathElements[1], entry.getValue().toString());
                 else
