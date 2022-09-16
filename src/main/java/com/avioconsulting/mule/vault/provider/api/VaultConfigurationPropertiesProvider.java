@@ -24,7 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Provider to read Vault properties from the Vault server or fallback file
+ * Provider to read Vault properties from the Vault server or fallback file.
  */
 public class VaultConfigurationPropertiesProvider implements ConfigurationPropertiesProvider {
 
@@ -41,11 +41,11 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
 
     /**
      * Constructs a VaultConfigurationPropertiesProvider. Vault must not be null.
-     * If isLocalMode is true, it will use the fallback file which contain secretPath and secrets
-     * in case vault server connections are not available.
+     * If isLocalMode is true, it will use the fallback file which contain secretPath and secrets.
+     * All Vault connections will be disabled when isLocalMode be true.
      * 
      * @param vault     vault object which contains secrets to pull from.
-     * @param isLocalMode determines wheter local fileback mode is enable or not.
+     * @param isLocalMode determines whether local fileback mode is enable or not.
      * @param localPropertiesFile local properties file name.
      */
     public VaultConfigurationPropertiesProvider(final Vault vault, final Boolean isLocalMode, final String localPropertiesFile) {
@@ -60,9 +60,9 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
     /**
      * Retrieves the property value from Vault. It stores the retrieved path in a Map so a Dynamic Secrets can be used.
      *
-     * @param path     the path to the secret
-     * @param property the property to retrieve from the secret
-     * @return         the value of the property or null if the property is not found
+     * @param path     the path to the secret.
+     * @param property the property to retrieve from the secret.
+     * @return         the value of the property or null if the property is not found.
      */
     private String getProperty(String path, String property) throws SecretNotFoundException, VaultAccessException, DefaultMuleException {
         try {
@@ -99,11 +99,11 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
     }
 
     /**
-     * Get a configuration property value from Vault or a local properties file
+     * Get a configuration property value from Vault or a local properties file.
      *
-     * @param configurationAttributeKey  the key to lookup
+     * @param configurationAttributeKey  the key to lookup.
      * @return                           an {@link Optional} containing the {@link ConfigurationProperty} which holds
-     * the value for the given key at the given secret path
+     * the value for the given key at the given secret path.
      */
     @Override
     public Optional<ConfigurationProperty> getConfigurationProperty(String configurationAttributeKey) {
@@ -131,12 +131,12 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
     }
 
     /**
-     * Parse the configurationAttributeKey to determine if the key provided should be retrieved from Vault. The configurationAttributeKey
-     * must match VAULT_PATTERN. 
+     * Parse the configurationAttributeKey to determine if the key provided should be retrieved from Vault.
+     * The configurationAttributeKey must match VAULT_PATTERN.
      * Not all configurationAttributeKeys are meant for the Vault Properties Provider and they must be ignored. 
      *  
-     * @param configurationAttributeKey a String representing the secret path and key that should be parsed
-     * @return a {@link VaultPropertyPath} with the Vault Secret Path and Key to retrieve or null if it is not a Vault property
+     * @param configurationAttributeKey a String representing the secret path and key that should be parsed.
+     * @return a {@link VaultPropertyPath} with the Vault Secret Path and Key to retrieve or null if it is not a Vault property.
      */
     private VaultPropertyPath parsePropertyPath(String configurationAttributeKey) {
 
@@ -156,11 +156,11 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
 
     /**
      * Retrieve values from the environment when the pattern \$\[[^\]]*\] is used in a property value and replace the pattern
-     * with the value. Example matches: $[ENV] or $[environment]
+     * with the value. Example matches: $[ENV] or $[environment].
      *
-     * @param value the text to search for the pattern and replace with values
-     * @return the inserted text with environment variables looked up
-     * @throws UnsetVariableException when the environment variable is not set
+     * @param value the text to search for the pattern and replace with values.
+     * @return the inserted text with environment variables looked up.
+     * @throws UnsetVariableException when the environment variable is not set.
      */
     private String expandedValue(final String value) {
         String result = value;
@@ -185,8 +185,8 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
     }
 
     /**
-     * Read a properties file from localPropertiesFile and load the local cache with its values
-     * @param localPropertiesFile path to a properties file located on the classpath
+     * Read a properties file from localPropertiesFile and load the local cache with its values.
+     * @param localPropertiesFile path to a properties file located on the classpath.
      */
     private void evaluateLocalProperitesConfig(String localPropertiesFile){
         if(localPropertiesFile==null || localPropertiesFile.isEmpty())
@@ -204,11 +204,11 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
 
     /**
      * Populate the cache using the properties provided. Logs warnings if the properties to not match the expected format.
-     * Expected format: path/to/secret/engine.key
+     * Expected format: path/to/secret/engine.key.
      * 
-     * Secret paths and the key cannot have periods in them
+     * Secret paths and the key cannot have periods in them.
      * 
-     * @param properties A {@link Properties} object to load the cache with
+     * @param properties A {@link Properties} object to load the cache with.
      */
     private void loadCacheFromProperties(Properties properties){
         if(properties == null || properties.isEmpty()) return;
