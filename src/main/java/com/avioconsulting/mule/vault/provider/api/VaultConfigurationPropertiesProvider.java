@@ -9,9 +9,11 @@ import com.bettercloud.vault.VaultException;
 import org.mule.runtime.api.exception.DefaultMuleException;
 import org.mule.runtime.config.api.dsl.model.properties.ConfigurationPropertiesProvider;
 import org.mule.runtime.config.api.dsl.model.properties.ConfigurationProperty;
+import org.mule.runtime.config.internal.dsl.model.config.DefaultConfigurationProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.text.html.Option;
 import java.io.FileInputStream;
 import java.net.URL;
 import java.util.HashMap;
@@ -22,15 +24,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Provider to read Vault properties from the Vault server.
+ * Provider to read Vault properties from the Vault server or fallback file
  */
 public class VaultConfigurationPropertiesProvider implements ConfigurationPropertiesProvider {
 
-    private final static Logger logger = LoggerFactory.getLogger(VaultConfigurationPropertiesProvider.class);
-
-    private final static String VAULT_PROPERTIES_PREFIX = "vault::";
-    private final static Pattern VAULT_PATTERN = Pattern.compile(VAULT_PROPERTIES_PREFIX + "([^\\.]*)\\.([^}]*)");
-    private final static Pattern ENV_PATTERN = Pattern.compile("\\$\\[([^\\]]*)\\]");
+    private static final Logger logger = LoggerFactory.getLogger(VaultConfigurationPropertiesProvider.class);
+    private static final String VAULT_PROPERTIES_PREFIX = "vault::";
+    private static final Pattern VAULT_PATTERN = Pattern.compile(VAULT_PROPERTIES_PREFIX + "([^\\.]*)\\.([^}]*)");
+    private static final Pattern ENV_PATTERN = Pattern.compile("\\$\\[([^\\]]*)\\]");
 
     private final Vault vault;
 
@@ -40,10 +41,12 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
 
     /**
      * Constructs a VaultConfigurationPropertiesProvider. Vault must not be null.
+     * If isLocalMode is true, it will use the fallback file which contain secretPath and secrets
+     * in case vault server connections are not available.
      * 
-     * If isLocalMode is true, it will use the 
-     * 
-     * @param vault
+     * @param vault     vault object which contains secrets to pull from.
+     * @param isLocalMode determines wheter local fileback mode is enable or not.
+     * @param localPropertiesFile local properties file name.
      */
     public VaultConfigurationPropertiesProvider(final Vault vault, final Boolean isLocalMode, final String localPropertiesFile) {
         this.vault = vault;
@@ -99,48 +102,27 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
      * Get a configuration property value from Vault or a local properties file
      *
      * @param configurationAttributeKey  the key to lookup
-     * @return                           an {@link Optional} containing the {@link ConfigurationProperty} which holds the value for the given key at the given secret path
+     * @return                           an {@link Optional} containing the {@link ConfigurationProperty} which holds
+     * the value for the given key at the given secret path
      */
     @Override
     public Optional<ConfigurationProperty> getConfigurationProperty(String configurationAttributeKey) {
-
+        Optional optionalValue = Optional.empty();
         if (configurationAttributeKey.startsWith(VAULT_PROPERTIES_PREFIX)) {
             VaultPropertyPath path = parsePropertyPath(configurationAttributeKey);
-
             if (path != null) {
-
                 try {
                     final String value = getProperty(path.getSecretPath(), path.getKey());
-
                     if (value != null) {
-                        return Optional.of(new ConfigurationProperty() {
-
-                            @Override
-                            public Object getSource() {
-                                return "Vault provider source";
-                            }
-
-                            @Override
-                            public Object getRawValue() {
-                                return value;
-                            }
-
-                            @Override
-                            public String getKey() {
-                                return String.format("%s.%s", path.getSecretPath(), path.getKey());
-                            }
-                        });
+                        optionalValue =  Optional.of(new DefaultConfigurationProperty("Vault provider source",
+                                String.format("%s.%s", path.getSecretPath(), path.getKey()), value));
                     }
                 } catch (Exception e) {
                     logger.error("Property was not found", e);
-                    return Optional.empty();
                 }
-
-                return Optional.empty();
-
             }
         }
-        return Optional.empty();
+        return optionalValue;
     }
 
     @Override
@@ -204,7 +186,6 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
 
     /**
      * Read a properties file from localPropertiesFile and load the local cache with its values
-     * 
      * @param localPropertiesFile path to a properties file located on the classpath
      */
     private void evaluateLocalProperitesConfig(String localPropertiesFile){
@@ -236,7 +217,7 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
             String keyS = entry.getKey().toString();
             String[] pathElements = keyS.split("\\.");
             if(pathElements.length != 2){
-                logger.warn(String.format("Invalid property path in local properties file (%s). Property must be in this format: path/to/secret/engine.key", keyS));
+                logger.warn(String.format("Invalid property secret path in local properties file (%s). Property must be in this format: path/to/secret/engine.key", keyS));
             } else {
                 if(cachedData.containsKey(pathElements[0]))
                     cachedData.get(pathElements[0]).put(pathElements[1], entry.getValue().toString());
