@@ -114,8 +114,23 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
                 try {
                     final String value = getProperty(path.getSecretPath(), path.getKey());
                     if (value != null) {
-                        optionalValue =  Optional.of(new DefaultConfigurationProperty("Vault provider source",
-                                String.format("%s.%s", path.getSecretPath(), path.getKey()), value));
+                        return Optional.of(new ConfigurationProperty() {
+
+                            @Override
+                            public Object getSource() {
+                                return "Vault provider source";
+                            }
+
+                            @Override
+                            public Object getRawValue() {
+                                return value;
+                            }
+
+                            @Override
+                            public String getKey() {
+                                return String.format("%s.%s", path.getSecretPath(), path.getKey());
+                            }
+                        });
                     }
                 } catch (Exception e) {
                     logger.error("Property was not found", e);
