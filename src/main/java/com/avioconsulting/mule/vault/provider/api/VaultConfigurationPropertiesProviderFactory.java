@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.avioconsulting.mule.vault.provider.internal.connection.VaultConnection;
+import com.avioconsulting.mule.vault.provider.internal.connection.provider.AbstractConnectionProvider;
 import com.avioconsulting.mule.vault.provider.internal.connection.provider.AppRoleConnectionProvider;
 import com.avioconsulting.mule.vault.provider.internal.connection.provider.Ec2ConnectionProvider;
 import com.avioconsulting.mule.vault.provider.internal.connection.provider.IamConnectionProvider;
@@ -41,7 +42,10 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
   public ConfigurationPropertiesProvider createProvider(final ConfigurationParameters parameters,
                                                         ResourceProvider externalResourceProvider) {
     try {
-      return new VaultConfigurationPropertiesProvider(getVault(parameters));
+        AbstractConnectionProvider vaultConnectionProvider = getVaultConnectionProvider(parameters);
+        return new VaultConfigurationPropertiesProvider(vaultConnectionProvider.connect().getVault(),
+                vaultConnectionProvider.isLocalMode(), 
+                vaultConnectionProvider.getLocalPropertiesFile());
     } catch (ConnectionException ce) {
       logger.error("Error connecting to Vault", ce);
       return null;
@@ -54,7 +58,7 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
    * @param parameters The parameters read from the Mule config file
    * @return a fully configured {@link Vault} object
    */
-  private Vault getVault(ConfigurationParameters parameters) throws ConnectionException {
+  private AbstractConnectionProvider getVaultConnectionProvider(ConfigurationParameters parameters) throws ConnectionException {
     if (parameters.getComplexConfigurationParameters().size() > 1) {
       logger.warn("Multiple Vault Properties Provider configurations have been found");
     }
@@ -89,12 +93,11 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
     }
 
     if (connectionProvider != null) {
-      return connectionProvider.connect().getVault();
+      return (AbstractConnectionProvider) connectionProvider;
     } else {
       logger.warn("No Vault Properties Provider configurations found");
       return null;
     }
 
   }
-
 }
