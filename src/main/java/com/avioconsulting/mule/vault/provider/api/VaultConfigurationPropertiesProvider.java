@@ -9,11 +9,9 @@ import com.bettercloud.vault.VaultException;
 import org.mule.runtime.api.exception.DefaultMuleException;
 import org.mule.runtime.config.api.dsl.model.properties.ConfigurationPropertiesProvider;
 import org.mule.runtime.config.api.dsl.model.properties.ConfigurationProperty;
-import org.mule.runtime.config.internal.dsl.model.config.DefaultConfigurationProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.text.html.Option;
 import java.io.FileInputStream;
 import java.net.URL;
 import java.util.HashMap;
