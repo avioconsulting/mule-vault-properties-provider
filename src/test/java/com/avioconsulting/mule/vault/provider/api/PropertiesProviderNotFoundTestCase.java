@@ -1,6 +1,5 @@
 package com.avioconsulting.mule.vault.provider.api;
 
-import com.bettercloud.vault.VaultException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

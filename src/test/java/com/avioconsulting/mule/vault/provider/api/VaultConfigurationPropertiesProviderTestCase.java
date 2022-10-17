@@ -1,9 +1,7 @@
 package com.avioconsulting.mule.vault.provider.api;
 
-import com.bettercloud.vault.Vault;
-import com.bettercloud.vault.VaultException;
-import com.bettercloud.vault.api.Logical;
-import com.bettercloud.vault.response.LogicalResponse;
+import com.avioconsulting.vault.http.client.output.VaultResponse;
+import com.avioconsulting.vault.http.client.provider.VaultClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,28 +30,30 @@ public class VaultConfigurationPropertiesProviderTestCase {
 	public static final String PROPERTIES_LOCATION_PATH = "files/local.properties";
 	private VaultConfigurationPropertiesProvider propertiesProvider;
 	private VaultConfigurationPropertiesProvider noLocalPropertiesProvider;
-	private @Mock Vault vault;
-	private @Mock Logical logical;
-	private @Mock LogicalResponse logicalResponse;
+	private @Mock VaultClient vaultClient;
 
 	@SystemStub
 	private EnvironmentVariables environmentVariables;
 
 
 	@BeforeEach
-	private void init() throws VaultException {
+	private void init()  {
 
 		if(propertiesProvider == null) {
-			propertiesProvider = new VaultConfigurationPropertiesProvider(vault, true, PROPERTIES_LOCATION_PATH);
+			propertiesProvider = new VaultConfigurationPropertiesProvider(vaultClient, true, PROPERTIES_LOCATION_PATH);
 		}
 
 		if(noLocalPropertiesProvider == null) {
-			noLocalPropertiesProvider = new VaultConfigurationPropertiesProvider(vault, false, PROPERTIES_LOCATION_PATH);
+			noLocalPropertiesProvider = new VaultConfigurationPropertiesProvider(vaultClient, false, PROPERTIES_LOCATION_PATH);
 		}
 
-		Mockito.lenient().when(vault.logical()).thenReturn(logical);
-		Mockito.lenient().when(logical.read(anyString())).thenReturn(logicalResponse);
-		Mockito.lenient().when(logicalResponse.getData()).thenReturn(getMockMapAsVaultResponse());
+		Mockito.lenient().when(vaultClient.getAuthToken()).thenReturn("aToken");
+		Mockito.lenient().when(vaultClient.getVaultAddress()).thenReturn("anAddress");
+		Mockito.lenient().when(vaultClient.getSecretFromUrlMap(anyString(),anyString(),anyString())).thenReturn(
+				VaultResponse.builder()
+						.data(getMockMapAsVaultResponse())
+						.build()
+		);
 
 		environmentVariables.set("ENV", "test");
 

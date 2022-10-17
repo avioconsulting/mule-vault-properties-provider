@@ -1,20 +1,19 @@
 package com.avioconsulting.mule.vault.provider.internal.connection.impl;
 
-import java.io.IOException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-
+import com.avioconsulting.mule.vault.provider.api.connection.parameters.EngineVersion;
+import com.avioconsulting.mule.vault.provider.api.connection.parameters.TlsContext;
+import com.avioconsulting.vault.http.client.output.AuthResponse;
+import com.avioconsulting.vault.http.client.provider.ClientProvider;
+import com.avioconsulting.vault.http.client.provider.VaultClient;
+import com.avioconsulting.vault.http.client.ssl.SslConfig;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.avioconsulting.mule.vault.provider.api.connection.parameters.EngineVersion;
-import com.avioconsulting.mule.vault.provider.api.connection.parameters.TlsContext;
-import com.bettercloud.vault.SslConfig;
-import com.bettercloud.vault.Vault;
-import com.bettercloud.vault.VaultConfig;
-import com.bettercloud.vault.VaultException;
+import java.io.IOException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 
 public class TlsConnection extends AbstractConnection {
 
@@ -22,22 +21,22 @@ public class TlsConnection extends AbstractConnection {
 
     public TlsConnection(String vaultUrl, TlsContext tlsContext, EngineVersion engineVersion, int prefixPathDepth) throws ConnectionException {
 
-        this.vaultConfig = new VaultConfig().address(vaultUrl).prefixPathDepth(prefixPathDepth);
-        if (engineVersion != null) {
-            this.vaultConfig = this.vaultConfig.engineVersion(engineVersion.getEngineVersionNumber());
-        }
-
         try {
             SslConfig ssl = getVaultSSLConfig(tlsContext);
-            this.vaultConfig = this.vaultConfig.sslConfig(ssl.build());
             logger.debug("TLS Setup Complete");
-            Vault vaultDriver = new Vault(this.vaultConfig.build());
-            String vaultToken = vaultDriver.auth().loginByCert().getAuthClientToken();
-            this.vault = new Vault(this.vaultConfig.sslConfig(ssl.build()).token(vaultToken).build());
+            this.vaultClient = new ClientProvider().getGrizzlyClient(vaultUrl, ssl.build(), 5000,
+                    true, engineVersion.getEngineVersionNumber(), prefixPathDepth);
+            AuthResponse authResponse = this.vaultClient.authByCert(vaultUrl,"cert");
+            this.vaultClient.setAuthToken(authResponse.getClientToken());
             this.valid = true;
-        } catch (VaultException | CertificateException | NoSuchAlgorithmException | KeyStoreException | IOException ve) {
-            throw new ConnectionException(ve);
+        } catch (CertificateException | NoSuchAlgorithmException | KeyStoreException | IOException ve) {
+            throw new ConnectionException(ve.getMessage(), ve.getCause());
+        } catch (com.avioconsulting.vault.http.client.exception.VaultException e) {
+            throw new RuntimeException(e);
         }
     }
 
+    @Override public VaultClient getVaultClient() {
+        return this.vaultClient;
+    }
 }

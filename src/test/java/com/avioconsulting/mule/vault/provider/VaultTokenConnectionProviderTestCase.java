@@ -2,16 +2,14 @@ package com.avioconsulting.mule.vault.provider;
 
 import org.junit.Rule;
 import org.junit.Test;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-
-import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.HttpResponse.response;
-
 import org.mockserver.client.MockServerClient;
 import org.mockserver.junit.MockServerRule;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.mockserver.model.HttpRequest.request;
+import static org.mockserver.model.HttpResponse.response;
 
 public class VaultTokenConnectionProviderTestCase extends MuleArtifactFunctionalTestCase{
 

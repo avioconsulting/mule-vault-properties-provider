@@ -3,7 +3,6 @@ package com.avioconsulting.mule.vault.provider.internal.connection.provider;
 import com.avioconsulting.mule.vault.provider.api.connection.parameters.EngineVersion;
 import com.avioconsulting.mule.vault.provider.api.connection.parameters.TlsContext;
 import com.avioconsulting.mule.vault.provider.internal.connection.VaultConnection;
-
 import org.mule.runtime.api.connection.ConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.meta.ExpressionSupport;

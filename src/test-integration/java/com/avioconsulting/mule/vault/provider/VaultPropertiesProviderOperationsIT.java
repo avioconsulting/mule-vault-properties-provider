@@ -1,20 +1,23 @@
 package com.avioconsulting.mule.vault.provider;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-
 import com.avioconsulting.mule.vault.util.SSLUtils;
 import com.avioconsulting.mule.vault.util.VaultContainer;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Test;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 
-import org.junit.Test;
-
 import java.io.IOException;
-import java.security.*;
+import java.security.InvalidKeyException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.SignatureException;
 import java.security.cert.CertificateException;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 
 public class VaultPropertiesProviderOperationsIT extends MuleArtifactFunctionalTestCase {
 

@@ -1,10 +1,10 @@
 package com.avioconsulting.mule.vault.provider.internal.connection;
 
-import com.bettercloud.vault.Vault;
+import com.avioconsulting.vault.http.client.provider.VaultClient;
 
 public interface VaultConnection {
 
-    Vault getVault();
+    VaultClient getVaultClient();
 
     void invalidate();
 

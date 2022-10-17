@@ -6,7 +6,7 @@
 
 
     <vault-properties-provider:config name="config">
-        <vault-properties-provider:approle-connection vaultUrl="${vaultUrl}" roleId="${roleId}" secretId="${secretId}">
+        <vault-properties-provider:approle-connection vaultUrl="${vaultUrl}" roleId="${roleId}" secretId="${secretId}" engineVersion="v2"   >
             <vault-properties-provider:tls-context>
                 <vault-properties-provider:trust-store type="JKS" path="mockserver/truststore.jks" password="password" />
             </vault-properties-provider:tls-context>

@@ -40,8 +40,6 @@ public class TrustStoreConfig {
     }
 
     public TrustStoreConfig(ConfigurationParameters parameters) {
-        super();
-
         try {
             type = parameters.getStringParameter("type");
         } catch (Exception e) {

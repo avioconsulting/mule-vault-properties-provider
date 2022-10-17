@@ -2,10 +2,10 @@ package com.avioconsulting.mule.vault.provider.internal.connection.impl;
 
 import com.avioconsulting.mule.vault.provider.api.connection.parameters.EngineVersion;
 import com.avioconsulting.mule.vault.provider.api.connection.parameters.TlsContext;
-import com.bettercloud.vault.SslConfig;
-import com.bettercloud.vault.Vault;
-import com.bettercloud.vault.VaultConfig;
-import com.bettercloud.vault.VaultException;
+import com.avioconsulting.vault.http.client.output.AuthResponse;
+import com.avioconsulting.vault.http.client.provider.ClientProvider;
+import com.avioconsulting.vault.http.client.provider.VaultClient;
+import com.avioconsulting.vault.http.client.ssl.SslConfig;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,23 +18,25 @@ import java.security.cert.CertificateException;
 public class AppRoleConnection extends AbstractConnection{
     private static final Logger logger = LoggerFactory.getLogger(AppRoleConnection.class);
 
-    public AppRoleConnection(String vaultUrl, String authMount, String roleId, String secretId, TlsContext tlsContext, EngineVersion engineVersion, int prefixPathDepth) throws ConnectionException {
+    public AppRoleConnection(String vaultUrl, String authMount, String roleId, String secretId, TlsContext tlsContext,
+            EngineVersion engineVersion, int prefixPathDepth) throws ConnectionException {
 
         try {
-            this.vaultConfig = new VaultConfig().address(vaultUrl).prefixPathDepth(prefixPathDepth);
-            if (engineVersion != null) {
-                this.vaultConfig = this.vaultConfig.engineVersion(engineVersion.getEngineVersionNumber());
-            }
             SslConfig ssl = getVaultSSLConfig(tlsContext);
-            this.vaultConfig = this.vaultConfig.sslConfig(ssl.build());
-            this.vault = new Vault(this.vaultConfig.build());
-            String token = vault.auth().loginByAppRole(authMount, roleId, secretId).getAuthClientToken();
-            this.vault = new Vault(this.vaultConfig.sslConfig(ssl.build()).token(token).build());
-            logger.debug("Successfully authenticated with AppRole auth method");
+            logger.debug("TLS Setup Complete");
+            this.vaultClient = new ClientProvider().getGrizzlyClient(vaultUrl, ssl.build(), 5000,
+                    true, engineVersion.getEngineVersionNumber(), prefixPathDepth);
+            AuthResponse authResponse = this.vaultClient.authByAppRole(vaultUrl,authMount,roleId,secretId);
+            this.vaultClient.setAuthToken(authResponse.getClientToken());
             this.valid = true;
-        } catch (VaultException | CertificateException | NoSuchAlgorithmException | KeyStoreException | IOException ve) {
-            logger.error("Error trying to stablish approle connection", ve);
+        } catch (CertificateException | NoSuchAlgorithmException | KeyStoreException | IOException ve) {
             throw new ConnectionException(ve.getMessage(), ve.getCause());
+        } catch (com.avioconsulting.vault.http.client.exception.VaultException e) {
+            throw new RuntimeException(e);
         }
+    }
+
+    @Override public VaultClient getVaultClient() {
+        return this.vaultClient;
     }
 }
