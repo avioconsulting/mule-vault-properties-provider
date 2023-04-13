@@ -7,6 +7,7 @@ import org.mule.runtime.config.api.dsl.model.ConfigurationParameters;
 import org.mule.runtime.config.api.dsl.model.ResourceProvider;
 import org.mule.runtime.config.api.dsl.model.properties.ConfigurationPropertiesProvider;
 import org.mule.runtime.config.api.dsl.model.properties.ConfigurationPropertiesProviderFactory;
+import static org.mule.runtime.api.component.ComponentIdentifier.builder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +18,7 @@ import com.avioconsulting.mule.vault.provider.internal.connection.provider.Ec2Co
 import com.avioconsulting.mule.vault.provider.internal.connection.provider.IamConnectionProvider;
 import com.avioconsulting.mule.vault.provider.internal.connection.provider.TlsConnectionProvider;
 import com.avioconsulting.mule.vault.provider.internal.connection.provider.TokenConnectionProvider;
-import com.avioconsulting.mule.vault.provider.internal.extension.VaultPropertiesProviderExtension;
+
 import com.bettercloud.vault.Vault;
 
 /**
@@ -27,15 +28,17 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
 
   private static final Logger logger = LoggerFactory.getLogger(VaultConfigurationPropertiesProviderFactory.class);
 
+  public static final String EXTENSION_NAMESPACE = "vault-properties-provider";
   public static final String TOKEN_PARAMETER_GROUP = "token-connection";
   public static final String TLS_PARAMETER_GROUP = "tls-connection";
   public static final String IAM_PARAMETER_GROUP = "iam-connection";
   public static final String EC2_PARAMETER_GROUP = "ec2-connection";
   public static final String APPROLE_PARAMETER_GROUP= "approle-connection";
+  public static final ComponentIdentifier VAULT_PROPERTIES_PROVIDER = builder().namespace(EXTENSION_NAMESPACE).name("config").build();
 
   @Override
   public ComponentIdentifier getSupportedComponentIdentifier() {
-    return VaultPropertiesProviderExtension.VAULT_PROPERTIES_PROVIDER;
+    return VAULT_PROPERTIES_PROVIDER;
   }
 
   @Override
@@ -74,7 +77,7 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
     for (int i=0;i<parameters.getComplexConfigurationParameters().size();i++) {
 	    String namespace = parameters.getComplexConfigurationParameters().get(i).getFirst().getNamespace();
 
-	    if (namespace.equals(VaultPropertiesProviderExtension.VAULT_PROPERTIES_PROVIDER.getNamespace())) {
+	    if (namespace.equals(VAULT_PROPERTIES_PROVIDER.getNamespace())) {
 	    	String firstConfiguration = parameters.getComplexConfigurationParameters().get(i).getFirst().getName();
 		    ConfigurationParameters configurationParameters = parameters.getComplexConfigurationParameters().get(i).getSecond();
 		    if (TLS_PARAMETER_GROUP.equals(firstConfiguration)) {

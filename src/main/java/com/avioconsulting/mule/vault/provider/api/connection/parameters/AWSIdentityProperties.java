@@ -1,6 +1,6 @@
 package com.avioconsulting.mule.vault.provider.api.connection.parameters;
 
-import com.avioconsulting.mule.vault.provider.internal.extension.VaultPropertiesProviderExtension;
+import com.avioconsulting.mule.vault.provider.api.VaultConfigurationPropertiesProviderFactory;
 import org.mule.runtime.api.meta.ExpressionSupport;
 import org.mule.runtime.config.api.dsl.model.ConfigurationParameters;
 import org.mule.runtime.extension.api.annotation.Expression;
@@ -48,7 +48,7 @@ public class AWSIdentityProperties {
 
         List<ConfigurationParameters> idList = parameters
                 .getComplexConfigurationParameter(builder()
-                        .namespace(VaultPropertiesProviderExtension.EXTENSION_NAMESPACE)
+                        .namespace(VaultConfigurationPropertiesProviderFactory.EXTENSION_NAMESPACE)
                         .name(IDENTITY_PARAMETER_GROUP).build());
 
         if (idList.size() > 0) {

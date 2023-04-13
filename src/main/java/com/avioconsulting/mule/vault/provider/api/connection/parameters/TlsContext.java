@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 import static org.mule.runtime.api.component.ComponentIdentifier.builder;
-import static com.avioconsulting.mule.vault.provider.internal.extension.VaultPropertiesProviderExtension.EXTENSION_NAMESPACE;
+import static com.avioconsulting.mule.vault.provider.api.VaultConfigurationPropertiesProviderFactory.EXTENSION_NAMESPACE;
 
 public class TlsContext {
 
