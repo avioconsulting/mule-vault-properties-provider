@@ -71,6 +71,11 @@ public class TrustStoreConfig {
         return ks;
     }
 
+    public String getType() { return type; }
+
+    public String getPath() { return path; }
+
+    public String getPassword() { return password; }
     public boolean isInsecure() {
         return insecure;
     }

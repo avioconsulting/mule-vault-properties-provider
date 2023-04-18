@@ -1,9 +1,11 @@
 package com.avioconsulting.mule.vault.provider.internal.connection.impl;
 
+import com.avioconsulting.mule.vault.provider.api.connection.parameters.KeyStoreConfig;
 import com.avioconsulting.mule.vault.provider.api.connection.parameters.TlsContext;
+import com.avioconsulting.mule.vault.provider.api.connection.parameters.TrustStoreConfig;
 import com.avioconsulting.mule.vault.provider.internal.connection.VaultConnection;
 import com.avioconsulting.vault.http.client.provider.VaultClient;
-import com.avioconsulting.vault.http.client.ssl.SslConfig;
+import org.glassfish.grizzly.ssl.SSLContextConfigurator;
 
 import java.io.IOException;
 import java.security.KeyStoreException;
@@ -31,24 +33,29 @@ public abstract class AbstractConnection implements VaultConnection {
     }
 
     /**
-     * Construct {@link SslConfig} given the tls-context element for TLS connections to Vault
+     * Construct {@link SSLContextConfigurator} given the tls-context element for TLS connections to Vault
      *
      * @param tlsContext properties in the tls-context element
-     * @return {@link SslConfig} constructed from the tls-context attributes
+     * @return {@link SSLContextConfigurator} constructed from the tls-context attributes
      * @throws CertificateException
      * @throws NoSuchAlgorithmException
      * @throws KeyStoreException
      * @throws IOException
      */
-    public SslConfig getVaultSSLConfig(TlsContext tlsContext) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
-        SslConfig ssl = new SslConfig();
+    public SSLContextConfigurator getVaultSSLConfig(TlsContext tlsContext) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
+        SSLContextConfigurator ssl = new SSLContextConfigurator(false);
         if (tlsContext != null) {
             if (tlsContext.isTrustStoreConfigured()) {
-                ssl = ssl.trustStore(tlsContext.getTrustStoreConfig().getKeyStore()).
-                        verify(!tlsContext.getTrustStoreConfig().isInsecure());
+                TrustStoreConfig trustStore = tlsContext.getTrustStoreConfig();
+                ssl.setTrustStoreFile(trustStore.getPath());
+                ssl.setTrustStorePass(trustStore.getPassword());
+                ssl.setTrustStoreType(trustStore.getType());
             }
             if (tlsContext.isKeyStoreConfigured()) {
-                ssl = ssl.keyStore(tlsContext.getKeyStoreConfig().getKeyStore(), tlsContext.getKeyStoreConfig().getPassword());
+                KeyStoreConfig keyStore = tlsContext.getKeyStoreConfig();
+                ssl.setKeyStoreFile(keyStore.getPath());
+                ssl.setKeyStorePass(keyStore.getPassword());
+                ssl.setKeyStoreType(keyStore.getType());
             }
         }
         return ssl;

@@ -5,7 +5,7 @@ import com.avioconsulting.mule.vault.provider.api.connection.parameters.TlsConte
 import com.avioconsulting.vault.http.client.output.AuthResponse;
 import com.avioconsulting.vault.http.client.provider.ClientProvider;
 import com.avioconsulting.vault.http.client.provider.VaultClient;
-import com.avioconsulting.vault.http.client.ssl.SslConfig;
+import org.glassfish.grizzly.ssl.SSLContextConfigurator;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,21 +22,19 @@ public class TlsConnection extends AbstractConnection {
     public TlsConnection(String vaultUrl, TlsContext tlsContext, EngineVersion engineVersion, int prefixPathDepth) throws ConnectionException {
 
         try {
-            SslConfig ssl = getVaultSSLConfig(tlsContext);
+            SSLContextConfigurator ssl = getVaultSSLConfig(tlsContext);
             logger.debug("TLS Setup Complete");
-            this.vaultClient = new ClientProvider().getGrizzlyClient(vaultUrl, ssl.build(), 5000,
-                    true, engineVersion.getEngineVersionNumber(), prefixPathDepth);
-            AuthResponse authResponse = this.vaultClient.authByCert(vaultUrl,"cert");
+            this.vaultClient = new ClientProvider().getGrizzlyClient(vaultUrl, ssl, 5000, true, engineVersion.getEngineVersionNumber(), prefixPathDepth);
+            AuthResponse authResponse = this.vaultClient.authByCert(vaultUrl, "cert");
             this.vaultClient.setAuthToken(authResponse.getClientToken());
             this.valid = true;
         } catch (CertificateException | NoSuchAlgorithmException | KeyStoreException | IOException ve) {
             throw new ConnectionException(ve.getMessage(), ve.getCause());
-        } catch (com.avioconsulting.vault.http.client.exception.VaultException e) {
-            throw new RuntimeException(e);
         }
     }
 
-    @Override public VaultClient getVaultClient() {
+    @Override
+    public VaultClient getVaultClient() {
         return this.vaultClient;
     }
 }
