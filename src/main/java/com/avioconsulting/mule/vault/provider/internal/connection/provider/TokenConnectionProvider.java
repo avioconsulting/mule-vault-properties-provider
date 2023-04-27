@@ -16,6 +16,8 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Objects;
+
 @DisplayName("Token Connection")
 @Alias("token-connection")
 public class TokenConnectionProvider extends AbstractConnectionProvider {
@@ -59,5 +61,16 @@ public class TokenConnectionProvider extends AbstractConnectionProvider {
         return new TokenConnection(vaultUrl, vaultToken, getTlsContext(), engineVersion, prefixPathDepth);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TokenConnectionProvider that = (TokenConnectionProvider) o;
+        return Objects.equals(vaultToken, that.vaultToken) && Objects.equals(tlsContext, that.tlsContext);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(vaultToken, tlsContext);
+    }
 }

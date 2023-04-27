@@ -17,6 +17,8 @@ import org.mule.runtime.extension.api.annotation.param.display.Summary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Objects;
+
 @DisplayName("AppRole Connection")
 @Alias("approle-connection")
 public class AppRoleConnectionProvider extends AbstractConnectionProvider {
@@ -66,5 +68,18 @@ public class AppRoleConnectionProvider extends AbstractConnectionProvider {
     @Override
     public VaultConnection connect() throws ConnectionException {
         return new AppRoleConnection(vaultUrl, authMount, roleId, secretId, getTlsContext(), engineVersion, prefixPathDepth);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AppRoleConnectionProvider that = (AppRoleConnectionProvider) o;
+        return Objects.equals(authMount, that.authMount) && Objects.equals(roleId, that.roleId) && Objects.equals(secretId, that.secretId) && Objects.equals(tlsContext, that.tlsContext);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(authMount, roleId, secretId, tlsContext);
     }
 }

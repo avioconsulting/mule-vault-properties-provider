@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Objects;
 
 import static com.avioconsulting.mule.vault.provider.internal.extension.VaultPropertiesProviderExtension.EXTENSION_NAMESPACE;
 import static org.mule.runtime.api.component.ComponentIdentifier.builder;
@@ -75,5 +76,18 @@ public class TlsContext {
 
     public boolean isKeyStoreConfigured() {
         return keyStoreConfig != null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TlsContext that = (TlsContext) o;
+        return Objects.equals(trustStoreConfig, that.trustStoreConfig) && Objects.equals(keyStoreConfig, that.keyStoreConfig);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(trustStoreConfig, keyStoreConfig);
     }
 }

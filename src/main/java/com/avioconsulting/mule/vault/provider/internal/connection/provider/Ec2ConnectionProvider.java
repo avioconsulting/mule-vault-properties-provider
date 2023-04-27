@@ -21,6 +21,8 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Objects;
+
 @DisplayName("EC2 Connection")
 @Alias("ec2-connection")
 @ExclusiveOptionals(isOneRequired = true)
@@ -110,5 +112,18 @@ public class Ec2ConnectionProvider extends AbstractAWSConnectionProvider {
 	@Override
 	protected TlsContext getTlsContext() {
 		return tlsContext;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Ec2ConnectionProvider that = (Ec2ConnectionProvider) o;
+		return Objects.equals(tlsContext, that.tlsContext) && Objects.equals(connectionProperties, that.connectionProperties) && Objects.equals(pkcs7Uri, that.pkcs7Uri);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(tlsContext, connectionProperties, pkcs7Uri);
 	}
 }
