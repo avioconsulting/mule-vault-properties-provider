@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Objects;
 
 import static org.mule.runtime.api.component.ComponentIdentifier.builder;
 
@@ -77,5 +78,18 @@ public class AWSIdentityProperties {
 
     public void setSignature(String signature) {
         this.signature = signature;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AWSIdentityProperties that = (AWSIdentityProperties) o;
+        return Objects.equals(identity, that.identity) && Objects.equals(signature, that.signature);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(identity, signature);
     }
 }

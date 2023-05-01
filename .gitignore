@@ -1,35 +1,50 @@
+# ------------------------------------------------------------------------------ #
+# Java defaults (https://github.com/github/gitignore/blob/master/Java.gitignore) #
+# ------------------------------------------------------------------------------ #
+*.class
 
-# Maven
-target/
+# Package Files #
+*.jar
+*.war
+*.ear
 
-
-# Eclipse files
-.classpath
+# ------------------------------------------------------------------------------------------- #
+# Eclipse-specific (https://github.com/github/gitignore/blob/master/Global/Eclipse.gitignore) #
+# ------------------------------------------------------------------------------------------- #
+*.pydevproject
+.metadata
+bin/**
+tmp/**
+tmp/**/*
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
 .project
-.settings
-/workspace/
+.classpath
 
-# IntelliJ Idea files
-*.iml
-*.ipr
-*.iws
-*.idea
+# External tool builders
+.externalToolBuilders/
 
-# Mac
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# CDT-specific
+.cproject
+
+# PDT-specific
+.buildpath
+
+# --------------- #
+# Studio-specific #
+# --------------- #
+target/
+.mule/**
+.mule/**/*
 .DS_Store
-
-# Test remnants
-objectstore/
-.mule/
-*.log
-temp/
-muleEmbeddedDB/
-activemq-data/
-testdir/
-hostkey.ser
-*.h2.db
-*.factorypath
-
-bin/
-aux/
-ssl/
+velocity.log
+.idea/
+exchange-docs/

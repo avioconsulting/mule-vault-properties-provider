@@ -14,6 +14,8 @@ import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Objects;
+
 @DisplayName("TLS Connection")
 @Alias("tls-connection")
 public class TlsConnectionProvider extends AbstractConnectionProvider {
@@ -48,4 +50,16 @@ public class TlsConnectionProvider extends AbstractConnectionProvider {
         return new TlsConnection(vaultUrl, getTlsContext(), engineVersion, prefixPathDepth);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TlsConnectionProvider that = (TlsConnectionProvider) o;
+        return Objects.equals(tlsContext, that.tlsContext);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(tlsContext);
+    }
 }

@@ -4,8 +4,8 @@ import com.avioconsulting.mule.vault.provider.internal.error.exception.SecretNot
 import com.avioconsulting.mule.vault.provider.internal.error.exception.UnsetVariableException;
 import com.avioconsulting.mule.vault.provider.internal.error.exception.VaultAccessException;
 import com.avioconsulting.mule.vault.provider.internal.extension.VaultPropertyPath;
-import com.bettercloud.vault.Vault;
-import com.bettercloud.vault.VaultException;
+import com.avioconsulting.vault.http.client.output.VaultResponse;
+import com.avioconsulting.vault.http.client.provider.VaultClient;
 import org.mule.runtime.api.exception.DefaultMuleException;
 import org.mule.runtime.config.api.dsl.model.properties.ConfigurationPropertiesProvider;
 import org.mule.runtime.config.api.dsl.model.properties.ConfigurationProperty;
@@ -31,7 +31,7 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
     private static final Pattern VAULT_PATTERN = Pattern.compile(VAULT_PROPERTIES_PREFIX + "([^\\.]*)\\.([^}]*)");
     private static final Pattern ENV_PATTERN = Pattern.compile("\\$\\[([^\\]]*)\\]");
 
-    private final Vault vault;
+    private final VaultClient vaultClient;
 
     private final boolean isLocalMode;
 
@@ -46,8 +46,8 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
      * @param isLocalMode determines whether local fileback mode is enable or not.
      * @param localPropertiesFile local properties file name.
      */
-    public VaultConfigurationPropertiesProvider(final Vault vault, final Boolean isLocalMode, final String localPropertiesFile) {
-        this.vault = vault;
+    public VaultConfigurationPropertiesProvider(final VaultClient vaultClient, final Boolean isLocalMode, final String localPropertiesFile) {
+        this.vaultClient = vaultClient;
         cachedData = new HashMap<>();
         this.isLocalMode = isLocalMode;
         if (isLocalMode) {
@@ -63,14 +63,16 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
      * @return         the value of the property or null if the property is not found.
      */
     private String getProperty(String path, String property) throws SecretNotFoundException, VaultAccessException, DefaultMuleException {
-        try {
+        //try {
             Map<String, String> data = null;
             if (cachedData.containsKey(path)) {
                 logger.trace("Getting data from cache");
                 data = cachedData.get(path);
             } else if (!isLocalMode) {
                 logger.trace("Getting data from Vault");
-                data = vault.logical().read(path).getData();
+
+                VaultResponse vaultResponse = this.vaultClient.getSecretFromUrlMap(this.vaultClient.getAuthToken(),path,this.vaultClient.getVaultAddress());
+                data = vaultResponse.getData();
                 // TODO: Does the driver ever return null? Or does it throw an exception? It returns a null if there is no data stored in the secret
                 cachedData.put(path, data);
             } else {
@@ -84,7 +86,7 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
                 throw new SecretNotFoundException(String.format("No value found for %s.%s", path, property));
             }
 
-        } catch (VaultException ve) {
+       /* } catch (VaultException ve) {
             if (ve.getHttpStatusCode() == 404) {
                 throw new SecretNotFoundException("Error getting data from Vault, secret not found", ve);
             } else if (ve.getHttpStatusCode() == 403) {
@@ -93,7 +95,7 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
                 logger.error("Error getting data from Vault", ve);
                 throw new DefaultMuleException("Unknown Vault exception", ve);
             }
-        }
+        }*/
     }
 
     /**

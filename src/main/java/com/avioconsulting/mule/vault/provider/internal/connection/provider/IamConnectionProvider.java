@@ -17,6 +17,8 @@ import org.mule.runtime.extension.api.annotation.param.display.Summary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Objects;
+
 @DisplayName("IAM Connection")
 @Alias("iam-connection")
 public class IamConnectionProvider extends AbstractAWSConnectionProvider {
@@ -75,4 +77,16 @@ public class IamConnectionProvider extends AbstractAWSConnectionProvider {
         return new IamConnection(vaultUrl, awsAuthMount, vaultRole, iamRequestUrl, iamRequestBody, iamRequestHeaders, getTlsContext(), engineVersion, prefixPathDepth);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        IamConnectionProvider that = (IamConnectionProvider) o;
+        return Objects.equals(iamRequestUrl, that.iamRequestUrl) && Objects.equals(iamRequestBody, that.iamRequestBody) && Objects.equals(iamRequestHeaders, that.iamRequestHeaders) && Objects.equals(tlsContext, that.tlsContext);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(iamRequestUrl, iamRequestBody, iamRequestHeaders, tlsContext);
+    }
 }

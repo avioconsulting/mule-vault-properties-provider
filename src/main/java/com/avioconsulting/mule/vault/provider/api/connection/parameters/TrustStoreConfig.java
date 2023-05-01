@@ -40,8 +40,6 @@ public class TrustStoreConfig {
     }
 
     public TrustStoreConfig(ConfigurationParameters parameters) {
-        super();
-
         try {
             type = parameters.getStringParameter("type");
         } catch (Exception e) {
@@ -73,6 +71,11 @@ public class TrustStoreConfig {
         return ks;
     }
 
+    public String getType() { return type; }
+
+    public String getPath() { return path; }
+
+    public String getPassword() { return password; }
     public boolean isInsecure() {
         return insecure;
     }

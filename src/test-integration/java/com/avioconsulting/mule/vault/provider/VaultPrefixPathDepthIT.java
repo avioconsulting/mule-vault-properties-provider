@@ -9,7 +9,11 @@ import org.junit.Test;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 
 import java.io.IOException;
-import java.security.*;
+import java.security.InvalidKeyException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.SignatureException;
 import java.security.cert.CertificateException;
 
 import static org.hamcrest.MatcherAssert.assertThat;

@@ -2,10 +2,9 @@ package com.avioconsulting.mule.vault.provider.internal.connection.impl;
 
 import com.avioconsulting.mule.vault.provider.api.connection.parameters.EngineVersion;
 import com.avioconsulting.mule.vault.provider.api.connection.parameters.TlsContext;
-import com.bettercloud.vault.SslConfig;
-import com.bettercloud.vault.Vault;
-import com.bettercloud.vault.VaultConfig;
-import com.bettercloud.vault.VaultException;
+import com.avioconsulting.vault.http.client.provider.ClientProvider;
+import com.avioconsulting.vault.http.client.provider.VaultClient;
+import org.glassfish.grizzly.ssl.SSLContextConfigurator;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,16 +20,18 @@ public class TokenConnection extends AbstractConnection {
     public TokenConnection(String vaultUrl, String vaultToken, TlsContext tlsContext, EngineVersion engineVersion, int prefixPathDepth) throws ConnectionException {
 
         try {
-            this.vaultConfig = new VaultConfig().address(vaultUrl).prefixPathDepth(prefixPathDepth);
-            if (engineVersion != null) {
-                this.vaultConfig = this.vaultConfig.engineVersion(engineVersion.getEngineVersionNumber());
-            }
-            SslConfig ssl = getVaultSSLConfig(tlsContext);
-            this.vault = new Vault(this.vaultConfig.token(vaultToken).sslConfig(ssl.build()).build());
+            SSLContextConfigurator ssl = getVaultSSLConfig(tlsContext);
             logger.debug("TLS Setup Complete");
+            this.vaultClient = new ClientProvider().getGrizzlyClient(vaultUrl, ssl, 5000, true, engineVersion.getEngineVersionNumber(), prefixPathDepth);
+            this.vaultClient.setAuthToken(vaultToken);
             this.valid = true;
-        } catch (VaultException | CertificateException | NoSuchAlgorithmException | KeyStoreException | IOException ve) {
+        } catch (CertificateException | NoSuchAlgorithmException | KeyStoreException | IOException ve) {
             throw new ConnectionException(ve.getMessage(), ve.getCause());
         }
+    }
+
+    @Override
+    public VaultClient getVaultClient() {
+        return vaultClient;
     }
 }

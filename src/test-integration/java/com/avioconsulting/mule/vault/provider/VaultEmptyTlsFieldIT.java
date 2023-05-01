@@ -9,25 +9,18 @@ import org.junit.Test;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 
 import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.SignatureException;
+import java.security.*;
 import java.security.cert.CertificateException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
-public class VaultJKSAuthenticationIT extends MuleArtifactFunctionalTestCase {
-
+public class VaultEmptyTlsFieldIT extends MuleArtifactFunctionalTestCase {
     @ClassRule
     public static final VaultContainer container = new VaultContainer();
 
     @BeforeClass
-    public static void setupContainer() throws IOException, InterruptedException, CertificateException,
-            SignatureException, NoSuchAlgorithmException, KeyStoreException, OperatorCreationException,
-            NoSuchProviderException, InvalidKeyException {
+    public static void setupContainer() throws IOException, InterruptedException, CertificateException, KeyStoreException, NoSuchAlgorithmException, SignatureException, NoSuchProviderException, InvalidKeyException, OperatorCreationException {
         container.initAndUnsealVault();
         SSLUtils.createClientCertAndKey();
         container.setupBackendCert();
@@ -36,20 +29,19 @@ public class VaultJKSAuthenticationIT extends MuleArtifactFunctionalTestCase {
 
         // Set vaultUrl and vaultToken properties so they can be used in the Mule config file
         System.setProperty("vaultUrl", container.getAddress());
-        System.setProperty("keyStorePath", VaultContainer.CLIENT_KEYSTORE);
-        System.setProperty("keyStorePassword", "password");
         System.setProperty("trustStoreFile", VaultContainer.CLIENT_TRUSTSTORE);
         System.setProperty("trustStorePassword", "password");
+        System.setProperty("vaultToken", container.getRootToken());
     }
 
     @Override
     protected String getConfigFile() {
-        return "mule_config/test-mule-jks-auth-config-it.xml";
+        return "mule_config/test-mule-empty-field-config-it.xml";
     }
 
     @Test
-    public void testVaultTLSAuthentication() throws Exception {
-        String payloadValue = ((String) flowRunner("testFlow")
+    public void testVaultAppRoleAuthentication() throws Exception {
+        String payloadValue = ((String) flowRunner("vault-properties-demoFlow")
                 .run()
                 .getMessage()
                 .getPayload()
