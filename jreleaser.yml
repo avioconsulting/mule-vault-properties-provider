@@ -1,0 +1,81 @@
+project:
+  name: mule-vault-properties-provider-module
+  description: The Mule 4 HashiCorp Vault properties provider allows you to access secrets stored in your Vault cluster
+  longDescription: |
+    The Mule 4 HashiCorp Vault properties provider allows you to access secrets stored in your Vault cluster from
+    you MuleSoft applications using a prefix similar to the built in secure properties provider.
+
+  links:
+    homepage: https://github.com/avioconsulting/
+    documentation: https://github.com/avioconsulting/mule-vault-properties-provider
+    license: https://github.com/avioconsulting/mule-vault-properties-provider/blob/main/LICENSE
+    contribute: https://github.com/avioconsulting/mule-vault-properties-provider/blob/main/README.md
+  authors:
+    - Adam DesJardin
+    - Adam Mead
+  license: BSD 2-Clause
+  inceptionYear: 2020
+  tags:
+    - mule
+  java:
+    groupId: com.avioconsulting.mule
+    version: 8
+
+release:
+  github:
+    owner: 'avioconsulting'
+    overwrite: true
+    draft: false
+    sign: true
+    releaseName: '{{tagName}}'
+    skipTag: false
+    milestone:
+      close: false
+    changelog:
+      skipMergeCommits: true
+      formatted: ALWAYS
+      preset: conventional-commits
+      format: '- {{commitShortHash}} {{commitTitle}}'
+      contributors:
+        format: '- {{contributorName}}{{#contributorUsernameAsLink}} ({{.}}){{/contributorUsernameAsLink}}'
+      labelers:
+        - label: 'dependencies'
+          title: 'chore(deps):'
+          order: 130
+      categories:
+        - title: '⚙️  Dependencies'
+          key: 'dependencies'
+          order: 80
+          labels:
+            - 'dependencies'
+      hide:
+        categories:
+          - 'merge'
+        contributors:
+          - 'GitHub'
+
+checksum:
+  individual: true
+
+signing:
+  active: ALWAYS
+  armored: true
+  mode: MEMORY
+
+#deploy:
+#  maven:
+#    nexus2:
+#      maven-central:
+#        active: ALWAYS
+#        url: https://oss.sonatype.org/service/local
+#        snapshotUrl: https://oss.sonatype.org/content/repositories/snapshots/
+#        applyMavenCentralRules: true
+#        closeRepository: true
+#        releaseRepository: true
+#        stagingRepositories:
+#          - target/staging-deploy
+
+distributions:
+  mule-health-check-api:
+    artifacts:
+      - path: target/mule-vault-properties-provider-module-{{projectVersion}}-mule-plugin.jar
