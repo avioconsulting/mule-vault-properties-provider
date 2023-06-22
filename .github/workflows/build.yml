@@ -3,13 +3,13 @@ name: Build and Publish
 on:
   push:
     branches:
-      - 'main'
+      - 'master'
       - 'chore/**'
       - 'feat/**'
       - 'develop'
   pull_request:
     branches:
-      - 'main'
+      - 'master'
 
 jobs:
   Build-and-Publish:
@@ -59,7 +59,7 @@ jobs:
 
       - name: Set up JDK 1.8 for maven central publish
         uses: actions/setup-java@v3
-        if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main'}}
+        if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/master'}}
         with:
           distribution: adopt-hotspot
           java-version: 8
@@ -72,7 +72,7 @@ jobs:
 
       - name: Publish to Maven Central
         id: publish-to-maven-central
-        if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main'}}
+        if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/master'}}
         run: ./mvnw deploy -Drelease=true -DskipTests=true
         env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
@@ -80,7 +80,7 @@ jobs:
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 
       - name: JReleaser full-Release
-        if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main'}}
+        if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/master'}}
         uses: jreleaser/release-action@v2
         env:
           JRELEASER_PROJECT_VERSION: ${{steps.set-version.outputs.version}}
@@ -96,7 +96,7 @@ jobs:
           arguments: full-release
 
       - name: JReleaser release output
-        if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main'}}
+        if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/master'}}
         uses: actions/upload-artifact@v3
         with:
           name: jreleaser-release
@@ -107,7 +107,7 @@ jobs:
   Perform-Release:
     runs-on: ubuntu-latest
     needs: Build-and-Publish
-    if: ${{ !contains(needs.Build-and-Publish.outputs.version, 'SNAPSHOT') && github.event_name != 'pull_request' && github.ref == 'refs/heads/main'}}
+    if: ${{ !contains(needs.Build-and-Publish.outputs.version, 'SNAPSHOT') && github.event_name != 'pull_request' && github.ref == 'refs/heads/master'}}
 
     steps:
       - uses: actions/checkout@v3
