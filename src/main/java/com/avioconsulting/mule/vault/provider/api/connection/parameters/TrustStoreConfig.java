@@ -51,6 +51,7 @@ public class TrustStoreConfig {
 
         try {
             insecure = "TRUE".equalsIgnoreCase(parameters.getStringParameter("insecure"));
+            logger.debug("Using insecure TLS");
         } catch (Exception e) {
             logger.debug("insecure property not set, defaulting to false");
             insecure = false;
@@ -68,6 +69,7 @@ public class TrustStoreConfig {
     public KeyStore getKeyStore() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
         KeyStore ks = KeyStore.getInstance(type);
         ks.load(new FileInputStream(path), password.toCharArray());
+        logger.debug(String.format("Using truststore from %s", path));
         return ks;
     }
 

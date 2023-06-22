@@ -10,4 +10,7 @@ public class SecretNotFoundException extends ModuleException {
     public SecretNotFoundException(String message, Throwable cause) {
         super(message, VaultErrorType.SECRET_NOT_FOUND, cause);
     }
+    public SecretNotFoundException(String message) {
+        super(message, VaultErrorType.SECRET_NOT_FOUND);
+    }
 }

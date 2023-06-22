@@ -32,4 +32,4 @@ hostkey.ser
 
 bin/
 aux/
-ssl/
+ssl/*

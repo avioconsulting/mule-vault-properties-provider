@@ -1,0 +1,24 @@
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:vault-properties-provider="http://www.mulesoft.org/schema/mule/vault-properties-provider"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+          http://www.mulesoft.org/schema/mule/vault-properties-provider http://www.mulesoft.org/schema/mule/vault-properties-provider/current/mule-vault-properties-provider.xsd">
+
+
+    <vault-properties-provider:config name="config">
+        <vault-properties-provider:token-connection vaultToken="${vaultToken}" vaultUrl="${vaultUrl}" engineVersion="v2" prefixPathDepth="3">
+            <vault-properties-provider:tls-context>
+                <vault-properties-provider:trust-store type="JKS" path="${trustStoreFile}" password="${trustStorePassword}"/>
+            </vault-properties-provider:tls-context>
+        </vault-properties-provider:token-connection>
+    </vault-properties-provider:config>
+
+    <flow name="testFlow">
+        <set-payload value="${vault::/avio/dev/kv/test/mysecret.att1}" />
+    </flow>
+
+    <flow name="testFlow2">
+        <set-payload value="${vault::/avio/dev/kv/test/mysecret.att2}" />
+    </flow>
+
+</mule>
