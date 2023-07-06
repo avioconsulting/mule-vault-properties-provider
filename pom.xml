@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.avioconsulting.mule</groupId>
     <artifactId>mule-vault-properties-provider-module</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>mule-extension</packaging>
     <name>Vault Properties Provider - Mule 4</name>
     <description>Mule 4 HashiCorp Vault Properties Provider</description>
