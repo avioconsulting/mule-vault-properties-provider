@@ -4,6 +4,7 @@ import com.avioconsulting.mule.vault.provider.api.connection.parameters.EC2Conne
 import com.avioconsulting.mule.vault.provider.api.connection.parameters.TlsContext;
 import com.avioconsulting.mule.vault.provider.internal.connection.VaultConnection;
 import com.avioconsulting.mule.vault.provider.internal.connection.impl.Ec2Connection;
+import com.intellectualsites.http.EntityMapper;
 import com.intellectualsites.http.HttpClient;
 import com.intellectualsites.http.HttpResponse;
 import org.mule.runtime.api.connection.ConnectionException;
@@ -21,6 +22,8 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Objects;
 
 @DisplayName("EC2 Connection")
@@ -101,12 +104,22 @@ public class Ec2ConnectionProvider extends AbstractAWSConnectionProvider {
 	 * @return the PKCS7 value with the '\n' characters removed
 	 */
 	private String lookupPkcs7() {
-		String pkcs7 = null;
-		HttpClient.Builder client = HttpClient.newBuilder();
-		HttpResponse response = client.build().get(pkcs7Uri).execute();
-		String responseStr = response.getResponseEntity(String.class);
-		pkcs7 = responseStr.replaceAll("\n", "");
-		return pkcs7;
+		// TODO: Property provider should not be accessing underlying http client directly
+		try {
+			URL pkcsUri = new URL(pkcs7Uri);
+			EntityMapper entityMapper = EntityMapper.newInstance();
+			HttpClient.Builder client = HttpClient.newBuilder().withBaseURL(pkcsUri.getProtocol() + "://" + pkcsUri.getAuthority()).withEntityMapper(entityMapper);
+			HttpResponse response = client.build().get(pkcsUri.getFile()).execute();
+			if(response != null) {
+				return response.getResponseEntity(String.class).replaceAll("\n", "");
+			} else {
+				logger.error("PKCS7 URL returned a null response");
+				return null;
+			}
+		} catch (MalformedURLException e) {
+			logger.error("Invalid PKCS7 URI format: " + pkcs7Uri, e);
+			return null;
+		}
 	}
 
 	@Override

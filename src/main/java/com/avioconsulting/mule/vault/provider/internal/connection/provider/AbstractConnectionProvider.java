@@ -24,7 +24,7 @@ public abstract class AbstractConnectionProvider implements ConnectionProvider<V
 
     @DisplayName("Secrets Engine Version")
     @Parameter
-    @Optional
+    @Optional(defaultValue = "v2")
     protected EngineVersion engineVersion;
 
     @DisplayName("Local Mode Enabled")

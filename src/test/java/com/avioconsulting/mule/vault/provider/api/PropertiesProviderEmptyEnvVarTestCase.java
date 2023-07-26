@@ -20,7 +20,7 @@ public class PropertiesProviderEmptyEnvVarTestCase extends MuleArtifactFunctiona
 
     @Override
     protected String getConfigFile() {
-        exceptionRule.expectMessage("Couldn't find configuration property value");
+        exceptionRule.expectMessage("Environment variable [BLAH] is not set");
         //Set vaultUrl and vaultToken properties so they can be used in the Mule config file
         System.setProperty("vaultUrl", String.format("https://%s:%d", mockServerRule.getClient().remoteAddress().getHostString(), mockServerRule.getClient().remoteAddress().getPort()));
         System.setProperty("vaultToken", "TOKEN");
