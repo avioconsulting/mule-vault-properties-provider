@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="test-vault-properties-provider-test-suite.xml" />
+	<munit:test name="test-vault-properties-provider-test-suiteTest" doc:id="911da143-4276-49ab-93f7-d13d1a6332a8" >
+		<munit:execution >
+			<flow-ref doc:name="test-vault-properties" doc:id="38e05b38-5d91-42d7-b0ca-3d457898a99d" name="test-vault-properties"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Payload is equal to secret" doc:id="2a3bf3bc-e2da-4065-a55d-76f8c04e3774" actual="#[payload]" expected="Vault is working" message="Property value isn't correct"/>
+		</munit:validation>
+	</munit:test>
+</mule>

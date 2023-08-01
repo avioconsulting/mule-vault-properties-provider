@@ -32,6 +32,12 @@
 <!--        <mule.api.version>1.3.0</mule.api.version>-->
 <!--        <mule.sdk.version>1.3.0</mule.sdk.version>-->
 <!--        <mule.extensions.ast.loader.version>1.3.0</mule.extensions.ast.loader.version>-->
+        <mavenResourcesVersion>3.0.2</mavenResourcesVersion>
+        <munit.input.directory>${basedir}/mule-vault-properties-provider-munit-tests</munit.input.directory>
+        <munit.output.directory>${basedir}/target/test-mule/munit</munit.output.directory>
+        <munit.version>2.2.3</munit.version>
+        <munit.extensions.maven.plugin.version>1.1.2</munit.extensions.maven.plugin.version>
+        <docker.maven.plugin.version>0.43.0</docker.maven.plugin.version>
     </properties>
 
     <build>
@@ -82,6 +88,132 @@
                         <id>verify</id>
                         <goals>
                             <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>${mavenResourcesVersion}</version>
+                <executions>
+                    <execution>
+                        <id>copy-munit-resources</id>
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${munit.output.directory}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${munit.input.directory}/src/main/mule</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                                <resource>
+                                    <directory>${munit.input.directory}/src/test/munit</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.mulesoft.munit</groupId>
+                <artifactId>munit-extensions-maven-plugin</artifactId>
+                <version>${munit.extensions.maven.plugin.version}</version>
+                <configuration>
+                    <!-- If you want to test against multiple runtime versions, do not set the runtimeVersion -->
+                    <runtimeVersion>${app.runtime}</runtimeVersion>
+                    <runtimeConfiguration>
+                        <discoverRuntimes>
+                            <product>EE</product>
+                        </discoverRuntimes>
+                        <!-- You can specify multiple versions to test against by adding the runtimes under additionalRuntimes -->
+                        <additionalRuntimes>
+                            <additionalRuntime>MULE_EE:4.3.0</additionalRuntime>
+                            <additionalRuntime>MULE_EE:4.4.0</additionalRuntime>
+                        </additionalRuntimes>
+                    </runtimeConfiguration>
+                    <systemPropertyVariables>
+                        <vault.protocol>http</vault.protocol>
+                        <vault.host>127.0.0.1</vault.host>
+                        <vault.port>${vault.port}</vault.port>
+                        <vault.token>test_token</vault.token>
+                    </systemPropertyVariables>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <phase>integration-test</phase>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.mulesoft.munit</groupId>
+                        <artifactId>munit-runner</artifactId>
+                        <version>${munit.version}</version>
+                        <classifier>mule-plugin</classifier>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.mulesoft.munit</groupId>
+                        <artifactId>munit-tools</artifactId>
+                        <version>${munit.version}</version>
+                        <classifier>mule-plugin</classifier>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>${docker.maven.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>start-vault</id>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                        <configuration>
+                            <images>
+                                <image>
+                                    <name>vault:1.13.3</name>
+                                    <alias>vault</alias>
+                                    <run>
+                                        <capAdd>
+                                            <add>IPC_LOCK</add>
+                                        </capAdd>
+                                        <env>
+                                            <VAULT_DEV_ROOT_TOKEN_ID>test_token</VAULT_DEV_ROOT_TOKEN_ID>
+                                        </env>
+                                        <volumes>
+                                            <bind>
+                                                <volume>${basedir}/src/test/resources/container/config:/vault/prepare</volume>
+                                            </bind>
+                                        </volumes>
+                                        <ports>
+                                            <port>vault.port:8200</port>
+                                        </ports>
+                                        <wait>
+                                            <http>
+                                                <url>http://127.0.0.1:${vault.port}/v1/sys/health</url>
+                                                <allowAllHosts>true</allowAllHosts>
+                                            </http>
+                                            <exec>
+                                                <postStart>sh /vault/prepare/configure.sh</postStart>
+                                            </exec>
+                                            <time>10000</time>
+                                        </wait>
+                                    </run>
+                                </image>
+                            </images>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>stop-vault</id>
+                        <goals>
+                            <goal>stop</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -193,4 +325,21 @@
             <url>https://repository.mulesoft.org/releases/</url>
         </repository>
     </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>mulesoft-release</id>
+            <name>mulesoft release repository</name>
+            <layout>default</layout>
+            <url>https://repository.mulesoft.org/releases/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+            <id>mulesoft-ee-releases</id>
+            <name>MuleSoft EE Releases Repository</name>
+            <url>https://repository.mulesoft.org/nexus-ee/content/repositories/releases-ee/</url>
+            <layout>default</layout>
+        </pluginRepository>
+    </pluginRepositories>
 </project>
