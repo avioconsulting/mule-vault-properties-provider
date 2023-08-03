@@ -16,4 +16,13 @@
 			<munit-tools:assert-equals doc:name="Payload is equal to secret" doc:id="2a3bf3bc-e2da-4065-a55d-76f8c04e3774" actual="#[payload]" expected="Vault is working" message="Property value isn't correct"/>
 		</munit:validation>
 	</munit:test>
+	<munit:test name="test-vault-multi-properties-provider-suiteTest" doc:id="eb821b67-0c54-4e45-bfde-b97c88227472" >
+		<munit:execution >
+			<flow-ref doc:name="test-vault-secret-multi-properties" doc:id="5faf79e1-6629-4f6c-a117-b5d3da4dbaac" name="test-vault-secret-multi-properties" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Payload is equal to secret1" doc:id="f5934562-1f03-4ddd-a78a-67520379c1d8" actual="#[payload]" expected="Vault is working to multi properties secret" message="Property value isn't correct" />
+			<munit-tools:assert-equals doc:name="Variable is equal to secret2" doc:id="863ada4f-50ca-429a-a08d-6276bf28ec4a" actual="#[vars.att2]" expected="Vault is working to multi properties secret2" message="Variable value isn't correct" />
+		</munit:validation>
+	</munit:test>
 </mule>

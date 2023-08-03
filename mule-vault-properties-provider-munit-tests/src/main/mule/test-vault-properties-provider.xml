@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:vault-properties-provider="http://www.mulesoft.org/schema/mule/vault-properties-provider" xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/vault-properties-provider http://www.mulesoft.org/schema/mule/vault-properties-provider/current/mule-vault-properties-provider.xsd">
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:vault-properties-provider="http://www.mulesoft.org/schema/mule/vault-properties-provider"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/vault-properties-provider http://www.mulesoft.org/schema/mule/vault-properties-provider/current/mule-vault-properties-provider.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 	<vault-properties-provider:config name="Vault_Properties_Provider_Config" doc:name="Vault Properties Provider Config" doc:id="0979ecf2-effb-4386-b7e1-96c352a0507f" >
-		<vault-properties-provider:token-connection vaultUrl="${vault.protocol}://${vault.host}:${vault.port}" vaultToken="${vault.token}" />
+		<vault-properties-provider:token-connection vaultUrl="${vault.protocol}://${vault.host}:${vault.port}" vaultToken="${vault.token}" engineVersion="v2"/>
 	</vault-properties-provider:config>
 	<sub-flow name="test-vault-properties" doc:id="34da7047-a2f3-42d9-ba90-c2be3e8fa76e" >
 		<set-payload value="${vault::secret/sample-secret.att}" doc:name="Set Secret to Payload" doc:id="7709f4e7-cbf8-4478-a81f-a0bd4cd91e6e" />
+	</sub-flow>
+	<sub-flow name="test-vault-secret-multi-properties" doc:id="f59c01b9-707a-4e57-9744-3ae4d5e8a300" >
+		<set-payload value="${vault::secret/multi-secret.att1}" doc:name="Set Secret to Payload" doc:id="8850622e-a273-49e0-873f-dd5601cc05ca" />
+		<set-variable value="${vault::secret/multi-secret.att2}" doc:name="att2" doc:id="2653989e-0884-4af0-85e1-b7e0290b5532" variableName="att2"/>
 	</sub-flow>
 </mule>

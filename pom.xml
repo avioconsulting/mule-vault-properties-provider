@@ -124,7 +124,7 @@
                 <version>${munit.extensions.maven.plugin.version}</version>
                 <configuration>
                     <!-- If you want to test against multiple runtime versions, do not set the runtimeVersion -->
-                    <runtimeVersion>${app.runtime}</runtimeVersion>
+                    <!--<runtimeVersion>${app.runtime}</runtimeVersion>-->
                     <runtimeConfiguration>
                         <discoverRuntimes>
                             <product>EE</product>
@@ -132,7 +132,7 @@
                         <!-- You can specify multiple versions to test against by adding the runtimes under additionalRuntimes -->
                         <additionalRuntimes>
                             <additionalRuntime>MULE_EE:4.3.0</additionalRuntime>
-                            <additionalRuntime>MULE_EE:4.4.0</additionalRuntime>
+                            <additionalRuntime>MULE_EE:4.4.0-20230616</additionalRuntime>
                         </additionalRuntimes>
                     </runtimeConfiguration>
                     <systemPropertyVariables>
