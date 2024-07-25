@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Objects;
 
 import static org.mule.runtime.api.component.ComponentIdentifier.builder;
 
@@ -19,63 +20,82 @@ import static org.mule.runtime.api.component.ComponentIdentifier.builder;
  */
 public class AWSIdentityProperties {
 
-    private static final Logger logger = LoggerFactory.getLogger(AWSIdentityProperties.class);
+  private static final Logger logger = LoggerFactory.getLogger(AWSIdentityProperties.class);
 
-    private static final String IDENTITY_PARAMETER_GROUP = "identity-properties";
+  private static final String IDENTITY_PARAMETER_GROUP = "identity-properties";
 
-    @DisplayName("Identity Document")
-    @Summary("Base64 encoded EC2 instance identity document.")
-    @Parameter
-    @Expression(ExpressionSupport.NOT_SUPPORTED)
-    private String identity;
+  @DisplayName("Identity Document")
+  @Summary("Base64 encoded EC2 instance identity document.")
+  @Parameter
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
+  private String identity;
 
-    @DisplayName("Identity Document Signature")
-    @Summary("Base64 encoded SHA256 RSA signature of the instance identity document")
-    @Parameter
-    @Expression(ExpressionSupport.NOT_SUPPORTED)
-    private String signature;
+  @DisplayName("Identity Document Signature")
+  @Summary("Base64 encoded SHA256 RSA signature of the instance identity document")
+  @Parameter
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
+  private String signature;
 
-    public AWSIdentityProperties() {
-        super();
+  public AWSIdentityProperties() {
+    super();
+  }
+
+  /**
+   * Construct an AWSIdentityProperties object with ConfigurationParameters
+   * 
+   * @param parameters
+   *            {@link ConfigurationParameters} with a sub-element containing
+   *            identity and signature
+   */
+  public AWSIdentityProperties(ConfigurationParameters parameters) {
+    super();
+
+    List<ConfigurationParameters> idList = parameters
+        .getComplexConfigurationParameter(builder()
+            .namespace(VaultPropertiesProviderExtension.EXTENSION_NAMESPACE)
+            .name(IDENTITY_PARAMETER_GROUP).build());
+
+    if (idList.size() > 0) {
+      ConfigurationParameters idParameters = idList.get(0);
+
+      try {
+        identity = idParameters.getStringParameter("identity");
+        signature = idParameters.getStringParameter("signature");
+      } catch (Exception ide) {
+        logger.debug("identity and/or signature properties are not present. If one is set, both must be set",
+            ide);
+      }
     }
+  }
 
-    /**
-     * Construct an AWSIdentityProperties object with ConfigurationParameters
-     * @param parameters {@link ConfigurationParameters} with a sub-element containing identity and signature
-     */
-    public AWSIdentityProperties(ConfigurationParameters parameters) {
-        super();
+  public String getIdentity() {
+    return identity;
+  }
 
-        List<ConfigurationParameters> idList = parameters
-                .getComplexConfigurationParameter(builder()
-                        .namespace(VaultPropertiesProviderExtension.EXTENSION_NAMESPACE)
-                        .name(IDENTITY_PARAMETER_GROUP).build());
+  public void setIdentity(String identity) {
+    this.identity = identity;
+  }
 
-        if (idList.size() > 0) {
-            ConfigurationParameters idParameters = idList.get(0);
+  public String getSignature() {
+    return signature;
+  }
 
-            try {
-                identity = idParameters.getStringParameter("identity");
-                signature = idParameters.getStringParameter("signature");
-            } catch (Exception ide) {
-                logger.debug("identity and/or signature properties are not present. If one is set, both must be set", ide);
-            }
-        }
-    }
+  public void setSignature(String signature) {
+    this.signature = signature;
+  }
 
-    public String getIdentity() {
-        return identity;
-    }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    AWSIdentityProperties that = (AWSIdentityProperties) o;
+    return Objects.equals(identity, that.identity) && Objects.equals(signature, that.signature);
+  }
 
-    public void setIdentity(String identity) {
-        this.identity = identity;
-    }
-
-    public String getSignature() {
-        return signature;
-    }
-
-    public void setSignature(String signature) {
-        this.signature = signature;
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(identity, signature);
+  }
 }

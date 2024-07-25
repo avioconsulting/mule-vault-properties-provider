@@ -9,7 +9,8 @@ import com.avioconsulting.mule.vault.provider.internal.connection.provider.IamCo
 import com.avioconsulting.mule.vault.provider.internal.connection.provider.TlsConnectionProvider;
 import com.avioconsulting.mule.vault.provider.internal.connection.provider.TokenConnectionProvider;
 
-@Configuration(name="config")
-@ConnectionProviders({TokenConnectionProvider.class, TlsConnectionProvider.class, IamConnectionProvider.class, Ec2ConnectionProvider.class, AppRoleConnectionProvider.class})
+@Configuration(name = "config")
+@ConnectionProviders({ TokenConnectionProvider.class, TlsConnectionProvider.class, IamConnectionProvider.class,
+    Ec2ConnectionProvider.class, AppRoleConnectionProvider.class })
 public class VaultPropertiesProviderConfiguration {
 }

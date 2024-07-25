@@ -1,13 +1,13 @@
 package com.avioconsulting.mule.vault.provider.internal.connection;
 
-import com.bettercloud.vault.Vault;
+import io.github.jopenlibs.vault.Vault;
 
 public interface VaultConnection {
 
-    Vault getVault();
+  Vault getVault();
 
-    void invalidate();
+  void invalidate();
 
-    boolean isValid();
+  boolean isValid();
 
 }
