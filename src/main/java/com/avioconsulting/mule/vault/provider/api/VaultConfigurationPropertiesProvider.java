@@ -79,8 +79,13 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
         data = cachedData.get(path);
       } else if (!isLocalMode) {
         logger.trace("Getting data from Vault");
-        // prefix= vault::namespace:engine_version:secret/path
-        data = vault.logical().read(path).getData();
+        // prefix= vault::namespace:secret/path
+        final String[] pathWithNS = path.split(":");
+        if (pathWithNS.length > 1) {
+          data = vault.logical().withNameSpace(pathWithNS[0]).read(pathWithNS[1]).getData();
+        } else {
+          data = vault.logical().read(path).getData();
+        }
         // TODO: Does the driver ever return null? Or does it throw an exception? It
         // returns a null if there is no data stored in the secret
         cachedData.put(path, data);
@@ -177,7 +182,6 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
     if (matcher.find()) {
       // The Vault path is everything after the prefix and before the first period
       final String secretPath = matcher.group(1);
-
       // The key is everything after the first period
       final String key = matcher.group(2);
 
