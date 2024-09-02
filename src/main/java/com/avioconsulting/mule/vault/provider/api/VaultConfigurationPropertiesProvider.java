@@ -31,6 +31,8 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
   private static final Pattern VAULT_PATTERN = Pattern.compile(VAULT_PROPERTIES_PREFIX + "([^\\.]*)\\.([^}]*)");
   private static final Pattern ENV_PATTERN = Pattern.compile("\\$\\[([^\\]]*)\\]");
 
+  private static final Pattern NAME_SPACE_PATTERN = Pattern.compile("^([^:]+):([^:]+)$");
+
   private final Vault vault;
 
   private final boolean isLocalMode;
@@ -80,10 +82,13 @@ public class VaultConfigurationPropertiesProvider implements ConfigurationProper
       } else if (!isLocalMode) {
         logger.trace("Getting data from Vault");
         // prefix= vault::namespace:secret/path
-        final String[] pathWithNS = path.split(":");
-        if (pathWithNS.length > 1) {
-          data = vault.logical().withNameSpace(pathWithNS[0]).read(pathWithNS[1]).getData();
+        Matcher nameSpaceMatcher = NAME_SPACE_PATTERN.matcher(path);
+        if (nameSpaceMatcher.matches()) {
+          logger.trace("Found namespace " + nameSpaceMatcher.group(1));
+          data = vault.logical().withNameSpace(nameSpaceMatcher.group(1)).read(nameSpaceMatcher.group(2))
+              .getData();
         } else {
+          logger.trace("No Namespace found using path to fetch the property");
           data = vault.logical().read(path).getData();
         }
         // TODO: Does the driver ever return null? Or does it throw an exception? It
