@@ -17,70 +17,70 @@ import org.slf4j.LoggerFactory;
 @ExclusiveOptionals(isOneRequired = true)
 public class EC2ConnectionProperties {
 
-    private static final Logger logger = LoggerFactory.getLogger(EC2ConnectionProperties.class);
+  private static final Logger logger = LoggerFactory.getLogger(EC2ConnectionProperties.class);
 
-    @DisplayName("Use Instance Metadata")
-    @Summary("Retrieve Instance metadata")
-    @Parameter
-    @Optional
-    private boolean useInstanceMetadata = false;
+  @DisplayName("Use Instance Metadata")
+  @Summary("Retrieve Instance metadata")
+  @Parameter
+  @Optional
+  private boolean useInstanceMetadata = false;
 
-    @DisplayName("PKCS7 Signature")
-    @Summary("PKCS7 signature of the identity document with all \\n characters removed.")
-    @Parameter
-    @Optional
-    private String pkcs7;
+  @DisplayName("PKCS7 Signature")
+  @Summary("PKCS7 signature of the identity document with all \\n characters removed.")
+  @Parameter
+  @Optional
+  private String pkcs7;
 
-    @DisplayName("Identity Properties")
-    @Summary("EC2 Identity Properties")
-    @Parameter
-    @Optional
-    private AWSIdentityProperties identityProperties;
+  @DisplayName("Identity Properties")
+  @Summary("EC2 Identity Properties")
+  @Parameter
+  @Optional
+  private AWSIdentityProperties identityProperties;
 
-    public EC2ConnectionProperties() {
-        super();
+  public EC2ConnectionProperties() {
+    super();
+  }
+
+  public EC2ConnectionProperties(ConfigurationParameters parameters) {
+    super();
+
+    try {
+      pkcs7 = parameters.getStringParameter("pkcs7");
+    } catch (Exception e) {
+      logger.debug("pkcs7 value is not set", e);
     }
 
-    public EC2ConnectionProperties(ConfigurationParameters parameters) {
-        super();
-
-        try {
-            pkcs7 = parameters.getStringParameter("pkcs7");
-        } catch (Exception e) {
-            logger.debug("pkcs7 value is not set", e);
-        }
-
-        try {
-            String useMetadataStr = parameters.getStringParameter("useInstanceMetadata");
-            useInstanceMetadata = "true".equals(useMetadataStr);
-        } catch (Exception e) {
-            logger.debug("useInstanceMetadata value is not set", e);
-        }
-
-        identityProperties = new AWSIdentityProperties(parameters);
+    try {
+      String useMetadataStr = parameters.getStringParameter("useInstanceMetadata");
+      useInstanceMetadata = "true".equals(useMetadataStr);
+    } catch (Exception e) {
+      logger.debug("useInstanceMetadata value is not set", e);
     }
 
-    public boolean isUseInstanceMetadata() {
-        return useInstanceMetadata;
-    }
+    identityProperties = new AWSIdentityProperties(parameters);
+  }
 
-    public void setUseInstanceMetadata(boolean useInstanceMetadata) {
-        this.useInstanceMetadata = useInstanceMetadata;
-    }
+  public boolean isUseInstanceMetadata() {
+    return useInstanceMetadata;
+  }
 
-    public String getPkcs7() {
-        return pkcs7;
-    }
+  public void setUseInstanceMetadata(boolean useInstanceMetadata) {
+    this.useInstanceMetadata = useInstanceMetadata;
+  }
 
-    public void setPkcs7(String pkcs7) {
-        this.pkcs7 = pkcs7;
-    }
+  public String getPkcs7() {
+    return pkcs7;
+  }
 
-    public AWSIdentityProperties getIdentityProperties() {
-        return identityProperties;
-    }
+  public void setPkcs7(String pkcs7) {
+    this.pkcs7 = pkcs7;
+  }
 
-    public void setIdentityProperties(AWSIdentityProperties identityProperties) {
-        this.identityProperties = identityProperties;
-    }
+  public AWSIdentityProperties getIdentityProperties() {
+    return identityProperties;
+  }
+
+  public void setIdentityProperties(AWSIdentityProperties identityProperties) {
+    this.identityProperties = identityProperties;
+  }
 }

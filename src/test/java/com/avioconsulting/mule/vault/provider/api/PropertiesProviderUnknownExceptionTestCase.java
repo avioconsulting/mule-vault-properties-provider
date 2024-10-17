@@ -11,49 +11,52 @@ import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
 public class PropertiesProviderUnknownExceptionTestCase extends MuleArtifactFunctionalTestCase {
-    @Rule
-    public MockServerRule mockServerRule = new MockServerRule(this);
-    private MockServerClient mockClient;
+  @Rule
+  public MockServerRule mockServerRule = new MockServerRule(this);
+  private MockServerClient mockClient;
 
-    @Rule
-    public ExpectedException exceptionRule = ExpectedException.none();
+  @Rule
+  public ExpectedException exceptionRule = ExpectedException.none();
 
-    @Override
-    protected String getConfigFile() {
-        exceptionRule.expectMessage("Couldn't find configuration property value");
-        //Set vaultUrl and vaultToken properties so they can be used in the Mule config file
-        System.setProperty("vaultUrl", String.format("https://%s:%d", mockServerRule.getClient().remoteAddress().getHostString(), mockServerRule.getClient().remoteAddress().getPort()));
-        System.setProperty("vaultToken", "TOKEN");
-        System.setProperty("ENV", "test");
+  @Override
+  protected String getConfigFile() {
+    exceptionRule.expectMessage("Couldn't find configuration property value");
+    // Set vaultUrl and vaultToken properties so they can be used in the Mule config
+    // file
+    System.setProperty("vaultUrl",
+        String.format("https://%s:%d", mockServerRule.getClient().remoteAddress().getHostString(),
+            mockServerRule.getClient().remoteAddress().getPort()));
+    System.setProperty("vaultToken", "TOKEN");
+    System.setProperty("ENV", "test");
 
-        mockClient
-                .withSecure(true)
-                .when(
-                        request()
-                                .withMethod("GET")
-                                .withPath("/v1/secret/data/test/mysecret")
-                ).respond(
-                response()
-                        .withStatusCode(500)
-                        .withHeader("Content-Type", "application/json")
-                        .withBody("{\"errors\":[]}")
+    mockClient
+        .withSecure(true)
+        .when(
+            request()
+                .withMethod("GET")
+                .withPath("/v1/secret/data/test/mysecret"))
+        .respond(
+            response()
+                .withStatusCode(500)
+                .withHeader("Content-Type", "application/json")
+                .withBody("{\"errors\":[]}")
 
         );
 
-        return "mule_config/test-mule-secret-not-found-config.xml";
+    return "mule_config/test-mule-secret-not-found-config.xml";
+  }
+
+  @Test
+  public void testUnknownException() {
+    try {
+      String payloadValue = ((String) flowRunner("testFlow")
+          .run()
+          .getMessage()
+          .getPayload()
+          .getValue());
+
+    } catch (Exception e) {
+
     }
-
-    @Test
-    public void testUnknownException() {
-        try {
-            String payloadValue = ((String) flowRunner("testFlow")
-                    .run()
-                    .getMessage()
-                    .getPayload()
-                    .getValue());
-
-        } catch (Exception e) {
-
-        }
-    }
+  }
 }

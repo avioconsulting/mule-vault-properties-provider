@@ -1,6 +1,5 @@
 package com.avioconsulting.mule.vault.provider.internal.error.provider;
 
-
 import static com.avioconsulting.mule.vault.provider.internal.error.VaultErrorType.ACCESS_DENIED;
 import static com.avioconsulting.mule.vault.provider.internal.error.VaultErrorType.SECRET_NOT_FOUND;
 import static com.avioconsulting.mule.vault.provider.internal.error.VaultErrorType.UNSET_VARIABLE;
@@ -14,8 +13,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class VaultErrorTypeProvider implements ErrorTypeProvider {
-    @Override
-    public Set<ErrorTypeDefinition> getErrorTypes() {
-        return Collections.unmodifiableSet(new HashSet<>(Arrays.asList(ACCESS_DENIED, SECRET_NOT_FOUND, UNSET_VARIABLE)));
-    }
+  @Override
+  public Set<ErrorTypeDefinition> getErrorTypes() {
+    return Collections
+        .unmodifiableSet(new HashSet<>(Arrays.asList(ACCESS_DENIED, SECRET_NOT_FOUND, UNSET_VARIABLE)));
+  }
 }

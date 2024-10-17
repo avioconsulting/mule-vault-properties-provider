@@ -5,8 +5,8 @@ import org.mule.runtime.extension.api.loader.ExtensionLoadingContext;
 import org.mule.runtime.extension.api.loader.ExtensionLoadingDelegate;
 
 public class VaultPropertiesExtensionLoadingDelegate implements ExtensionLoadingDelegate {
-    @Override
-    public void accept(ExtensionDeclarer extensionDeclarer, ExtensionLoadingContext extensionLoadingContext) {
+  @Override
+  public void accept(ExtensionDeclarer extensionDeclarer, ExtensionLoadingContext extensionLoadingContext) {
 
-    }
+  }
 }

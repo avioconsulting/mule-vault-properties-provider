@@ -6,20 +6,19 @@ import org.mule.runtime.extension.api.error.MuleErrors;
 import java.util.Optional;
 
 public enum VaultErrorType implements ErrorTypeDefinition<VaultErrorType> {
-    ACCESS_DENIED(MuleErrors.CLIENT_SECURITY),
-    SECRET_NOT_FOUND,
-    UNSET_VARIABLE(MuleErrors.EXPRESSION);
+  ACCESS_DENIED(MuleErrors.CLIENT_SECURITY), SECRET_NOT_FOUND, UNSET_VARIABLE(MuleErrors.EXPRESSION);
 
-    private ErrorTypeDefinition<? extends Enum<?>> parent;
+  private ErrorTypeDefinition<? extends Enum<?>> parent;
 
-    VaultErrorType(ErrorTypeDefinition<? extends Enum<?>> parent) {
-        this.parent = parent;
-    }
+  VaultErrorType(ErrorTypeDefinition<? extends Enum<?>> parent) {
+    this.parent = parent;
+  }
 
-    VaultErrorType() {};
+  VaultErrorType() {
+  };
 
-    @Override
-    public Optional<ErrorTypeDefinition<? extends Enum<?>>> getParent() {
-        return Optional.ofNullable(parent);
-    }
+  @Override
+  public Optional<ErrorTypeDefinition<? extends Enum<?>>> getParent() {
+    return Optional.ofNullable(parent);
+  }
 }
