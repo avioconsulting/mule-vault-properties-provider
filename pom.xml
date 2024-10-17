@@ -43,7 +43,7 @@
 
   <properties>
     <vault.driver.version>5.4.0</vault.driver.version>
-    <bouncy.castle.version>1.74</bouncy.castle.version>
+    <bouncy.castle.version>1.78</bouncy.castle.version>
     <test.containers.version>1.20.2</test.containers.version>
     <mock.server.version>5.10.0</mock.server.version>
   </properties>
