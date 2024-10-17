@@ -120,12 +120,12 @@ Attributes:
 
 ```xml
 <vault-properties-provider:config name="config" >
-  <vault-properties-provider:iam-connection vaultUrl="http://localhost:8200" 
-                                            engineVersion="v2" 
+  <vault-properties-provider:iam-connection vaultUrl="http://localhost:8200"
+                                            engineVersion="v2"
                                             awsAuthMount="aws"
-                                            vaultRole="test-role" 
-                                            iamRequestUrl="https://sts.amazonaws.com/" 
-                                            iamRequestBody="Action=GetCallerIdentity&Version=2011-06-15" 
+                                            vaultRole="test-role"
+                                            iamRequestUrl="https://sts.amazonaws.com/"
+                                            iamRequestBody="Action=GetCallerIdentity&Version=2011-06-15"
                                             iamRequestHeaders="" />
 </vault-properties-provider:config>
 ```
@@ -138,7 +138,7 @@ Attributes:
 *   `engineVersion` - Version of the KV engine being used (v1 or v2)
 *   `awsAuthMount` - the Vault mount for AWS authentication
 *   `vaultRole` - the Vault role to login as
-*   `useInstanceMetadata` - true to login with instance metadata (PKCS7 is looked up on the host) 
+*   `useInstanceMetadata` - true to login with instance metadata (PKCS7 is looked up on the host)
 
 ```xml
 <vault-properties-provider:config name="config" >
@@ -158,10 +158,10 @@ Attributes:
 
 ```xml
 <vault-properties-provider:config name="config" >
-  <vault-properties-provider:ec2-connection vaultUrl="http://localhost:8200" 
-                                            engineVersion="v2" 
-                                            awsAuthMount="aws" 
-                                            vaultRole="test-role" 
+  <vault-properties-provider:ec2-connection vaultUrl="http://localhost:8200"
+                                            engineVersion="v2"
+                                            awsAuthMount="aws"
+                                            vaultRole="test-role"
                                             pkcs7="MIICiTCCAfICCQD6m7oRw0uXOjANBgkqhkiG9w0BAQUFADCBiDELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAldBMRAwDgYDVQQHEwdTZWF0dGxlMQ8wDQYDVQQKEwZBbWF6b24xFDASBgNVBAsTC0lBTSBDb25zb2xlMRIwEAYDVQQDEwlUZXN0Q2lsYWMxHzAdBgkqhkiG9w0BCQEWEG5vb25lQGFtYXpvbi5jb20wHhcNMTEwNDI1MjA0NTIxWhcNMTIwNDI0MjA0NTIxWjCBiDELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAldBMRAwDgYDVQQHEwdTZWF0dGxlMQ8wDQYDVQQKEwZBbWF6b24xFDASBgNVBAsTC0lBTSBDb25zb2xlMRIwEAYDVQQDEwlUZXN0Q2lsYWMxHzAdBgkqhkiG9w0BCQEWEG5vb25lQGFtYXpvbi5jb20wgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAMaK0dn+a4GmWIWJ21uUSfwfEvySWtC2XADZ4nB+BLYgVIk60CpiwsZ3G93vUEIO3IyNoH/f0wYK8m9TrDHudUZg3qX4waLG5M43q7Wgc/MbQITxOUSQv7c7ugFFDzQGBzZswY6786m86gpEIbb3OhjZnzcvQAaRHhdlQWIMm2nrAgMBAAEwDQYJKoZIhvcNAQEFBQADgYEAtCu4nUhVVxYUntneD9+h8Mg9q6q+auNKyExzyLwaxlAoo7TJHidbtS4J5iNmZgXL0FkbFFBjvSfpJIlJ00zbhNYS5f6GuoEDmFJl0ZxBHjJnyp378OD8uTs7fLvjx79LjSTbNYiytVbZPQUQ5Yaxu2jXnimvw3rrszlaEXAMPLE"/>
 </vault-properties-provider:config>
 ```
@@ -182,7 +182,7 @@ Attributes:
 ```xml
 <vault-properties-provider:config name="config" >
   <vault-properties-provider:ec2-connection vaultUrl="http://localhost:8200" engineVersion="v2" awsAuthMount="aws" vaultRole="test-role">
-    <vault-properties-provider:identity-properties identity="eyAiZGV2cGF5UHJvZHVjdENvZGVzIiA6IG51bGwsICJtYXJrZXRwbGFjZVByb2R1Y3RDb2RlcyIgOiBbICIxYWJjMmRlZmdoaWprbG0zbm9wcXJzNHR1IiBdLCAiYXZhaWxhYmlsaXR5Wm9uZSIgOiAidXMtd2VzdC0yYiIsICJwcml2YXRlSXAiIDogIjEwLjE1OC4xMTIuODQiLCAidmVyc2lvbiIgOiAiMjAxNy0wOS0zMCIsICJpbnN0YW5jZUlkIiA6ICJpLTEyMzQ1Njc4OTBhYmNkZWYwIiwgImJpbGxpbmdQcm9kdWN0cyIgOiBudWxsLCAiaW5zdGFuY2VUeXBlIiA6ICJ0Mi5taWNybyIsICJhY2NvdW50SWQiIDogIjEyMzQ1Njc4OTAxMiIsICJpbWFnZUlkIiA6ICJhbWktNWZiOGM4MzUiLCAicGVuZGluZ1RpbWUiIDogIjIwMTYtMTEtMTlUMTY6MzI6MTFaIiwgImFyY2hpdGVjdHVyZSIgOiAieDg2XzY0IiwgImtlcm5lbElkIiA6IG51bGwsICJyYW1kaXNrSWQiIDogbnVsbCwgInJlZ2lvbiIgOiAidXMtd2VzdC0yIn0=" 
+    <vault-properties-provider:identity-properties identity="eyAiZGV2cGF5UHJvZHVjdENvZGVzIiA6IG51bGwsICJtYXJrZXRwbGFjZVByb2R1Y3RDb2RlcyIgOiBbICIxYWJjMmRlZmdoaWprbG0zbm9wcXJzNHR1IiBdLCAiYXZhaWxhYmlsaXR5Wm9uZSIgOiAidXMtd2VzdC0yYiIsICJwcml2YXRlSXAiIDogIjEwLjE1OC4xMTIuODQiLCAidmVyc2lvbiIgOiAiMjAxNy0wOS0zMCIsICJpbnN0YW5jZUlkIiA6ICJpLTEyMzQ1Njc4OTBhYmNkZWYwIiwgImJpbGxpbmdQcm9kdWN0cyIgOiBudWxsLCAiaW5zdGFuY2VUeXBlIiA6ICJ0Mi5taWNybyIsICJhY2NvdW50SWQiIDogIjEyMzQ1Njc4OTAxMiIsICJpbWFnZUlkIiA6ICJhbWktNWZiOGM4MzUiLCAicGVuZGluZ1RpbWUiIDogIjIwMTYtMTEtMTlUMTY6MzI6MTFaIiwgImFyY2hpdGVjdHVyZSIgOiAieDg2XzY0IiwgImtlcm5lbElkIiA6IG51bGwsICJyYW1kaXNrSWQiIDogbnVsbCwgInJlZ2lvbiIgOiAidXMtd2VzdC0yIn0="
                                                    signature="dExamplesjNQhhJan7pORLpLSr7lJEF4V2DhKGlyoYVBoUYrY9njyBCmhEayaGrhtS/AWY+LPxlVSQURF5n0gwPNCuO6ICT0fNrm5IH7w9ydyaexamplejJw8XvWPxbuRkcN0TAA1p4RtCAqm4ms=x2oALjWSCBExample=" />
   </vault-properties-provider:ec2-connection>
 </vault-properties-provider:config>
@@ -227,7 +227,7 @@ In addition, update the `url` in the `distributionManagement` section of the pom
 https://maven.anypoint.mulesoft.com/api/v1/organizations/${orgID}/maven
 ```
 
-Add a `server` for the exchange repository in your Maven `settings.xml` file with the username and password to use for AnyPoint Exchange. 
+Add a `server` for the exchange repository in your Maven `settings.xml` file with the username and password to use for AnyPoint Exchange.
 
 After it is published in the exchange, the dependency in a project would change to look like this:
 
