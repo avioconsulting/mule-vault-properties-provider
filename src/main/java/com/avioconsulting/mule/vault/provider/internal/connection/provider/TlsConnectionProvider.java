@@ -18,34 +18,34 @@ import org.slf4j.LoggerFactory;
 @Alias("tls-connection")
 public class TlsConnectionProvider extends AbstractConnectionProvider {
 
-    private static final Logger logger = LoggerFactory.getLogger(TlsConnectionProvider.class);
+  private static final Logger logger = LoggerFactory.getLogger(TlsConnectionProvider.class);
 
-    @DisplayName("TLS Context")
-    @Expression(ExpressionSupport.NOT_SUPPORTED)
-    @ParameterDsl(allowReferences = false)
-    @Parameter
-    protected TlsContext tlsContext;
+  @DisplayName("TLS Context")
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
+  @ParameterDsl(allowReferences = false)
+  @Parameter
+  protected TlsContext tlsContext;
 
-    public TlsConnectionProvider() {
-        super();
+  public TlsConnectionProvider() {
+    super();
+  }
+
+  public TlsConnectionProvider(ConfigurationParameters parameters) {
+    super(parameters);
+    tlsContext = new TlsContext(parameters);
+  }
+
+  @Override
+  protected TlsContext getTlsContext() {
+    return tlsContext;
+  }
+
+  @Override
+  public VaultConnection connect() throws ConnectionException {
+    if (tlsContext == null) {
+      throw new ConnectionException("TLS Context is required for TLS Connection");
     }
-
-    public TlsConnectionProvider(ConfigurationParameters parameters) {
-        super(parameters);
-        tlsContext = new TlsContext(parameters);
-    }
-
-    @Override
-    protected TlsContext getTlsContext() {
-        return tlsContext;
-    }
-
-    @Override
-    public VaultConnection connect() throws ConnectionException {
-        if (tlsContext == null) {
-            throw new ConnectionException("TLS Context is required for TLS Connection");
-        }
-        return new TlsConnection(vaultUrl, getTlsContext(), engineVersion, prefixPathDepth);
-    }
+    return new TlsConnection(getTlsContext());
+  }
 
 }

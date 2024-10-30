@@ -1,39 +1,39 @@
 package com.avioconsulting.mule.vault.provider.internal.extension;
 
 /**
- * The path to a value in Vault. Contains the secret path and key name that should be used to retreive the value from Vault.
+ * The path to a value in Vault. Contains the secret path and key name that
+ * should be used to retreive the value from Vault.
  */
 public class VaultPropertyPath {
-    
-    private String secretPath;
-    
-    private String key;
 
-    public VaultPropertyPath() {
-        super();
-    }
+  private String secretPath;
 
-    public VaultPropertyPath(String secretPath, String key) {
-        super();
-        this.secretPath = secretPath;
-        this.key = key;
-    }
+  private String key;
 
-    public String getSecretPath() {
-        return secretPath;
-    }
+  public VaultPropertyPath() {
+    super();
+  }
 
-    public void setSecretPath(String secretPath) {
-        this.secretPath = secretPath;
-    }
+  public VaultPropertyPath(String secretPath, String key) {
+    super();
+    this.secretPath = secretPath;
+    this.key = key;
+  }
 
-    public String getKey() {
-        return key;
-    }
+  public String getSecretPath() {
+    return secretPath;
+  }
 
-    public void setKey(String key) {
-        this.key = key;
-    }
+  public void setSecretPath(String secretPath) {
+    this.secretPath = secretPath;
+  }
 
-    
+  public String getKey() {
+    return key;
+  }
+
+  public void setKey(String key) {
+    this.key = key;
+  }
+
 }

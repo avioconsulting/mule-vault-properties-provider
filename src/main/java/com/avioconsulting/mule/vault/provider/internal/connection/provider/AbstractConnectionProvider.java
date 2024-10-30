@@ -3,7 +3,7 @@ package com.avioconsulting.mule.vault.provider.internal.connection.provider;
 import com.avioconsulting.mule.vault.provider.api.connection.parameters.EngineVersion;
 import com.avioconsulting.mule.vault.provider.api.connection.parameters.TlsContext;
 import com.avioconsulting.mule.vault.provider.internal.connection.VaultConnection;
-
+import io.github.jopenlibs.vault.VaultConfig;
 import org.mule.runtime.api.connection.ConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.meta.ExpressionSupport;
@@ -17,83 +17,98 @@ import org.slf4j.LoggerFactory;
 
 public abstract class AbstractConnectionProvider implements ConnectionProvider<VaultConnection> {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractConnectionProvider.class);
+  private static final Logger logger = LoggerFactory.getLogger(AbstractConnectionProvider.class);
 
-    @DisplayName("Vault URL")
-    @Parameter
-    protected String vaultUrl;
+  public static VaultConfig vaultConfig = new VaultConfig();
+  @DisplayName("Vault URL")
+  @Parameter
+  protected String vaultUrl;
 
-    @DisplayName("Secrets Engine Version")
-    @Parameter
-    @Optional
-    protected EngineVersion engineVersion;
+  @DisplayName("Vault Namespace")
+  @Parameter
+  @Optional
+  protected String vaultNamespace;
 
-    @DisplayName("Local Mode Enabled")
-    @Parameter
-    @Optional(defaultValue = "false")
-    @Expression(ExpressionSupport.SUPPORTED)
-    protected boolean localMode;
+  @DisplayName("Secrets Engine Version")
+  @Parameter
+  @Optional
+  protected EngineVersion engineVersion;
 
-    @DisplayName("Local Properties File")
-    @Parameter
-    @Optional
-    protected String localPropertiesFile;
+  @DisplayName("Local Mode Enabled")
+  @Parameter
+  @Optional(defaultValue = "false")
+  @Expression(ExpressionSupport.SUPPORTED)
+  protected boolean localMode;
 
-    @DisplayName("Prefix path depth")
-    @Parameter
-    @Optional(defaultValue = "1")
-    protected int prefixPathDepth;
+  @DisplayName("Local Properties File")
+  @Parameter
+  @Optional
+  protected String localPropertiesFile;
 
-    protected abstract TlsContext getTlsContext();
+  @DisplayName("Prefix path depth")
+  @Parameter
+  @Optional(defaultValue = "1")
+  protected int prefixPathDepth;
 
-    public AbstractConnectionProvider() {
-        super();
+  protected abstract TlsContext getTlsContext();
+
+  public AbstractConnectionProvider() {
+    super();
+  }
+
+  public AbstractConnectionProvider(ConfigurationParameters parameters) {
+
+    vaultUrl = parameters.getStringParameter("vaultUrl");
+
+    vaultNamespace = parameters.getStringParameter("vaultNamespace");
+
+    // prefixPathDepth and localMode have default values, so the parameters will
+    // always be available
+    prefixPathDepth = Integer.valueOf(parameters.getStringParameter("prefixPathDepth"));
+    localMode = Boolean.parseBoolean(parameters.getStringParameter("localMode"));
+    try {
+      String ev = parameters.getStringParameter("engineVersion");
+      engineVersion = EngineVersion.valueOf(ev);
+      vaultConfig.address(vaultUrl).prefixPathDepth(prefixPathDepth);
+      if (engineVersion != null) {
+        vaultConfig.engineVersion(engineVersion.getEngineVersionNumber());
+      }
+      if (vaultNamespace != null) {
+        vaultConfig.nameSpace(vaultNamespace);
+      }
+    } catch (Exception e) {
+      logger.debug("kvVersion parameter is not present, or is not a valid value (v1 or v2)", e);
     }
 
-    public AbstractConnectionProvider(ConfigurationParameters parameters) {
-
-        vaultUrl = parameters.getStringParameter("vaultUrl");
-
-        // prefixPathDepth and localMode have default values, so the parameters will always be available
-        prefixPathDepth = Integer.valueOf(parameters.getStringParameter("prefixPathDepth"));
-        localMode = Boolean.parseBoolean(parameters.getStringParameter("localMode"));
-        
-        try {
-            String ev = parameters.getStringParameter("engineVersion");
-            engineVersion = EngineVersion.valueOf(ev);
-        } catch (Exception e) {
-            logger.debug("kvVersion parameter is not present, or is not a valid value (v1 or v2)", e);
-        }
-
-        // Only retrieve the local properties file path if local mode is enabled
-        if (localMode) {
-            try{
-                localPropertiesFile = parameters.getStringParameter("localPropertiesFile");
-            } catch (Exception e){
-                logger.debug("localPropertiesFile parameter is not present", e);
-            }
-        }
+    // Only retrieve the local properties file path if local mode is enabled
+    if (localMode) {
+      try {
+        localPropertiesFile = parameters.getStringParameter("localPropertiesFile");
+      } catch (Exception e) {
+        logger.debug("localPropertiesFile parameter is not present", e);
+      }
     }
+  }
 
-    @Override
-    public void disconnect(VaultConnection connection) {
-        connection.invalidate();
-    }
+  @Override
+  public void disconnect(VaultConnection connection) {
+    connection.invalidate();
+  }
 
-    @Override
-    public ConnectionValidationResult validate(VaultConnection vaultConnection) {
-        if (vaultConnection.isValid()) {
-            return ConnectionValidationResult.success();
-        } else {
-            return ConnectionValidationResult.failure("Invalid Connection", null);
-        }
+  @Override
+  public ConnectionValidationResult validate(VaultConnection vaultConnection) {
+    if (vaultConnection.isValid()) {
+      return ConnectionValidationResult.success();
+    } else {
+      return ConnectionValidationResult.failure("Invalid Connection", null);
     }
+  }
 
-    public boolean isLocalMode() {
-        return this.localMode;
-    }
+  public boolean isLocalMode() {
+    return this.localMode;
+  }
 
-    public String getLocalPropertiesFile() {
-        return this.localPropertiesFile;
-    }
+  public String getLocalPropertiesFile() {
+    return this.localPropertiesFile;
+  }
 }
