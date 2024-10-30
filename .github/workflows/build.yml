@@ -9,7 +9,7 @@ on:
       - 'fix/**'
   pull_request:
     branches:
-      - 'main'
+      - 'master'
 
 jobs:
   Build-Maven:
@@ -32,7 +32,7 @@ jobs:
     #   java-distribution: adopt-hotspot
     #   java-version: 8
     #   maven-args: -X
-    #   main-branch: main
+      main-branch: master
 
   Post-Release-Maven:
     needs: [Build-Maven, Release-Maven]
@@ -43,5 +43,5 @@ jobs:
     #   java-distribution: adopt-hotspot
     #   java-version: 8
     #   maven-args: -X
-    #   main-branch: main
+      main-branch: master
     #   pr-reviewers: adesjardin, manikmagar, kkingavio
