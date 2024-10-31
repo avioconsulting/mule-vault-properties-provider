@@ -3,7 +3,7 @@ name: Maven Build and Release for Mule-Plugin
 on:
   push:
     branches:
-      - 'master'
+      - 'main'
       - 'chore/**'
       - 'feat/**'
       - 'fix/**'
