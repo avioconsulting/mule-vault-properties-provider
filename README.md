@@ -1,4 +1,4 @@
-# Vault Properties Provider
+# Vault Properties Provider for Mule
 
 ### Global Config
 Add a single Vault Properties Provider Config global element to your application. Specify the Vault URL and properties to log in.
