@@ -205,5 +205,17 @@
       </plugin>
     </plugins>
   </build>
+  <distributionManagement>
+    <repository>
+      <id>bmi.releases</id>
+      <url>https://nexus.brotherhoodmutual.com/nexus/content/repositories/releases</url>
+      <uniqueVersion>true</uniqueVersion>
+    </repository>
+    <snapshotRepository>
+      <id>bmi.snapshots</id>
+      <name>Snapshot</name>
+      <url>https://nexus.brotherhoodmutual.com/nexus/content/repositories/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
 
 </project>
