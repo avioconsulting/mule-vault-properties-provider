@@ -44,7 +44,8 @@ public class VaultConfigurationPropertiesProviderFactory implements Configuratio
     VaultConfig vaultConfig = new VaultConfig();
     try {
       AbstractConnectionProvider vaultConnectionProvider = getVaultConnectionProvider(parameters, vaultConfig);
-      return new VaultConfigurationPropertiesProvider(vaultConnectionProvider.connect().getVault(),
+      return new VaultConfigurationPropertiesProvider(
+          vaultConnectionProvider.isLocalMode() ? null : vaultConnectionProvider.connect().getVault(),
           vaultConnectionProvider.isLocalMode(),
           vaultConnectionProvider.getLocalPropertiesFile());
     } catch (ConnectionException ce) {
